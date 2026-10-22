@@ -4,6 +4,6 @@ window.ERP_MARQUE = {
   nom: "LOGISTICA",
   court: "Logistica",
   modules: ["distribution", "placement", "assurance"],
-  outils: ["crm", "parametres"],
+  outils: ["portail", "crm", "parametres"],
   admin: { nom: "ADMIN", role: "admin", pwd: {"v":2,"it":150000,"s":"yBJvd6NZ8JFNeopkXYWDxg==","h":"i37tVbsMACJYifCnKgdFiZ7TbpBJOd8OIoCI9W7F6II="} }
 };
