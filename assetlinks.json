@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "africa.sanix.angels.livreur",
+      "sha256_cert_fingerprints": ["REMPLACER:PAR:L'EMPREINTE:SHA-256:DE:LA:CLE:DE:SIGNATURE"]
+    }
+  }
+]

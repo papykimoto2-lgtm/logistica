@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#7a1d17">
+<meta name="referrer" content="no-referrer">
+<link rel="manifest" href="manifest-hub.webmanifest">
+<link rel="icon" type="image/png" href="icons/hub-192.png">
+<link rel="apple-touch-icon" href="icons/hub-apple-180.png">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Placement de personnel — LOGISTICA</title>
+<link rel="stylesheet" href="modules.css">
+</head>
+<body>
+<header><div class="w top"><div><h1>👷 Placement de personnel</h1><p>Temporaires, journaliers, coursiers et personnel de bureau · <span id="date"></span></p></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span id="who" style="font-size:13px"></span><button class="back" id="lock" hidden type="button" data-a="lock">🔒 Verrouiller</button><a class="back" href="index.html">← Hub</a></div></div></header>
+<main><div class="w" id="app"></div></main>
+<div id="toast" role="status" aria-live="polite"></div>
+<footer>© LOGISTICA · Placement · <a href="index.html">Retour au hub</a><br><small>Logiciel développé par <b>Sanix Africa Division Technologies</b> · Contact (WhatsApp) : +225 0779181075 / 0140017751</small></footer>
+<script src="passerelle-config.js"></script>
+<script src="sync-engine.js"></script>
+<script src="marque.js"></script><script src="auth-engine.js"></script>
+<script src="shell-engine.js"></script>
+<script src="placement-engine.js"></script>
+<script>
+const $=s=>document.getElementById(s),P=ANGELS_PLACEMENT,{E,fc,av,kpi,ilya}=ANGELS_SHELL;
+$("date").textContent=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+const auj=()=>new Date().toISOString().slice(0,10),S=()=>P.etat(),opts=(o,sel)=>Object.keys(o).map(k=>`<option value="${E(k)}"${k===sel?" selected":""}>${E(o[k])}</option>`).join("");
+const tr=id=>S().travailleurs.find(x=>x.id===id)||{nom:"?"},cl=id=>S().clients.find(x=>x.id===id)||{nom:"?"},bs=id=>S().besoins.find(x=>x.id===id)||{};
+const fd=d=>d?String(d).split("-").reverse().join("/"):"—",per=(a,b)=>a===b?fd(a):fd(a)+" → "+fd(b);
+const modesO=P.MODES.map(m=>`<option>${E(m)}</option>`).join("");
+const vide=t=>`<div class="empty">${t}</div>`;
+const rech=(k,ph)=>`<div class="f"><label style="flex:1;min-width:200px">Recherche<input data-q="${k}" type="search" placeholder="${ph}" value="${E(ST_().q[k]||"")}"></label></div>`;
+let SH=null;const ST_=()=>SH?SH.ST:{q:{}};
+const stBd=s=>`<span class="bd ${s==="disponible"||s==="payee"||s==="pourvu"||s==="terminee"?"":s==="exclu"||s==="annulee"||s==="annule"?"wa":"mu"}">${E(({disponible:"Disponible",indisponible:"Indisponible",exclu:"Exclu",ouvert:"Ouvert",pourvu:"Pourvu",annule:"Annulé",planifiee:"Planifiée",en_cours:"En cours",terminee:"Terminée",annulee:"Annulée",emise:"Émise",partielle:"Partielle",payee:"Payée"})[s]||s)}</span>`;
+/* ---------- Écrans ---------- */
+function pil(){const r=P.resume(),h=new Date().getHours(),sal=h<12?"Bonjour":h<18?"Bon après-midi":"Bonsoir";
+ return`<div class="hello"><h2>${sal} 👋</h2><p class="note">${r.en_poste} personne(s) en poste aujourd'hui · ${r.non_pointes} journée(s) à pointer · ${r.besoins_ouverts} besoin(s) ouvert(s).</p></div>
+ <div class="kpis">${kpi("💰",r.ca_mois,"fc","Facturé ce mois (HT)")}${kpi("📈",r.marge_mois,"fc","Marge du mois",{er:r.marge_mois<0})}${kpi("🧾",r.a_facturer,"fc","À facturer (journées pointées)")}${kpi("👷",r.a_payer,"fc","À payer aux travailleurs")}${kpi("⏳",r.creances,"fc","Créances clients",{er:r.factures_retard>0})}${kpi("🟢",r.disponibles,"n","Travailleurs disponibles")}</div>
+ <div class="two"><div class="pan"><h3 style="margin-top:0">À faire</h3><ul class="det">
+ <li><span>Journées du jour à pointer</span><b class="${r.non_pointes?"er":""}">${r.non_pointes}</b></li><li><span>Besoins ouverts à pourvoir</span><b>${r.besoins_ouverts}</b></li><li><span>Factures en retard</span><b class="${r.factures_retard?"er":""}">${r.factures_retard}</b></li></ul>
+ <p style="margin-top:12px"><button class="btn" data-a="tab" data-v="poi">✅ Pointer aujourd'hui</button> <button class="btn g" data-a="tab" data-v="bes">➕ Nouveau besoin</button></p></div>
+ <div class="pan"><h3 style="margin-top:0">Chaîne de valeur</h3><p class="note">Travailleur → besoin d'une entreprise → affectation → pointage → facture client + paie du travailleur → marge. Rien n'est facturé ni payé deux fois ; chaque action est tracée.</p></div></div>`}
+function tra(ST){const q=P.norm(ST.q.tra||""),ft=ST.ftype||"",L=S().travailleurs.filter(t=>(!ft||t.type===ft)&&(!q||P.norm(t.nom).includes(q)||String(t.tel).replace(/\D/g,"").includes(q.replace(/\D/g,"")||"~")||t.competences.some(c=>P.norm(c).includes(q))));
+ return`<div class="pan"><h3 style="margin-top:0">➕ Nouveau travailleur</h3><form data-f="tra"><div class="f"><label>Nom complet<input name="nom" required maxlength="80"></label><label>Téléphone<input name="tel" required inputmode="tel" maxlength="25"></label><label>Type<select name="type">${opts(P.TYPES)}</select></label><label>Ville / commune<input name="ville" maxlength="60"></label></div>
+ <div class="f"><label>Compétences (virgules)<input name="competences" placeholder="permis A, accueil, Excel"></label><label>N° pièce d'identité<input name="cni" maxlength="30"></label><label>Mobile Money<select name="momo_op"><option value="">—</option>${P.MODES.filter(m=>m!=="Espèces"&&m!=="Virement").map(m=>`<option>${E(m)}</option>`).join("")}</select></label><label>N° Mobile Money<input name="momo_num" inputmode="tel" maxlength="15"></label><label>Tarif jour souhaité (F)<input name="taux" type="number" min="0" step="500"></label></div><button class="btn" type="submit">Enregistrer</button></form></div>
+ ${rech("tra","Nom, téléphone, compétence…")}<div class="chips">${["",...Object.keys(P.TYPES)].map(k=>`<button class="chip ${ft===k?"on":""}" data-a="ftype" data-v="${k}">${k?E(P.TYPES[k]):"Tous"}</button>`).join("")}</div>
+ <p class="note">${L.length} travailleur(s)</p>${L.length?`<div class="grid">${L.map(t=>`<div class="bc"><div class="meta">${av(t.nom,44)}<div><b>${E(t.nom)}</b><br><span class="note">${E(t.tel)} · ${E(P.TYPES[t.type])}${t.ville?" · "+E(t.ville):""}</span></div></div>
+ <div>${stBd(t.statut)} ${t.competences.slice(0,4).map(c=>`<span class="bd mu">${E(c)}</span>`).join(" ")}</div>${t.taux?`<div class="note">Souhaite ${fc(t.taux)} / jour</div>`:""}${t.momo_num?`<div class="note">${E(t.momo_op||"Mobile Money")} : ${E(t.momo_num)}</div>`:""}
+ <div class="acts">${t.statut!=="disponible"?`<button class="btn sm g" data-a="tst" data-v="${t.id}|disponible">Disponible</button>`:`<button class="btn sm g" data-a="tst" data-v="${t.id}|indisponible">Indisponible</button>`}${t.statut!=="exclu"?`<button class="btn sm er" data-a="tst" data-v="${t.id}|exclu">Exclure</button>`:""}<a class="btn sm g" href="tel:${E(String(t.tel).replace(/[^\d+]/g,""))}">📞</a></div></div>`).join("")}</div>`:vide("Aucun travailleur. Ajoutez le premier ci-dessus.")}`}
+function ent(ST){const q=P.norm(ST.q.ent||""),L=S().clients.filter(c=>!q||P.norm(c.nom).includes(q));
+ return`<div class="pan"><h3 style="margin-top:0">➕ Nouvelle entreprise cliente</h3><form data-f="ent"><div class="f"><label>Entreprise<input name="nom" required maxlength="100"></label><label>Contact<input name="contact" maxlength="80"></label><label>Téléphone<input name="tel" inputmode="tel" maxlength="25"></label><label>E-mail<input name="email" type="email" maxlength="100"></label><label>Adresse<input name="adresse" maxlength="160"></label></div><button class="btn" type="submit">Enregistrer</button></form></div>
+ ${rech("ent","Nom de l'entreprise…")}${L.length?`<div class="grid">${L.map(c=>{const B=S().besoins.filter(b=>b.client_id===c.id),F=S().factures.filter(f=>f.client_id===c.id),du=F.reduce((s,f)=>s+f.ttc-P.payeFacture(S(),f),0);return`<div class="bc"><div class="meta">${av(c.nom,44)}<div><b>${E(c.nom)}</b><br><span class="note">${E(c.contact||"—")} · ${E(c.tel||"—")}</span></div></div><div class="note">${B.length} besoin(s) · ${B.filter(b=>b.statut==="ouvert").length} ouvert(s)</div><div class="note">Reste dû : <b>${fc(du)}</b></div></div>`}).join("")}</div>`:vide("Aucune entreprise cliente.")}`}
+function bes(ST){if(ST.sel)return besDet(ST.sel);const B=S().besoins.slice().reverse();
+ return`<div class="pan"><h3 style="margin-top:0">➕ Nouveau besoin d'une entreprise</h3>${S().clients.length?`<form data-f="bes"><div class="f"><label>Entreprise<select name="client_id">${S().clients.map(c=>`<option value="${c.id}">${E(c.nom)}</option>`).join("")}</select></label><label>Poste<input name="poste" required maxlength="80" placeholder="Coursier moto, standardiste…"></label><label>Type<select name="type">${opts(P.TYPES)}</select></label><label>Nombre<input name="nb" type="number" min="1" max="500" value="1" required></label></div>
+ <div class="f"><label>Du<input name="debut" type="date" value="${auj()}" required></label><label>Au<input name="fin" type="date" value="${auj()}" required></label><label>Tarif client / jour (F)<input name="taux_client" type="number" min="1" step="500" required></label><label>Paie travailleur / jour (F)<input name="taux_travailleur" type="number" min="1" step="500" required></label></div><button class="btn" type="submit">Créer le besoin</button></form>`:`<p class="note">Créez d'abord une entreprise (onglet Entreprises).</p>`}</div>
+ ${B.length?`<div class="grid">${B.map(b=>`<a class="bc" href="#" data-a="ouvrir" data-v="${b.id}"><div class="meta"><b>${E(b.poste)}</b>${stBd(b.statut)}</div><div class="note">${E(cl(b.client_id).nom)} · ${E(b.numero)}</div><div>${P.pourvus(S(),b)} / ${b.nb} pourvu(s) · ${per(b.debut,b.fin)}</div><div class="note">Client ${fc(b.taux_client)}/j · Travailleur ${fc(b.taux_travailleur)}/j · Marge ${fc(b.taux_client-b.taux_travailleur)}/j</div></a>`).join("")}</div>`:vide("Aucun besoin pour le moment.")}`}
+function besDet(id){const b=bs(id),A=S().affectations.filter(a=>a.besoin_id===id&&a.statut!=="annulee"),C=b.statut==="ouvert"?P.candidats(S(),id):[];
+ return`<p><button class="btn g sm" data-a="retour">← Besoins</button></p><div class="pan"><h3 style="margin-top:0">${E(b.poste)} ${stBd(b.statut)}</h3><p class="note">${E(cl(b.client_id).nom)} · ${E(b.numero)} · ${P.pourvus(S(),b)} / ${b.nb} · ${per(b.debut,b.fin)}</p>${b.statut==="ouvert"||b.statut==="pourvu"?`<button class="btn sm er" data-a="bannule" data-v="${b.id}">Annuler le besoin</button>`:""}</div>
+ <div class="pan"><h3 style="margin-top:0">Affectés</h3>${A.length?`<ul class="det">${A.map(a=>`<li><span>${E(tr(a.travailleur_id).nom)} · ${per(a.debut,a.fin)} ${stBd(a.statut)}</span><span>${a.statut!=="terminee"?`<button class="btn sm g" data-a="afin" data-v="${a.id}">Terminer</button> `:""}<button class="btn sm er" data-a="aann" data-v="${a.id}">Retirer</button></span></li>`).join("")}</ul>`:vide("Personne d'affecté.")}</div>
+ ${b.statut==="ouvert"?`<div class="pan"><h3 style="margin-top:0">Candidats disponibles sur la période</h3>${C.length?`<ul class="det">${C.map(t=>`<li><span>${av(t.nom,30)} <b>${E(t.nom)}</b> <span class="note">${E(P.TYPES[t.type])}${t.type===b.type?" · correspond":""}</span></span><button class="btn sm" data-a="aff" data-v="${b.id}|${t.id}">Affecter</button></li>`).join("")}</ul>`:vide("Aucun travailleur disponible sur toute la période.")}</div>`:""}`}
+function poi(ST){const d=ST.jour||auj(),A=S().affectations.filter(a=>(a.statut==="planifiee"||a.statut==="en_cours")&&a.debut<=d&&a.fin>=d);
+ return`<div class="pan"><div class="f"><label>Journée<input type="date" id="jour" value="${d}" max="${auj()}" data-a="jour"></label></div><p class="note">Touchez Présent, Demi-journée ou Absent. Un pointage n'est modifiable qu'avec un motif, et jamais une fois facturé ou payé.</p></div>
+ ${A.length?`<div class="grid">${A.map(a=>{const p=S().pointages.find(x=>x.affectation_id===a.id&&x.date===d),t=tr(a.travailleur_id),b=bs(a.besoin_id);return`<div class="bc"><div class="meta">${av(t.nom,44)}<div><b>${E(t.nom)}</b><br><span class="note">${E(b.poste)} · ${E(cl(b.client_id).nom)}</span></div></div>
+ ${p?`<div>${p.fraction===1?'<span class="bd">Présent</span>':p.fraction===.5?'<span class="bd wa">Demi-journée</span>':'<span class="bd mu">Absent</span>'} ${p.facture_id||p.paie_id?'<span class="note">verrouillé</span>':`<button class="btn sm g" data-a="pcor" data-v="${p.id}">Corriger</button>`}</div>`:`<div class="acts"><button class="btn sm" data-a="pt" data-v="${a.id}|1">✅ Présent</button><button class="btn sm g" data-a="pt" data-v="${a.id}|0.5">½ journée</button><button class="btn sm er" data-a="pt" data-v="${a.id}|0">Absent</button></div>`}</div>`}).join("")}</div>`:vide("Aucune affectation en cours ce jour-là.")}`}
+function fac(ST){const C=S().clients.map(c=>({c,P:P.afacturer(S(),c.id)})).filter(x=>x.P.length),F=S().factures.slice().reverse();
+ return`<div class="pan"><h3 style="margin-top:0">🧾 À facturer</h3>${C.length?`<ul class="det">${C.map(x=>{const m=x.P.reduce((s,p)=>{const a=S().affectations.find(y=>y.id===p.affectation_id);return s+Math.round(p.fraction*a.taux_client)},0);return`<li><span><b>${E(x.c.nom)}</b> · ${x.P.length} journée(s) pointée(s) · ${fc(m)} HT</span><button class="btn sm" data-a="fact" data-v="${x.c.id}">Facturer</button></li>`}).join("")}</ul>`:vide("Rien à facturer : toutes les journées pointées le sont déjà.")}</div>
+ <div class="pan"><h3 style="margin-top:0">Factures</h3>${F.length?`<div class="tw"><table><thead><tr><th>N°</th><th>Entreprise</th><th>Date</th><th class="n">TTC</th><th class="n">Reste</th><th>État</th><th></th></tr></thead><tbody>${F.map(f=>{const r=f.ttc-P.payeFacture(S(),f);return`<tr><td>${E(f.numero)}</td><td>${E(cl(f.client_id).nom)}</td><td>${fd(f.date)}</td><td class="n">${fc(f.ttc)}</td><td class="n">${fc(r)}</td><td>${stBd(f.statut)}${f.statut!=="payee"&&f.echeance<auj()?' <span class="bd wa">en retard</span>':""}</td><td>${r>0?`<button class="btn sm" data-a="enc" data-v="${f.id}">Encaisser</button>`:""} <button class="btn sm g" data-a="imp" data-v="${f.id}">Imprimer</button></td></tr>`}).join("")}</tbody></table></div>`:vide("Aucune facture.")}</div>`}
+function pai(ST){const T=S().travailleurs.map(t=>({t,P:P.apayer(S(),t.id)})).filter(x=>x.P.length),L=S().paies.slice().reverse();
+ return`<div class="pan"><h3 style="margin-top:0">👷 À payer</h3>${T.length?`<ul class="det">${T.map(x=>{const m=x.P.reduce((s,p)=>{const a=S().affectations.find(y=>y.id===p.affectation_id);return s+Math.round(p.fraction*a.taux_travailleur)},0);return`<li><span><b>${E(x.t.nom)}</b> · ${x.P.reduce((s,p)=>s+p.fraction,0)} j · <b>${fc(m)}</b>${x.t.momo_num?` <span class="note">${E(x.t.momo_op||"MM")} ${E(x.t.momo_num)}</span>`:""}</span><button class="btn sm" data-a="payer" data-v="${x.t.id}">Payer</button></li>`}).join("")}</ul>`:vide("Aucune paie en attente.")}</div>
+ <div class="pan"><h3 style="margin-top:0">Paies effectuées</h3>${L.length?`<div class="tw"><table><thead><tr><th>N°</th><th>Date</th><th>Travailleur</th><th class="n">Jours</th><th class="n">Montant</th><th>Mode</th></tr></thead><tbody>${L.map(p=>`<tr><td>${E(p.numero)}</td><td>${fd(p.date)}</td><td>${E(tr(p.travailleur_id).nom)}</td><td class="n">${p.jours}</td><td class="n">${fc(p.net)}</td><td>${E(p.mode)}${p.ref?" · "+E(p.ref):""}</td></tr>`).join("")}</tbody></table></div><p><button class="btn g sm" data-a="csv" data-v="paies">⬇ Exporter (Excel)</button></p>`:vide("Aucune paie.")}</div>`}
+function reg(ST){const c=P.cfg(),E2=P.ecritures();
+ return`<div class="pan"><h3 style="margin-top:0">⚙️ Réglages</h3><form data-f="reg"><div class="f"><label>TVA sur factures (%)<input name="tva" type="number" min="0" max="30" step="0.5" value="${c.tva}"></label><label>Délai de paiement (jours)<input name="delai_facture" type="number" min="0" max="180" value="${c.delai_facture}"></label></div><button class="btn" type="submit">Enregistrer</button></form><p class="note">Aucune retenue sociale ou fiscale n'est calculée (journaliers payés au montant convenu) : à valider avec votre expert-comptable.</p></div>
+ <div class="pan"><h3 style="margin-top:0">📒 Écritures SYSCOHADA</h3><p class="note">${E2.length} écriture(s) générée(s), ${P.equilibre(E2)?"toutes équilibrées":"⚠ déséquilibre détecté"}. Facture : 4111 / 7061 + 4431 · Paie : 6611 / 422, puis 422 / trésorerie (553 Mobile Money, 571 caisse, 5211 banque).</p><button class="btn g sm" data-a="csv" data-v="ecritures">⬇ Exporter le journal (Excel)</button></div>
+ <div class="pan"><h3 style="margin-top:0">Journal d'audit</h3><ul class="det">${S().audit.slice(-12).reverse().map(a=>`<li><span>${E(a.action)} — ${E(a.detail)}</span><span class="note">${E(a.par)} · ${ilya(a.t)}</span></li>`).join("")||"<li>Aucune action.</li>"}</ul></div>`}
+function dl(nom,txt){const u=URL.createObjectURL(new Blob([txt],{type:"text/csv;charset=utf-8"})),l=document.createElement("a");l.href=u;l.download=nom;document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),2000)}
+function imprimer(id){const f=S().factures.find(x=>x.id===id),c=cl(f.client_id),w=window.open("","_blank");if(!w)return;
+ w.document.write(`<!doctype html><meta charset="utf-8"><title>${E(f.numero)}</title><style>body{font:14px Arial;margin:30px;color:#111}table{width:100%;border-collapse:collapse}td,th{border:1px solid #999;padding:6px;text-align:left}.n{text-align:right}</style><h2>${E((window.ERP_MARQUE||{}).nom||"")} — Facture ${E(f.numero)}</h2><p>Date : ${fd(f.date)} · Échéance : ${fd(f.echeance)}<br>Client : <b>${E(c.nom)}</b> ${E(c.adresse||"")}</p><table><tr><th>Poste</th><th>Besoin</th><th class="n">Jours</th><th class="n">Tarif</th><th class="n">Montant</th></tr>${f.lignes.map(l=>`<tr><td>${E(l.poste)}</td><td>${E(l.besoin)}</td><td class="n">${l.jours}</td><td class="n">${fc(l.taux)}</td><td class="n">${fc(l.montant)}</td></tr>`).join("")}</table><p class="n">Total HT : ${fc(f.ht)}<br>TVA ${f.tva_taux} % : ${fc(f.tva)}<br><b>Total TTC : ${fc(f.ttc)}</b></p><script>onload=()=>print()<\/script>`);w.document.close()}
+/* ---------- Actions ---------- */
+SH=ANGELS_SHELL.init({id:"placement",titre:"Placement",
+ vues:[{id:"pil",nom:"Accueil",ic:"🏠",fn:pil},{id:"tra",nom:"Travailleurs",ic:"👷",fn:tra},{id:"ent",nom:"Entreprises",ic:"🏢",fn:ent},{id:"bes",nom:"Besoins",ic:"📋",fn:bes,badge:()=>P.resume().besoins_ouverts},{id:"poi",nom:"Pointage",ic:"✅",fn:poi,badge:()=>P.resume().non_pointes},{id:"fac",nom:"Facturation",ic:"🧾",fn:fac},{id:"pai",nom:"Paie",ic:"💳",fn:pai},{id:"reg",nom:"Réglages",ic:"⚙️",fn:reg}],
+ action(a,v,b,ST,agir,par){
+  if(a==="ftype"){ST.ftype=v;return SH.render()}
+  if(a==="tst"){const[id,s]=v.split("|");let m="";if(s==="exclu"){m=prompt("Motif de l'exclusion (obligatoire) :")||""}return agir(()=>P.statutTravailleur(par(),id,s,m),"Statut mis à jour.")}
+  if(a==="aff"){const[bi,ti]=v.split("|");return agir(()=>P.affecter(par(),bi,ti),"Travailleur affecté.")}
+  if(a==="aann"){const m=prompt("Motif du retrait (obligatoire) :")||"";return agir(()=>P.annulerAffectation(par(),v,m),"Affectation retirée.")}
+  if(a==="afin")return agir(()=>P.terminerAffectation(par(),v),"Affectation terminée.");
+  if(a==="bannule"){const m=prompt("Motif de l'annulation (obligatoire) :")||"";return agir(()=>P.annulerBesoin(par(),v,m),"Besoin annulé.")}
+  if(a==="pt"){const[i,f]=v.split("|");return agir(()=>P.pointer(par(),i,ST.jour||auj(),+f),"Pointage enregistré.")}
+  if(a==="pcor"){const f=prompt("Présence : 1 (journée), 0.5 (demi), 0 (absent)");if(f==null)return;const m=prompt("Motif de la correction (obligatoire) :")||"";return agir(()=>P.corrigerPointage(par(),v,f.replace(",","."),m),"Pointage corrigé.")}
+  if(a==="fact")return agir(()=>P.facturer(par(),v),f=>"Facture "+f.numero+" émise.");
+  if(a==="enc"){const f=S().factures.find(x=>x.id===v),r=f.ttc-P.payeFacture(S(),f),m=prompt("Montant encaissé (reste "+r+" F) :",r);if(m==null)return;const mo=prompt("Mode : "+P.MODES.join(", "),"Espèces");if(mo==null)return;const ref=mo==="Espèces"?"":prompt("Référence de la transaction :")||"";return agir(()=>P.encaisser(par(),v,m,mo,ref),"Encaissement enregistré.")}
+  if(a==="payer"){const mo=prompt("Mode de paiement : "+P.MODES.join(", "),"Orange Money");if(mo==null)return;const ref=mo==="Espèces"?"":prompt("Référence de la transaction :")||"";return agir(()=>P.payer(par(),v,mo,ref),p=>"Paie "+p.numero+" : "+fc(p.net)+".")}
+  if(a==="imp")return imprimer(v);
+  if(a==="csv"){return dl(v==="paies"?"paies.csv":"journal-placement.csv",v==="paies"?P.exportPaies():P.csvEcritures())}
+ },
+ changer(){},
+ formulaire(k,d,f,ST,agir,par){
+  if(k==="tra")return agir(()=>P.ajouterTravailleur(par(),Object.fromEntries(d)),"Travailleur enregistré.");
+  if(k==="ent")return agir(()=>P.ajouterClient(par(),Object.fromEntries(d)),"Entreprise enregistrée.");
+  if(k==="bes")return agir(()=>P.creerBesoin(par(),Object.fromEntries(d)),"Besoin créé.");
+  if(k==="reg")return agir(()=>P.reglages(par(),Object.fromEntries(d)),"Réglages enregistrés.")}});
+document.addEventListener("change",e=>{if(e.target.id==="jour"&&SH.garde()){SH.ST.jour=e.target.value||auj();SH.render()}});
+ANGELS_SYNC.init({app:"placement",nom:"Placement",get:()=>P.etat(),persist:()=>P.sauver(),refresh:()=>{if(SH.garde())SH.render()},qui:()=>SH.session()?SH.session().nom:"poste"});
+if("serviceWorker"in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>

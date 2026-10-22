@@ -1,0 +1,25 @@
+{
+  "id": "./distribution.html?app=vendeur",
+  "name": "LOGISTICA — Espace vendeur partenaire",
+  "short_name": "Espace vendeur",
+  "description": "Espace vendeur partenaire : déposer ses commandes, suivre les livraisons, la collecte de ses colis et ses règlements.",
+  "lang": "fr",
+  "start_url": "./distribution.html?app=vendeur",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#2e1a5e",
+  "theme_color": "#6d28d9",
+  "categories": ["business", "shopping"],
+  "icons": [
+    {"src": "icons/vendeur-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icons/vendeur-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icons/vendeur-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ],
+  "share_target": {
+    "action": "./distribution.html?app=vendeur&partage=1",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {"title": "title", "text": "text", "url": "url", "files": [{"name": "medias", "accept": ["image/*", "text/plain", ".txt", "application/zip", ".zip"]}]}
+  }
+}

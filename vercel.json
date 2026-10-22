@@ -1,0 +1,139 @@
+{
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(self), geolocation=(self), microphone=()"
+        }
+      ]
+    },
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        },
+        {
+          "key": "Service-Worker-Allowed",
+          "value": "/"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/javascript; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/icons/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)\\.webmanifest",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/manifest+json; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
+    },
+    {
+      "source": "/assetlinks.json",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/hub",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/livreur",
+      "destination": "/livreur.html"
+    },
+    {
+      "source": "/portail",
+      "destination": "/portail.html"
+    },
+    {
+      "source": "/compta-groupe",
+      "destination": "/compta-groupe.html"
+    },
+    {
+      "source": "/parametres",
+      "destination": "/parametres.html"
+    },
+    {
+      "source": "/vendeur",
+      "destination": "/distribution.html"
+    },
+    {
+      "source": "/livreur",
+      "destination": "/livreur.html"
+    },
+    {
+      "source": "/distribution",
+      "destination": "/distribution.html"
+    },
+    {
+      "source": "/transport",
+      "destination": "/transport.html"
+    },
+    {
+      "source": "/agro",
+      "destination": "/agro.html"
+    },
+    {
+      "source": "/verifier",
+      "destination": "/verifier.html"
+    },
+    {
+      "source": "/.well-known/assetlinks.json",
+      "destination": "/assetlinks.json"
+    },
+    {
+      "source": "/signer",
+      "destination": "/signer.html"
+    },
+    {
+      "source": "/commander",
+      "destination": "/portail.html"
+    }
+  ]
+}

@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#7a1d17">
+<link rel="manifest" href="manifest-hub.webmanifest">
+<link rel="icon" type="image/png" href="icons/hub-192.png">
+<link rel="apple-touch-icon" href="icons/hub-apple-180.png">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Logistica"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Paramètres — LOGISTICA</title>
+<style>
+:root{--b:#c8352b;--b2:#7a1d17;--bg:#f1f6f8;--card:#fff;--tx:#1b2240;--mu:#6b7390;--ok:#118a4b;--wa:#b86e00;--bd:#d6e4ea;--g1:#c8352b;--g2:#c2410c;--g3:#15803d}
+@media(prefers-color-scheme:dark){:root{--bg:#0a1a21;--card:#112832;--tx:#e6f0f3;--mu:#93a9b2;--bd:#1f3a46}}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.45 system-ui,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+header{background:linear-gradient(135deg,var(--b2),var(--b));color:#fff;padding:calc(18px + env(safe-area-inset-top)) 16px 28px}
+.w{max-width:1100px;margin:0 auto}
+header h1{margin:0;font-size:22px;letter-spacing:.3px}
+header p{margin:4px 0 0;opacity:.8;font-size:13px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+main{padding:0 16px 40px;margin-top:-16px}
+.cards{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;border-top:5px solid var(--c);text-decoration:none;color:inherit}
+.card h2{margin:0;font-size:17px}
+.card .ic{font-size:30px}
+.card p{margin:0;color:var(--mu);font-size:13px}
+.cxk{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0}.cxk>div{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 14px;min-width:150px}.cxk b{display:block;font-size:24px}.cxk span{font-size:12px;color:var(--mu)}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.kp div{background:var(--bg);border-radius:10px;padding:8px;text-align:center}
+.kp b{display:block;font-size:19px}
+.kp span{font-size:11px;color:var(--mu)}
+.badge{align-self:flex-start;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:700;background:#e3f5ea;color:var(--ok)}
+.badge.soon{background:#fff1d6;color:var(--wa)}
+.btn{display:block;text-align:center;padding:12px;border-radius:10px;background:var(--c);color:#fff;font-weight:700;text-decoration:none;min-height:44px}
+.btn[aria-disabled=true]{opacity:.45;pointer-events:none}
+h3{margin:26px 0 10px;font-size:15px}
+.mod{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.mod div{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;font-size:13px}
+.cons{margin:0 0 6px;padding-top:26px}td.act{white-space:normal;font-size:12px;min-width:150px;line-height:1.35}.cons h2{margin:22px 0 10px;font-size:16px}
+.big{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin-bottom:12px}
+.big div{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px}.big b{display:block;font-size:20px}.big span{font-size:12px;color:var(--mu)}
+.tw{overflow:auto;border:1px solid var(--bd);border-radius:12px;background:var(--card)}table{width:100%;border-collapse:collapse}th,td{padding:8px 10px;border-bottom:1px solid var(--bd);text-align:right;white-space:nowrap}th:first-child,td:first-child{text-align:left}th{font-size:12px;color:var(--mu)}tr.t td{font-weight:800}
+.nd{color:var(--mu);font-weight:400}.er{color:#c62828;font-weight:700}.ok{color:var(--ok);font-weight:700}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.tab{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:99px;padding:8px 14px;font:inherit;font-weight:700;min-height:40px;cursor:pointer}.tab.on{background:var(--c);color:#fff;border-color:var(--c)}.pill{font-style:normal;background:#c62828;color:#fff;border-radius:99px;padding:0 7px;font-size:11px;margin-left:4px}
+.two{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}.pan{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px}.pan h4{margin:0 0 10px;font-size:13px;color:var(--mu)}
+.bars{display:flex;align-items:flex-end;gap:8px;height:150px}.bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;font-size:11px;color:var(--mu)}.bar i{display:block;width:100%;min-height:2px;border-radius:5px 5px 0 0}.bar em{font-style:normal;margin-top:4px}.bar small{font-size:10px}
+.det{list-style:none;margin:0;padding:0}.det li{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd);font-size:13px}.det li:last-child{border:0}
+.note{font-size:12px;color:var(--mu);margin:8px 0 0}
+.ut td,.ut th{text-align:left}.ut td{white-space:normal}.uf{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin:10px 0}.uf label{display:block;font-size:12px;color:var(--mu);font-weight:600}
+.uf input,.uf select,.ut select{font:inherit;padding:8px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx);min-height:40px;display:block;margin-top:3px}
+button.sb{border:0;border-radius:8px;padding:8px 12px;background:var(--c,var(--b));color:#fff;font:inherit;font-weight:700;cursor:pointer;min-height:38px}button.sb.g{background:transparent;color:var(--tx);border:1px solid var(--bd)}
+.bd0{display:inline-block;padding:5px 11px;border-radius:99px;font-size:12px;font-weight:700;background:#eef2f6;color:#1c2430}.bd0.ok{background:#e3f5ea;color:#118a4b}.bd0.er{background:#fde8e8;color:#c62828}.bd0.wa{background:#fff1d6;color:#8a5a00}
+.umsg{margin:8px 0;padding:8px 12px;border-radius:8px;font-size:13px;background:#e3f5ea;color:var(--ok)}.umsg.er{background:#fde8e8;color:#c62828}.off{opacity:.55}
+.tabs .tab.on{background:var(--b2);color:#fff;border-color:var(--b2)}.bar i{background:var(--b)}.bar span{font-size:10px}#ptabs .tab{min-height:42px}
+footer{text-align:center;color:var(--mu);font-size:12px;padding:12px}
+
+.back{color:#fff;opacity:.9;text-decoration:none;font-weight:700;font-size:13px;border:1px solid rgba(255,255,255,.4);border-radius:99px;padding:6px 12px}
+</style>
+</head>
+<body>
+<header><div class="w top"><div><h1>⚙️ Paramètres — LOGISTICA</h1><p>Utilisateurs et rôles de chaque application · <span id="date"></span></p></div><a class="back" href="index.html">← Hub</a></div></header>
+<main><div class="w"><div class="tabs" id="ptabs" role="tablist" style="margin-top:18px"></div><div id="s-users">
+<h2 style="margin:6px 0 10px;font-size:16px">👥 Utilisateurs et rôles des applications</h2>
+<p class="note">Créez les comptes et attribuez les rôles de Distributions, Transport et Agro. Chaque application se déverrouille avec le mot de passe d'un de ses administrateurs ; les changements sont inscrits au journal d'audit de l'application (« via Hub ») et pris en compte aussitôt.</p>
+<div class="tabs" id="utabs"></div><section id="usr"></section>
+</div><div id="s-ptl" hidden><h2 style="margin:6px 0 10px;font-size:16px">🌐 Portail unique du groupe</h2>
+<p class="note">Le portail est le site public du groupe et sa boutique en ligne (<a href="portail.html">portail.html</a>) : il ne donne jamais accès aux applications de gestion. Réglez ici l'identité, la boutique, les candidatures de vendeurs partenaires, les services, la FAQ et le contact. Les réglages sont enregistrés sur cet appareil ; pour les publier, copiez le <b>lien du portail</b> (il contient les réglages) et partagez-le. Modification réservée à un administrateur : déverrouillez d'abord une application avec le mot de passe d'un administrateur (onglet « Utilisateurs et rôles »).</p>
+<section id="ptl"></section>
+</div><div id="s-stats" hidden><h2 style="margin:6px 0 10px;font-size:16px">📊 Statistiques portail</h2><p class="note">Activité commerciale venue du portail : commandes de la boutique en ligne et candidatures de vendeurs partenaires, lues dans les données de Distributions de cet appareil. Le portail est un site public sans serveur : le nombre de visites n'est pas mesuré.</p><section id="pstat"></section></div>
+<div id="s-acces" hidden><h2 style="margin:6px 0 10px;font-size:16px">🔑 Accès portail (tous acteurs)</h2><p class="note">Toutes les personnes en lien avec le portail : clients de la boutique en ligne, candidats vendeurs et vendeurs partenaires. Contactez-les sur WhatsApp et gérez l'accès des vendeurs partenaires (activation / désactivation du compte, après déverrouillage de Distributions dans l'onglet Utilisateurs).</p><section id="pacc"></section></div>
+<div id="s-cx" hidden></div>
+<div id="s-imp" hidden><h2 style="margin:6px 0 10px;font-size:16px">🖨️ Impression — en-tête, logo par division, pied de page et QR de sécurité</h2><p class="note">Moteur d'impression commun à Distributions, Transport et Agro : chaque document imprimé porte l'en-tête de la division qui l'émet (logo, raison sociale, RCCM, NCC, siège), un pied de page et un QR code de sécurité signé que l'on contrôle sur la page de vérification.</p><section id="pimp"></section></div>
+<div id="s-cloud" hidden><h2 style="margin:6px 0 10px;font-size:16px">☁️ Cloud / Supabase</h2><p class="note">Connexion du groupe à son projet Supabase : comptes des livreurs vérifiés par le serveur, passerelle livreur (numéros des clients retirés des téléphones) et pont téléphonique. Sans configuration, les applications fonctionnent en mode local (données stockées dans l'appareil). Seule la clé <b>anonyme</b> (publique) se saisit ici ; la clé d'administration reste dans Distributions → Paramètres.</p>
+<div class="two" style="margin-top:12px"><div class="pan"><h4>☁️ Connexion Supabase</h4><div class="uf" style="display:block"><label>URL du projet Supabase<input id="cl-url" placeholder="https://xxxx.supabase.co" autocomplete="off" autocapitalize="none" style="width:100%"></label><label style="margin-top:8px">Clé anonyme (anon key)<input id="cl-key" placeholder="eyJh…" autocomplete="off" autocapitalize="none" style="width:100%"></label></div><div id="cl-badge" style="margin:8px 0;font-size:13px"></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="sb" data-cl="save">💾 Enregistrer</button><button type="button" class="sb g" data-cl="test">🔌 Tester</button><button type="button" class="sb g" data-cl="clear">🗑️ Effacer</button><button type="button" class="sb g" data-cl="def">↩ Projet par défaut</button></div><div id="cl-res" style="margin-top:10px;font-size:13px"></div></div>
+<div class="pan"><h4>🔄 Synchronisation entre postes</h4><p class="note" style="margin-top:0">Les postes partagent les mêmes données : chaque saisie est envoyée au serveur et reprise par les autres postes en quelques secondes. À régler sur <b>chaque poste</b> avec la même clé (secret <code>SYNC_KEY</code> de Supabase).</p><div class="uf" style="display:block"><label style="display:flex;gap:8px;align-items:center;font-size:14px;color:var(--tx)"><input type="checkbox" id="cs-on" style="width:auto;margin:0"> Synchroniser les applications de cet appareil</label><label style="margin-top:8px">Clé de synchronisation<input id="cs-key" type="password" placeholder="Valeur du secret SYNC_KEY" autocomplete="off" autocapitalize="none" style="width:100%"></label></div><div id="cs-badge" style="margin:8px 0;font-size:13px"></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="sb" data-cl="sync-save">💾 Enregistrer</button><button type="button" class="sb g" data-cl="sync-test">🔌 Tester la clé</button></div><div id="cs-res" style="margin-top:10px;font-size:13px"></div></div>
+<div class="pan"><h4>🔗 Applications branchées</h4><ul class="det" id="cl-apps"></ul><p class="note">La passerelle livreur et le pont se règlent dans Distributions → Paramètres. L'application des livreurs est <a href="livreur.html">livreur.html</a>.</p></div></div>
+<div class="pan" style="margin-top:12px"><h4>📊 État de la synchronisation (envoi ↔ réception)</h4><p class="note" style="margin-top:0">Compare, application par application, les enregistrements de cet appareil et ceux du serveur. Une application ouverte dans un autre onglet exécute elle-même les actions ; sinon elles s'appliquent aux données de cet appareil.</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0"><span id="ss-conn" class="bd0">…</span><span id="ss-envoi" class="bd0">⬆ Dernier envoi : —</span><span id="ss-recep" class="bd0">⬇ Dernière réception : —</span><label style="font-size:13px;color:var(--mu);font-weight:600;margin-left:auto">Application <select id="ss-app" style="font:inherit;padding:6px 8px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx)"><option value="tous">Toutes</option><option value="distribution">Distributions</option><option value="transport">Transport</option><option value="agro">Agro</option><option value="crm">CRM</option></select></label></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="sb g" data-ss="diag">🔍 Vérifier l'état (local ↔ cloud)</button><button type="button" class="sb g" data-ss="resync">🔁 Resynchro complète</button><button type="button" class="sb g" data-ss="purge" style="color:#c62828;border-color:#c62828">🧹 Purger le cache local</button><button type="button" class="sb" data-ss="send">⬆ Tout envoyer</button><button type="button" class="sb g" data-ss="recv">⬇ Tout récupérer</button><button type="button" class="sb g" data-ss="retry">🔄 Réessayer la file</button><button type="button" class="sb g" data-ss="diag">⟳ Rafraîchir</button><button type="button" class="sb g" data-ss="file">📋 File d'attente</button><button type="button" class="sb g" data-ss="cloud">🩺 Diagnostic cloud</button><button type="button" class="sb g" data-ss="ecart">🔎 Écart cloud ↔ local</button></div>
+<div id="ss-kpi" style="margin:12px 0 6px;font-size:13px;color:var(--mu)">Cliquez sur « Vérifier l'état ».</div><div style="overflow-x:auto"><table class="ut" id="ss-tab" style="width:100%"></table></div><div id="ss-out" style="margin-top:10px;font-size:13px"></div></div></div>
+<div id="s-med" hidden><h2 style="margin:6px 0 10px;font-size:16px">🖼️ Site / Portail — Médias publiables</h2>
+<p class="note">Ajoutez des photos, des vidéos (par lien YouTube / Vimeo / fichier https) et des documents PDF qui s'affichent sur le portail public : diaporama d'accueil, galerie, pages d'activité, page Société, documents à télécharger. Les photos sont compressées automatiquement ; documents PDF : 1,5 Mo maximum (au-delà, utilisez « Document par lien »).</p>
+<section id="pmed"></section>
+</div></div></main>
+<footer>© LOGISTICA · Paramètres · <a href="index.html">Retour au hub</a><br><small>Logiciel développé par <b>Sanix Africa Division Technologies</b> · Contact (WhatsApp) : +225 0779181075 / 0140017751</small></footer>
+<script src="passerelle-config.js"></script>
+<script src="sync-engine.js"></script>
+<script src="roles-engine.js"></script>
+<script src="qrcode.js"></script>
+<script src="marque.js"></script><script src="auth-engine.js"></script>
+<script src="rapport-engine.js"></script>
+<script src="print-engine.js"></script>
+<script>
+const $=s=>document.getElementById(s);
+$("date").textContent=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+const lire=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}};
+const MQ_=window.ERP_MARQUE||{modules:["distribution","transport","agro"],outils:["crm"]};
+const MODS=[{id:"dist",mod:"distribution",nom:"Distributions",ic:"🏍️",href:"distribution.html",c:"var(--g1)"},{id:"trans",mod:"transport",nom:"Transport",ic:"🚚",href:"transport.html",c:"var(--g2)"},{id:"agro",mod:"agro",nom:"Agro",ic:"🐔",href:"agro.html",c:"var(--g3)"}].filter(x=>(MQ_.modules||[]).includes(x.mod));
+/* ---------- Utilisateurs et rôles de chaque application (créés depuis le hub) ---------- */
+const E=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const hashPin=(id,p)=>{let x=5381;for(const c of id+":"+p)x=((x<<5)+x+c.charCodeAt(0))|0;return x};
+const uid=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const stamp=()=>new Date().toISOString();
+const RL={ /* mêmes profils que dans chaque application ; « lie » = profils rattachés à une fiche, créés dans leur application */
+ dist:{key:"angels_erp_v1",lie:["livreur","vendeur"],roles:{admin:"Administrateur",direction:"Direction générale",superviseur:"Superviseur des livraisons",commercial:"Responsable commercial",preparateur:"Préparateur",caissier:"Caissier",livreur:"Livreur",vendeur:"Vendeur partenaire"},
+  ok:G=>G&&G.v===1&&Array.isArray(G.users)&&Array.isArray(G.audit),mdp:G=>Math.max(8,+(G.config&&G.config.mdp_min)||10),
+  aud:(G,a,d,u)=>G.audit.push({ts:stamp(),user:u.nom,role:u.role,action:a,detail:d})},
+ trans:{key:"angels_transport_v3",lie:["chauffeur"],roles:{admin:"Administrateur général",directeur:"Directeur / propriétaire",flotte:"Gestionnaire de flotte",caissier:"Caissier",comptable:"Comptable",controleur:"Contrôleur",chauffeur:"Chauffeur",transitaire:"Transitaire externe",importateur:"Responsable importation",stock_auto:"Gestionnaire de stock automobile",commercial_auto:"Commercial automobile"},
+  ok:G=>G&&Array.isArray(G.users)&&Array.isArray(G.audit),mdp:G=>Math.max(8,+(G.settings&&G.settings.mdp_min)||10),
+  aud:(G,a,d,u)=>G.audit.unshift({t:stamp(),u:u.nom,r:u.role,a,d})},
+ agro:{key:"angels_agro_v1",lie:[],roles:{admin:"Administrateur",direction:"Direction générale",chef:"Chef d'exploitation",soigneur:"Soigneur",magasinier:"Magasinier",commercial:"Commercial",caissier:"Caissier",comptable:"Comptable"},
+  ok:G=>G&&Array.isArray(G.users)&&Array.isArray(G.audit),mdp:G=>Math.max(8,+(G.settings&&G.settings.mdp_min)||10),
+  aud:(G,a,d,u)=>G.audit.unshift({t:stamp(),u:u.nom,r:u.role,a,d})}};
+let UM=(()=>{try{return sessionStorage.getItem("hub_umod")||"dist"}catch(e){return"dist"}})(),UEDIT=null,UMSG=null;
+const AUTH={},TRY={},DUREE=10*60*1000;
+const uEtat=m=>{const G=lire(RL[m].key);return G&&RL[m].ok(G)?G:null};
+const uSess=m=>{const a=AUTH[m];if(a&&a.exp>Date.now())return a;delete AUTH[m];return null};
+const rlSync=(R,G)=>{Object.keys(R.roles).filter(k=>k.indexOf("r_")===0).forEach(k=>delete R.roles[k]);(G.roles_perso||[]).forEach(r=>{R.roles[r.id]=r.nom})};
+const admins=(G,m)=>G.users.filter(u=>u.role==="admin"&&u.actif!==false);
+function uView(){
+ $("utabs").innerHTML=MODS.map(x=>`<button class="tab${x.id===UM?" on":""}" data-um="${x.id}" style="--c:${x.c}">${x.ic} ${x.nom}</button>`).join("");
+ const m=UM,R=RL[m],G=uEtat(m),box=$("usr"),mod=MODS.find(x=>x.id===m),msg=UMSG?`<div class="umsg${UMSG.er?" er":""}" role="status">${E(UMSG.t)}</div>`:"";
+ if(G)rlSync(R,G);
+ if(!G){box.innerHTML=`<p class="note">${mod.nom} : application pas encore utilisée sur cet appareil — ouvrez-la une première fois pour créer ses comptes. <a href="${mod.href}">Ouvrir l'ERP</a></p>`;return}
+ const au=uSess(m);
+ if(!au){
+  const ad=admins(G,m);
+  box.innerHTML=msg+(ad.length?`<form class="uf" id="ugate"><div class="note" style="flex-basis:100%;margin:0">La gestion des comptes de ${E(mod.nom)} exige l'accord d'un administrateur de cette application.</div>
+   <label>Administrateur<select name="u">${ad.map(u=>`<option value="${E(u.id)}">${E(u.nom)}</option>`).join("")}</select></label>
+   <label>Son mot de passe<input name="pwd" type="password" autocomplete="current-password" required></label><button class="sb" style="--c:${mod.c}">🔓 Déverrouiller</button></form>`
+   :`<p class="note">Aucun administrateur actif dans ${E(mod.nom)} : ouvrez l'application pour réactiver un compte administrateur.</p>`);return}
+ const nAd=admins(G,m).length;
+ const rows=G.users.map(u=>{const lie=R.lie.includes(u.role),act=u.actif!==false,last=u.role==="admin"&&act&&nAd<=1;
+  const role=lie?`${E(R.roles[u.role]||u.role)} <span class="note">(fiche liée)</span>`:`<select data-ur="${E(u.id)}" aria-label="Rôle de ${E(u.nom)}">${Object.entries(R.roles).filter(([k])=>!R.lie.includes(k)).map(([k,v])=>`<option value="${k}"${k===u.role?" selected":""}>${E(v)}</option>`).join("")}${R.roles[u.role]?"":`<option value="${E(u.role)}" selected>${E(u.role)}</option>`}</select>`;
+  const ed="";
+  return`<tr class="${act?"":"off"}"><td><b>${E(u.nom)}</b>${last?' <span class="note">(dernier administrateur)</span>':""}</td><td>${role}</td><td>${act?'<span class="ok">Actif</span>':'<span class="er">Désactivé</span>'}</td>
+   <td><button class="sb g" data-up="${E(u.id)}">🔑 Mot de passe</button> <button class="sb g" data-ut="${E(u.id)}">${act?"Désactiver":"Réactiver"}</button>${ed}</td></tr>`}).join("");
+ box.innerHTML=msg+`<p class="note" style="margin:0 0 8px">Autorisé par <b>${E(au.nom)}</b> (administrateur ${E(mod.nom)}) · <a href="#" data-ulock="1">Verrouiller</a> · <button type="button" class="sb g" data-rl="1">🛡️ Rôles et droits</button></p>
+  <div class="tw"><table class="ut"><thead><tr><th>Utilisateur</th><th>Rôle</th><th>État</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <form class="uf" id="uadd"><label>Nom<input name="nom" required maxlength="60"></label>
+   <label>Rôle<select name="role">${Object.entries(R.roles).filter(([k])=>!R.lie.includes(k)).map(([k,v])=>`<option value="${k}">${E(v)}</option>`).join("")}</select></label>
+   <button class="sb" style="--c:${mod.c}">➕ Créer le compte</button><span class="note" style="flex-basis:100%;margin:0">Un mot de passe temporaire est généré et montré une seule fois ; l'utilisateur devra le changer à sa première connexion.</span></form>
+  ${R.lie.length?`<p class="note">Les comptes « ${R.lie.map(k=>E(R.roles[k])).join(" » et « ")} » se créent dans ${E(mod.nom)}, avec leur fiche (téléphone, zone, moto…).</p>`:""}
+  <p class="note">Les changements s'appliquent aussitôt dans l'application, y compris si elle est ouverte. Les droits et les mots de passe (hachés) sont stockés sur cet appareil (pas de serveur) : voir « Limites assumées ».</p>`;
+}
+/* écrit dans l'application : relit l'état, revérifie l'autorisation, applique, journalise, enregistre */
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-rl]");if(!b)return;const m=UM,R=RL[m],au=uSess(m);if(!au)return;const G=uEtat(m),me=G&&G.users.find(u=>u.id===au.id);if(!me||me.role!=="admin"||me.actif===false)return;
+ ANGELS_ROLES.ouvrir({app:{dist:"distribution",trans:"transport",agro:"agro"}[m],nomApp:MODS.find(x=>x.id===m).nom,get:()=>G,persister:()=>{localStorage.setItem(R.key,JSON.stringify(G))},audit:(a,d)=>R.aud(G,a+" (via Hub)",d,me),apres:()=>{rlSync(R,G);uView()}})});
+function uAgir(m,fn){
+ const au=uSess(m);if(!au){UMSG={er:1,t:"Autorisation expirée : déverrouillez à nouveau."};return uView()}
+ const R=RL[m],G=uEtat(m);if(!G){UMSG={er:1,t:"Application introuvable."};return uView()}rlSync(R,G);
+ const me=G.users.find(u=>u.id===au.id);if(!me||me.role!=="admin"||me.actif===false){delete AUTH[m];UMSG={er:1,t:"Ce compte n'est plus administrateur actif."};return uView()}
+ try{const t=fn(G,R,me);try{localStorage.setItem(R.key,JSON.stringify(G))}catch(e){throw new Error("Stockage plein : changement non enregistré.")}UMSG={t};UEDIT=null}catch(e){UMSG={er:1,t:e.message}}
+ uView()
+}
+async function uReset(id){const mdp=ANGELS_AUTH.generer(),rec=await ANGELS_AUTH.creer(mdp);let nom0="";
+ uAgir(UM,(G,R,me)=>{const u=G.users.find(x=>x.id===id);if(!u)throw new Error("Compte introuvable.");u.pwd=rec;u.chg=true;delete u.h;delete u.pin_h;if(G.tries&&typeof G.tries==="object")G.tries[u.id]={n:0,until:0};nom0=u.nom;R.aud(G,"Mot de passe réinitialisé (via Hub)",u.nom,me);return u.nom+" : mot de passe temporaire généré."});
+ if(UMSG&&!UMSG.er&&nom0)await ANGELS_AUTH.afficherTemp({titre:"Mot de passe réinitialisé",nom:nom0,mdp})}
+document.addEventListener("click",e=>{
+ const t=e.target.closest("[data-um],[data-up],[data-ut],[data-ux],[data-ulock]");if(!t)return;
+ if(t.dataset.um){UM=t.dataset.um;UEDIT=null;UMSG=null;try{sessionStorage.setItem("hub_umod",UM)}catch(x){}return uView()}
+ e.preventDefault();
+ if(t.dataset.ulock){delete AUTH[UM];UMSG=null;UEDIT=null;return uView()}
+ if(t.dataset.ux){UEDIT=null;return uView()}
+ if(t.dataset.up){const id=t.dataset.up,G0=uEtat(UM),u0=G0&&G0.users.find(x=>x.id===id);if(!u0)return;if(!confirm('Réinitialiser le mot de passe de '+u0.nom+' ? Un mot de passe temporaire sera généré et montré une seule fois.'))return;UMSG=null;return uReset(id)}
+ if(t.dataset.ut){const id=t.dataset.ut;uAgir(UM,(G,R,me)=>{const u=G.users.find(x=>x.id===id);if(!u)throw new Error("Compte introuvable.");
+  const act=u.actif!==false;if(act){if(u.id===me.id)throw new Error("Impossible de désactiver le compte qui vous autorise.");if(u.role==="admin"&&admins(G,UM).length<=1)throw new Error("Impossible : c'est le dernier administrateur actif.")}
+  u.actif=!act;R.aud(G,"Compte "+(u.actif?"réactivé":"désactivé")+" (via Hub)",u.nom,me);return u.nom+" : compte "+(u.actif?"réactivé":"désactivé")+"."})}
+});
+document.addEventListener("change",e=>{const s=e.target.closest("[data-ur]");if(!s)return;const id=s.dataset.ur,nv=s.value;
+ uAgir(UM,(G,R,me)=>{const u=G.users.find(x=>x.id===id);if(!u)throw new Error("Compte introuvable.");if(R.lie.includes(u.role)||R.lie.includes(nv)||!R.roles[nv])throw new Error("Ce profil se gère dans l'application.");
+  if(u.role==="admin"&&nv!=="admin"&&u.actif!==false&&admins(G,UM).length<=1)throw new Error("Impossible : c'est le dernier administrateur actif.");
+  const av=u.role;u.role=nv;R.aud(G,"Rôle modifié (via Hub)",u.nom+" : "+av+" → "+nv,me);return u.nom+" : rôle « "+R.roles[nv]+" »."})});
+document.addEventListener("submit",e=>{const f=e.target;if(f.id==="ugate"){e.preventDefault();const m=UM,G=uEtat(m);if(!G)return uView();
+  const tr=TRY[m]||(TRY[m]={n:0,until:0});if(tr.until>Date.now()){UMSG={er:1,t:"Trop d'essais : patientez "+Math.ceil((tr.until-Date.now())/1000)+" s."};return uView()}
+  const d=new FormData(f),u=G.users.find(x=>x.id===d.get("u")&&x.role==="admin"&&x.actif!==false),pwd=String(d.get("pwd"));
+  (async()=>{let r={ok:false};try{if(u)r=await ANGELS_AUTH.connecter(u,pwd)}catch(x){UMSG={er:1,t:x.message};return uView()}
+   if(r.ok&&r.legacy){UMSG={er:1,t:"Les codes PIN ne sont plus acceptés : ouvrez l'application et connectez-vous une fois pour créer votre mot de passe."}}
+   else if(r.ok&&u.chg){UMSG={er:1,t:"Votre mot de passe est temporaire : ouvrez l'application et connectez-vous une fois pour le remplacer."}}
+   else if(r.ok){TRY[m]={n:0,until:0};AUTH[m]={id:u.id,nom:u.nom,exp:Date.now()+DUREE};UMSG=null;cxHub(m,G,u,"param_ok")}
+   else{cxHub(m,G,u||{id:String(d.get("u")||""),nom:(G.users.find(x=>x.id===d.get("u"))||{}).nom||"",role:""},"param_ko","Mot de passe incorrect");tr.n++;if(tr.n>=5){tr.n=0;tr.until=Date.now()+60000}UMSG={er:1,t:"Administrateur ou mot de passe incorrect."}}
+   uView()})();return}
+ if(f.id==="uadd"){e.preventDefault();const d=new FormData(f),mdp=ANGELS_AUTH.generer();
+  (async()=>{const rec=await ANGELS_AUTH.creer(mdp);let nom0="";
+   uAgir(UM,(G,R,me)=>{const nom=String(d.get("nom")||"").trim().replace(/\s+/g," "),role=String(d.get("role"));
+    if(!nom)throw new Error("Nom obligatoire.");if(!R.roles[role]||R.lie.includes(role))throw new Error("Profil non autorisé depuis le hub.");
+    if(G.users.some(u=>String(u.nom).toLowerCase()===nom.toLowerCase()))throw new Error("Un compte porte déjà ce nom.");
+    const u={id:uid("u"),nom,role,actif:true,pwd:rec,chg:true};G.users.push(u);nom0=nom;R.aud(G,"Utilisateur créé (via Hub)",nom+" ("+role+")",me);return nom+" : compte créé ("+R.roles[role]+")."});
+   if(UMSG&&!UMSG.er&&nom0)await ANGELS_AUTH.afficherTemp({titre:"Compte créé",nom:nom0,mdp})})();return}
+});
+window.addEventListener("storage",()=>{if(!document.activeElement||!/INPUT|SELECT/.test(document.activeElement.tagName))uView()});
+window.addEventListener("storage",ev=>{if(ev.key===PKEY&&(!document.activeElement||!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName))){PCUR=null;pView()}});
+
+/* ---------- Portail unique : réglages (lus par portail.html) ---------- */
+const PKEY="angels_portail_v1";
+const PDEF={v:4,logo:"",couleur2:"",couleur3:"",legal:{raison:"",forme:"",rccm:"",siege:"",capital:"",dirigeant:""},nom:"LOGISTICA",slogan:"Commandez en ligne, faites-vous livrer. Vendez avec nous.",apropos:"",couleur:"#c8352b",
+ societe:"Le groupe réunit plusieurs activités complémentaires au service de ses clients et de ses partenaires : la livraison à moto et la vente en ligne, le transport de personnes, le négoce et l'import de véhicules, et l'élevage.",
+ bandeau:["Commandez en ligne, livraison rapide.","Devenez vendeur partenaire : postulez en quelques minutes.","Paiement à la livraison ou par Mobile Money."],
+ hero:{titre:"Commandez en ligne. Faites-vous livrer.",texte:"Une boutique, des livreurs, des partenaires : tout le groupe, au même endroit.",video:""},stats:[],
+ atouts:[{photo:"",titre:"Livraison rapide",texte:"À moto, jusqu'à votre porte"},{photo:"",titre:"Paiement simple",texte:"Espèces ou Mobile Money"},{photo:"",titre:"Vendeurs partenaires",texte:"Vendez avec notre réseau"}],photosProduits:{},
+ contact:{tel:"",whatsapp:"",email:"",adresse:"",horaires:""},boutique:"",vendeurs:{actif:true,texte:"Vous vendez des produits et vous cherchez un partenaire de livraison fiable ? Postulez : nous étudions votre candidature et vous contactons."},
+ motdg:{titre:"",nom:"",fonction:"",accroche:"",texte:"",photo:""},
+ activites:[{nom:"Distributions",slogan:"Livrés chez vous, partout.",texte:"Livraison à moto et vente en ligne.",detail:"Nous livrons vos commandes rapidement à votre adresse, avec suivi. Commandez dans la boutique en ligne ou faites livrer vos propres produits.",points:["Livraison à moto","Paiement à la livraison ou Mobile Money","Suivi de commande"],banniere:"",actif:true},{nom:"Transport",slogan:"",texte:"Transport de personnes et négoce de véhicules.",detail:"Une flotte suivie au quotidien, et des véhicules à vendre : demandez-nous un devis.",points:[],banniere:"",actif:true},{nom:"Agro",slogan:"",texte:"Des produits frais issus de notre élevage.",detail:"Œufs, volaille et produits de l'élevage, directement du producteur.",points:[],banniere:"",actif:true}],
+ avis:[],faq:[{q:"Comment commander ?",r:"Choisissez vos produits dans la boutique, indiquez votre adresse et envoyez la commande par WhatsApp : nous la confirmons et vous livrons."},{q:"Comment devenir vendeur partenaire ?",r:"Remplissez le formulaire « Devenir vendeur partenaire » : votre candidature nous parvient sur WhatsApp et nous revenons vers vous."}],mentions:""};
+const pLire=()=>{const c=lire(PKEY);const B=JSON.parse(JSON.stringify(PDEF));if(!c||typeof c!=="object")return B;const A=(k)=>Array.isArray(c[k])?c[k]:B[k];return{...B,...c,motdg:{...B.motdg,...(c.motdg||{})},legal:{...B.legal,...(c.legal||{})},contact:{...B.contact,...(c.contact||{})},vendeurs:{...B.vendeurs,...(c.vendeurs||{})},hero:{...B.hero,...(c.hero||{})},bandeau:A("bandeau"),stats:A("stats"),atouts:A("atouts").map(a=>({photo:"",...a})),activites:A("activites").map(a=>({slogan:"",points:[],banniere:"",actif:true,...a,points:Array.isArray(a.points)?a.points:[]})),avis:A("avis"),faq:A("faq"),boutique:String(c.boutique||""),photosProduits:(c.photosProduits&&typeof c.photosProduits==="object")?c.photosProduits:{}}};
+const pVideo=u=>{u=String(u||"").trim();if(!u)return"";if(!/^https:\/\/[^\s"'<>]+\.(mp4|webm)(\?[^\s"'<>]*)?$/i.test(u))throw new Error("Vidéo : adresse https:// d'un fichier .mp4 ou .webm.");return u};
+const pTok=v=>{v=String(v||"").trim();if(!v)return"";const m=/#boutique=([A-Za-z0-9_-]+)/.exec(v);const t=m?m[1]:v;if(!/^[A-Za-z0-9_-]{20,}$/.test(t))throw new Error("Lien de boutique invalide : collez le lien copié dans Distributions → Vente en ligne.");try{const p=JSON.parse(decodeURIComponent(escape(atob(t.replace(/-/g,"+").replace(/_/g,"/")))));if(!p||!Array.isArray(p.p)||!Array.isArray(p.z))throw 0}catch(e){throw new Error("Lien de boutique illisible : générez-en un nouveau dans Distributions.")}return t};
+const pProduits=C=>{try{const t=C.boutique;if(!t)return[];const o=JSON.parse(decodeURIComponent(escape(atob(t.replace(/-/g,"+").replace(/_/g,"/")))));return(o.p||[]).map(x=>({c:String(x[0]).slice(0,30),n:String(x[1]).slice(0,100)}))}catch(e){return[]}};
+/* Catalogue de la boutique lu directement dans Distributions (mode automatique) */
+const pCatDist=()=>{const G=lire("angels_erp_v1");if(!G||!Array.isArray(G.produits)||!G.config)return null;const act=a=>(a||[]).filter(p=>p.actif&&p.en_ligne);
+ const mm=(G.config.momo_comptes||[]).map(x=>String(x).trim()).filter(x=>x&&!/exemple/i.test(x)),P=[...act(G.produits).map(p=>[p.code,p.nom,Math.round(p.prix),Math.max(0,Math.floor(p.stock))]),...act(G.prestations).map(p=>[p.code,p.nom,Math.round(p.prix),-1,p.service||""])];
+ return{n:P.length,tok:P.length?btoa(unescape(encodeURIComponent(JSON.stringify({o:String(G.config.org||"LOGISTICA"),w:G.config.whatsapp||"",z:(G.config.zones||[]).map(z=>[z.nom,Math.round(z.frais||0)]),p:P,m:mm,f:act(G.forfaits||[]).map(f=>[f.code,f.nom,Math.round(f.prix),f.livraisons])})))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""):""}};
+const pDebloque=()=>Object.values(AUTH).some(a=>a&&a.exp>Date.now());
+let PMSG=null,PCUR=null;
+function pEnc(c){return btoa(unescape(encodeURIComponent(JSON.stringify(c)))).replace(/\+/g,"-").replace(/\//g,"_")}
+function pLien(c){c={...c};if(c.logo&&c.logo.startsWith("data:"))c.logo="";c.activites=(c.activites||[]).map(a=>({...a,banniere:a.banniere&&a.banniere.startsWith("data:")?"":a.banniere}));if(c.motdg&&c.motdg.photo&&c.motdg.photo.startsWith("data:"))c.motdg={...c.motdg,photo:""};c.atouts=(c.atouts||[]).map(a=>({...a,photo:a.photo&&a.photo.startsWith("data:")?"":a.photo}));c.photosProduits={};return location.href.split("#")[0].split("?")[0].replace(/[^\/]*$/,"portail.html")+"#p="+pEnc(c)}
+const pLignes=(t,n)=>String(t||"").split("\n").map(l=>l.trim()).filter(Boolean).slice(0,n);
+function pView(){
+ const el=$("ptl");if(!el)return;const C=PCUR||(PCUR=pLire()),ok=pDebloque(),dis=ok?"":"disabled";
+ const e=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+ const TA='style="width:100%;font:inherit;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx)"';
+ const H=t=>`<h3 style="margin:16px 0 4px;font-size:14px">${t}</h3>`;
+ el.innerHTML=(PMSG?`<div class="umsg ${PMSG.er?"er":""}">${e(PMSG.t)}</div>`:"")+(ok?"":'<div class="umsg er">Lecture seule : déverrouillez une application avec le mot de passe d\'un administrateur pour modifier le portail.</div>')+
+ `<form id="pform"><div class="pp" data-pp="identite">${H("🎨 Identité du portail")}<p class="note">Chaque réglage est publié sur le portail : aucune donnée n'est codée en dur.</p>
+ <div class="uf"><label style="flex:1;min-width:240px">Nom affiché sur le portail<input name="nom" value="${e(C.nom)}" maxlength="60" style="width:100%"></label></div>
+ <div class="uf"><label style="flex:1;min-width:240px">Slogan (sous le nom, dans l'en-tête)<input name="slogan" value="${e(C.slogan)}" maxlength="160" style="width:100%"></label></div>
+ <div class="uf"><label style="flex:1;min-width:240px">Logo du portail (adresse https:// ou fichier)<input name="logo" value="${e(C.logo&&C.logo.startsWith("data:")?"(logo importé)":C.logo)}" placeholder="https://… (laisser vide pour afficher le nom en texte)" style="width:100%"></label>${C.logo?`<img src="${e(C.logo)}" alt="Logo" style="height:44px;border:1px solid var(--bd);border-radius:8px;background:#fff">`:""}<button type="button" class="sb g" ${dis} data-p="logo">📁 Importer</button>${C.logo?`<button type="button" class="sb g" ${dis} data-p="logox">Retirer</button>`:""}</div>
+ <div class="uf"><label>Couleur primaire<input type="color" name="couleur" value="${e(C.couleur)}"></label><label>Couleur secondaire<input type="color" name="couleur2" value="${e(C.couleur2||"#0b4a5c")}"></label><label>Survol / foncé<input type="color" name="couleur3" value="${e(C.couleur3||"#0b5568")}"></label>
+  <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="c2auto" ${C.couleur2?"":"checked"}> secondaire automatique</label><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="c3auto" ${C.couleur3?"":"checked"}> survol automatique</label></div>
+ </div><div class="pp" data-pp="contact">${H("⚖️ Informations légales (affichées sur la page Société et dans les mentions)")}<div class="uf"><label>Raison sociale<input name="l_raison" value="${e(C.legal.raison)}"></label><label>Forme juridique<input name="l_forme" value="${e(C.legal.forme)}"></label><label>Capital<input name="l_capital" value="${e(C.legal.capital)}"></label><label>RCCM<input name="l_rccm" value="${e(C.legal.rccm)}"></label><label>Siège<input name="l_siege" value="${e(C.legal.siege)}"></label><label>Dirigeant<input name="l_dirigeant" value="${e(C.legal.dirigeant)}"></label></div>
+ </div><div class="pp" data-pp="identite">${H("📣 Bandeau défilant en haut du site")}<p class="note">Une annonce par ligne (10 maximum).</p><textarea name="bandeau" rows="3" ${TA}>${e(C.bandeau.join("\n"))}</textarea>
+ </div><div class="pp" data-pp="accueil">${H("🏠 Page d'accueil")}<div class="uf"><label style="flex:1;min-width:240px">Titre<input name="htitre" value="${e(C.hero.titre)}" maxlength="120" style="width:100%"></label></div><div class="uf"><label style="flex:1;min-width:240px">Texte<input name="htexte" value="${e(C.hero.texte)}" maxlength="300" style="width:100%"></label></div>
+ <div class="uf"><label style="flex:1;min-width:240px">Vidéo de présentation (facultatif, adresse https:// d'un .mp4 ou .webm)<input name="hvideo" value="${e(C.hero.video)}" style="width:100%"></label></div>
+ <p class="note">Chiffres clés (facultatif, 3 maximum) — une ligne : valeur | libellé. Les atouts se règlent ci-dessous.</p>
+ <textarea name="stats" rows="2" ${TA}>${e(C.stats.map(x=>x.v+" | "+x.l).join("\n"))}</textarea>
+ ${H("Atouts sous le titre (3 maximum) — avec photo")}<p class="note">Chaque atout peut avoir une photo (importée) ; sans photo, une icône sobre s'affiche. Pas d'emoji sur le portail.</p>
+ ${[0,1,2].map(i=>{const x=C.atouts[i]||{photo:"",titre:"",texte:""};return`<div class="uf" style="align-items:flex-end"><label style="flex:1;min-width:160px">Titre<input name="at_t${i}" value="${e(x.titre)}" maxlength="60" style="width:100%"></label><label style="flex:2;min-width:220px">Texte<input name="at_x${i}" value="${e(x.texte)}" maxlength="100" style="width:100%"></label>${x.photo?`<img src="${e(x.photo)}" alt="" style="height:44px;width:44px;object-fit:cover;border-radius:10px;border:1px solid var(--bd)">`:""}<button type="button" class="sb g" ${dis} data-p="atp" data-i="${i}">📁 Photo</button>${x.photo?`<button type="button" class="sb g" ${dis} data-p="atx" data-i="${i}">Retirer</button>`:""}</div>`}).join("")}
+ </div><div class="pp" data-pp="accueil">${H("🧭 Divisions et activités publiées sur le portail")}<p class="note">Chaque activité cochée « Publiée » apparaît dans le menu « Activités » du portail avec sa propre page : bannière, slogan, présentation, à propos et points forts (8 maximum).</p>
+ ${C.activites.map((x,i)=>`<div class="pan" style="margin-bottom:10px"><div class="uf" style="align-items:center;margin:0 0 6px"><label style="display:flex;gap:8px;align-items:center;font-weight:800;color:var(--tx)"><input type="checkbox" name="act${i}" ${x.actif!==false?"checked":""}> ${e((x.nom||"Nouvelle activité").toUpperCase())}</label><span style="flex:1"></span>
+  <button type="button" class="sb g" ${dis} data-p="aup" data-i="${i}" ${i?"":"disabled"} title="Monter">↑</button><button type="button" class="sb g" ${dis} data-p="adown" data-i="${i}" ${i<C.activites.length-1?"":"disabled"} title="Descendre">↓</button><button type="button" class="sb g" ${dis} data-p="adel" data-i="${i}" title="Retirer">🗑</button></div>
+  <details ${i===0||!x.nom?"open":""}><summary style="cursor:pointer;color:var(--b);font-size:13px">✏️ Contenu et photo de cette activité</summary>
+  <div class="uf"><label style="flex:1;min-width:200px">Nom<input name="nm${i}" value="${e(x.nom)}" maxlength="60" style="width:100%"></label></div>
+  <div class="uf"><label style="flex:1;min-width:240px">Slogan<input name="sl${i}" value="${e(x.slogan)}" maxlength="120" style="width:100%"></label></div>
+  <label style="display:block">Présentation courte (sous le titre)<textarea name="tx${i}" rows="2" maxlength="200" ${TA}>${e(x.texte)}</textarea></label>
+  <label style="display:block;margin-top:6px">À propos (texte détaillé)<textarea name="dt${i}" rows="4" maxlength="1500" ${TA}>${e(x.detail)}</textarea></label>
+  <label style="display:block;margin-top:6px">Points forts (un par ligne)<textarea name="pt${i}" rows="3" ${TA}>${e((x.points||[]).join("\n"))}</textarea></label>
+  <div class="uf"><label style="flex:1;min-width:240px">Photo de la division (carte et bannière — adresse https:// ou fichier)<input name="bn${i}" value="${e(x.banniere&&x.banniere.startsWith("data:")?"(photo importée)":x.banniere)}" placeholder="https://…" style="width:100%"></label>${x.banniere?`<img src="${e(x.banniere)}" alt="" style="height:44px;border-radius:8px;border:1px solid var(--bd)">`:""}<button type="button" class="sb g" ${dis} data-p="abn" data-i="${i}">📁 Importer</button>${x.banniere?`<button type="button" class="sb g" ${dis} data-p="abx" data-i="${i}">Retirer</button>`:""}</div></details></div>`).join("")}
+ <div class="uf"><button type="button" class="sb g" ${dis||C.activites.length>=8?"disabled":""} data-p="aadd">➕ Ajouter une activité</button></div>
+ </div><div class="pp" data-pp="accueil">${H("🗣️ Mot du DG — portail public")}<p class="note">Laissez le texte ET la photo vides pour ne pas afficher la section du tout.</p>
+ <div class="uf"><label>Titre de la section<input name="dg_titre" value="${e(C.motdg.titre)}" maxlength="80" placeholder="Vide = « Mot du DG »"></label><label>Nom du dirigeant<input name="dg_nom" value="${e(C.motdg.nom)}" maxlength="80"></label><label>Fonction<input name="dg_fonction" value="${e(C.motdg.fonction)}" maxlength="80" placeholder="Ex : Directeur Général"></label></div>
+ <div class="uf"><label style="flex:1;min-width:240px">Phrase d'accroche (en italique)<input name="dg_accroche" value="${e(C.motdg.accroche)}" maxlength="200" style="width:100%"></label></div>
+ <label style="display:block">Texte du mot (une ligne vide sépare deux paragraphes)<textarea name="dg_texte" rows="6" maxlength="3000" ${TA}>${e(C.motdg.texte)}</textarea></label>
+ <div class="uf"><label style="flex:1;min-width:240px">Photo du dirigeant (adresse https:// ou fichier)<input name="dg_photo" value="${e(C.motdg.photo&&C.motdg.photo.startsWith("data:")?"(photo importée)":C.motdg.photo)}" style="width:100%"></label>${C.motdg.photo?`<img src="${e(C.motdg.photo)}" alt="" style="height:56px;border-radius:8px;border:1px solid var(--bd)">`:""}<button type="button" class="sb g" ${dis} data-p="dgp">📁 Importer</button>${C.motdg.photo?`<button type="button" class="sb g" ${dis} data-p="dgx">Retirer</button>`:""}</div>
+ </div><div class="pp" data-pp="accueil">${H("🏢 Société et avis")}<textarea name="societe" rows="3" ${TA}>${e(C.societe)}</textarea><p class="note">Avis clients (facultatif) — une ligne : nom | avis. La rubrique « Avis » n'apparaît que s'il y en a.</p><textarea name="avis" rows="3" ${TA}>${e(C.avis.map(x=>x.nom+" | "+x.texte).join("\n"))}</textarea>
+ </div><div class="pp" data-pp="contact">${H("📞 Contact (reçoit les commandes et les candidatures par WhatsApp)")}<div class="uf"><label>Téléphone<input name="tel" value="${e(C.contact.tel)}"></label><label>WhatsApp<input name="whatsapp" value="${e(C.contact.whatsapp)}" placeholder="Numéro WhatsApp de l'entreprise"></label><label>E-mail<input name="email" value="${e(C.contact.email)}"></label><label>Adresse<input name="adresse" value="${e(C.contact.adresse)}"></label><label>Horaires<input name="horaires" value="${e(C.contact.horaires)}"></label></div>
+ </div><div class="pp" data-pp="boutique">${H("🛒 Boutique en ligne")}<p class="note">Le portail affiche votre catalogue de vente en ligne : dans Distributions → Vente en ligne, copiez le lien de la boutique et collez-le ici. Après une modification du catalogue (prix, stock), recopiez-le. Les commandes arrivent sur WhatsApp et s'importent dans Distributions.</p>
+ <div class="uf"><label>Source du catalogue<select name="bsrc"><option value="auto" ${(C.boutique_src||"auto")==="auto"?"selected":""}>Distributions — automatique (recommandé)</option><option value="lien" ${C.boutique_src==="lien"?"selected":""}>Lien collé à la main</option></select></label><button type="button" class="sb g" ${dis} data-p="bsync">Synchroniser maintenant</button></div>
+ ${(()=>{const d=pCatDist();return(C.boutique_src||"auto")==="auto"?`<p class="note">${d?(d.n?`Le portail suit le catalogue « Vente en ligne » de Distributions : <b>${d.n} article(s)</b> publié(s), mis à jour à chaque enregistrement dans Distributions${C.boutique_sync?" (dernière synchronisation : "+e(String(C.boutique_sync).slice(0,16).replace("T"," "))+")":""}.`:"Distributions n'a encore aucun produit ni prestation publié en ligne : cochez « Vendu en ligne » dans Produits et stock ou Prestations."):"Aucune donnée de Distributions sur cet appareil : ouvrez Distributions une fois."}</p>`:'<p class="note">Mode lien : collez ci-dessous le lien copié dans Distributions → Vente en ligne. Le catalogue ne suit plus Distributions.</p>'})()}
+ <div class="uf"><label style="flex:1;min-width:240px">Lien de la boutique (mode « lien » uniquement)<input name="boutique" value="${e(C.boutique?"…#boutique="+C.boutique.slice(0,12)+"… (enregistré)":"")}" style="width:100%" placeholder="https://…/distribution.html#boutique=…"></label></div>
+ ${pProduits(C).length?`${H("Photos des produits")}<p class="note">Une photo réelle par produit s'affiche à côté du produit dans la boutique du portail (compressée à 320 px).</p><div style="overflow-x:auto"><table class="ut" style="min-width:460px"><tr><th>Photo</th><th>Produit</th><th>Code</th><th></th></tr>${pProduits(C).map(x=>`<tr><td>${C.photosProduits[x.c]?`<img src="${e(C.photosProduits[x.c])}" alt="" style="height:44px;width:44px;object-fit:cover;border-radius:10px">`:'<span class="note">—</span>'}</td><td>${e(x.n)}</td><td>${e(x.c)}</td><td><button type="button" class="sb g" ${dis} data-p="ppp" data-c="${e(x.c)}">📁 Photo</button>${C.photosProduits[x.c]?`<button type="button" class="sb g" ${dis} data-p="ppx" data-c="${e(x.c)}">Retirer</button>`:""}</td></tr>`).join("")}</table></div>`:'<p class="note">Collez le lien de la boutique et enregistrez : les produits apparaîtront ici pour recevoir leurs photos.</p>'}
+ </div><div class="pp" data-pp="boutique">${H("🚗 Véhicules à vendre")}<div class="uf"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="vehact" ${C.vehicules_actif!==false?"checked":""}> Afficher le catalogue véhicules (alimenté par Transport → Catalogue véhicules)</label></div>${(()=>{let n="?";try{const r=JSON.parse(localStorage.getItem("angels_transport_v3")||"null");if(r&&Array.isArray(r.vn))n=r.vn.filter(v=>v.portail!==false&&((v.statut==="stock")||(v.statut==="route"&&v.prix_affiche>0))).length}catch(x){}return `<p class="note">${n} véhicule(s) publiable(s) sur cet appareil. Le catalogue est synchronisé à chaque enregistrement dans Transport ; masquez une fiche avec « Publié sur le portail : Non ».</p>`})()}</div><div class="pp" data-pp="boutique">${H("🤝 Devenir vendeur partenaire")}<div class="uf"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="vact" ${C.vendeurs.actif?"checked":""}> Candidatures ouvertes</label></div>
+ <div class="uf"><label style="flex:1;min-width:240px">Texte d'accueil<textarea name="vtexte" rows="2" maxlength="500" ${TA}>${e(C.vendeurs.texte)}</textarea></label></div>
+ <p class="note">Les candidatures arrivent par WhatsApp : collez-les dans Distributions → Vendeurs partenaires → Candidatures. Vous approuvez ou refusez ; aucun compte n'est créé automatiquement.</p>
+ </div><div class="pp" data-pp="accueil">${H("❓ Questions fréquentes")}<p class="note">Une question par ligne : question | réponse</p><textarea name="faq" rows="5" ${TA}>${e(C.faq.map(f=>f.q+" | "+f.r).join("\n"))}</textarea>
+ </div><div class="pp" data-pp="contact">${H("Mentions légales")}<textarea name="mentions" rows="4" ${TA}>${e(C.mentions)}</textarea>
+ </div><div class="pp" data-pp="publication"><h3 style="margin:16px 0 4px;font-size:14px">🚀 Publier le portail</h3><p class="note">Sans serveur, le portail public se publie par un fichier : <b>portail-data.js</b> (réglages et médias, à déposer à côté de <code>portail.html</code>) ou un <b>portail autonome (.html)</b> (à remplacer sur le site). Enregistrez d'abord vos modifications. Le lien du portail porte les réglages mais pas les photos.</p>
+ <div class="uf"><button type="button" class="sb" data-p="data">⬇️ Télécharger portail-data.js</button><button type="button" class="sb" data-p="auto">⬇️ Générer un portail autonome (.html)</button><button type="button" class="sb g" data-p="lien">Copier le lien du portail</button><button type="button" class="sb g" data-p="wa">Partager sur WhatsApp</button></div>
+ <p class="note">Aperçu : <a href="portail.html" target="_blank" rel="noopener">ouvrir le portail</a> (il se met à jour en direct sur cet appareil).</p></div><div class="uf" style="position:sticky;bottom:0;background:var(--bg);padding:8px 0;border-top:1px solid var(--bd)"><button class="sb" ${dis}>Enregistrer le portail</button><button type="button" class="sb g" ${dis} data-p="def">Rétablir les réglages par défaut</button></div></form>`;
+ if(typeof pTab==="function"&&$("ptabs"))pTab(PTAB);
+}
+/* Lecture du formulaire : strict (enregistrement, erreurs bloquantes) ou tolérant (synchronisation avant ajout / retrait / import d'image) */
+function pFromForm(form,C,strict){
+ const d=new FormData(form),g=k=>String(d.get(k)||"").trim(),bad=m=>{if(strict)throw new Error(m)};
+ if(!g("nom"))bad("Le nom est obligatoire.");if(!/^#[0-9a-f]{6}$/i.test(g("couleur")))bad("Couleur invalide.");
+ C.v=5;C.nom=g("nom")||C.nom;if(/^#[0-9a-f]{6}$/i.test(g("couleur")))C.couleur=g("couleur");C.couleur2=d.get("c2auto")?"":g("couleur2");C.couleur3=d.get("c3auto")?"":g("couleur3");
+ {const lg=g("logo");if(lg==="(logo importé)"){}else if(!lg)C.logo="";else if(/^https:\/\/[^\s"'<>]+$/i.test(lg))C.logo=lg;else{bad("Logo : adresse https:// d'une image, ou importez un fichier.")}}
+ C.legal={raison:g("l_raison"),forme:g("l_forme"),capital:g("l_capital"),rccm:g("l_rccm"),siege:g("l_siege"),dirigeant:g("l_dirigeant")};C.slogan=g("slogan");C.societe=g("societe");C.mentions=g("mentions");
+ C.bandeau=pLignes(g("bandeau"),10);let hv=g("hvideo");try{hv=pVideo(hv)}catch(e){bad(e.message);hv=C.hero.video}C.hero={titre:g("htitre"),texte:g("htexte"),video:hv};
+ const cut=(l,n)=>l.split("|").map(x=>x.trim()).concat(Array(n).fill("")).slice(0,n);
+ C.stats=pLignes(g("stats"),3).map(l=>{const a=cut(l,2);return{v:a[0],l:a[1]}});
+ C.atouts=[0,1,2].map(i=>({photo:(C.atouts[i]||{}).photo||"",titre:g("at_t"+i),texte:g("at_x"+i)})).filter(x=>x.titre||x.photo);
+ C.activites=C.activites.map((x,i)=>{const nom=g("nm"+i),pub=!!d.get("act"+i);if(pub&&!nom)bad("Activité n° "+(i+1)+" : le nom est obligatoire pour la publier.");
+  let bn=g("bn"+i);if(bn==="(photo importée)")bn=x.banniere;else if(bn&&!/^https:\/\/[^\s"'<>]+$/i.test(bn)){bad("Activité « "+nom+" » : bannière en https:// ou fichier importé.");bn=x.banniere}
+  return{nom,slogan:g("sl"+i),texte:g("tx"+i),detail:g("dt"+i),points:pLignes(g("pt"+i),10),banniere:bn,actif:pub}});
+ C.motdg={titre:g("dg_titre"),nom:g("dg_nom"),fonction:g("dg_fonction"),accroche:g("dg_accroche"),texte:g("dg_texte"),photo:(()=>{const v=g("dg_photo");if(v==="(photo importée)")return C.motdg.photo;if(!v)return"";if(/^https:\/\/[^\s"'<>]+$/i.test(v))return v;bad("Photo du dirigeant : adresse https:// ou fichier importé.");return C.motdg.photo})()};
+ C.avis=pLignes(g("avis"),12).map(l=>{const a=cut(l,2);return{nom:a[0],texte:a[1]}}).filter(x=>x.texte);
+ C.contact={tel:g("tel"),whatsapp:g("whatsapp"),email:g("email"),adresse:g("adresse"),horaires:g("horaires")};
+ if(C.contact.email&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(C.contact.email))bad("Adresse e-mail invalide.");
+ C.boutique_src=g("bsrc")==="lien"?"lien":"auto";
+ if(C.boutique_src==="auto"){const d=pCatDist();if(d){C.boutique=d.tok;C.boutique_sync=new Date().toISOString()}}
+ else{const b=g("boutique");if(b&&!/^…#boutique=/.test(b)){try{C.boutique=pTok(b)}catch(e){bad(e.message)}}else if(!b)C.boutique=""}
+ C.vehicules_actif=!!d.get("vehact"); C.vendeurs={actif:!!d.get("vact"),texte:g("vtexte")};delete C.services;delete C.entrees;
+ C.faq=g("faq").split("\n").map(l=>l.split("|")).filter(a=>a[0].trim()).map(a=>({q:a[0].trim(),r:a.slice(1).join("|").trim()}));
+ return C}
+const pSync=()=>{const f=$("pform");if(!f)return PCUR||pLire();PCUR=pFromForm(f,PCUR||pLire(),false);return PCUR};
+document.addEventListener("submit",ev=>{if(ev.target.id!=="pform")return;ev.preventDefault();
+ try{if(!pDebloque())throw new Error("Déverrouillez d'abord une application avec le mot de passe d'un administrateur.");
+  const C=pFromForm(ev.target,PCUR||pLire(),true);
+  try{localStorage.setItem(PKEY,JSON.stringify(C))}catch(x){throw new Error("Stockage plein : retirez des médias ou une photo volumineuse.")}PCUR=null;pDiffuse();PMSG={t:"Portail enregistré sur cet appareil. Pour le publier : téléchargez portail-data.js (à déposer à côté de portail.html) ou générez un portail autonome."}}
+ catch(e){PMSG={er:1,t:e.message}}pView()});
+let PIMG=null;
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-p]");if(!b)return;const k=b.dataset.p,i=+b.dataset.i;
+ if(k==="bsync"){if(!pDebloque()){PMSG={er:1,t:"Déverrouillez d'abord une application avec le mot de passe d'un administrateur."};return pView()}const C=pSync(),d=pCatDist();if(!d){PMSG={er:1,t:"Aucune donnée de Distributions sur cet appareil : ouvrez Distributions une fois."};return pView()}C.boutique_src="auto";C.boutique=d.tok;C.boutique_sync=new Date().toISOString();try{localStorage.setItem(PKEY,JSON.stringify(C))}catch(x){PMSG={er:1,t:"Stockage plein."};return pView()}PCUR=null;pDiffuse();PMSG={t:d.n?"Catalogue synchronisé : "+d.n+" article(s) publié(s) en ligne.":"Synchronisé : Distributions n'a aucun article publié en ligne pour le moment."};return pView()}
+ if(["aadd","aup","adown","adel","abn","abx","dgp","dgx","atp","atx","ppp","ppx"].includes(k)){
+  if(!pDebloque()){PMSG={er:1,t:"Déverrouillez d'abord une application avec le mot de passe d'un administrateur."};return pView()}
+  const C=pSync(),A=C.activites;
+  if(k==="aadd"){if(A.length<8)A.push({nom:"",slogan:"",texte:"",detail:"",points:[],banniere:"",actif:false})}
+  else if(k==="aup"&&i>0)[A[i-1],A[i]]=[A[i],A[i-1]];
+  else if(k==="adown"&&i<A.length-1)[A[i+1],A[i]]=[A[i],A[i+1]];
+  else if(k==="adel"){if(confirm("Retirer l'activité « "+(A[i].nom||"sans nom")+" » du portail ? Les médias qui lui sont rattachés passeront au groupe."))A.splice(i,1);else return}
+  else if(k==="abx")A[i].banniere="";
+  else if(k==="dgx")C.motdg.photo="";
+  else if(k==="atx"){if(C.atouts[i])C.atouts[i].photo=""}
+  else if(k==="ppx"){delete C.photosProduits[b.dataset.c]}
+  else if(k==="abn"||k==="dgp"||k==="atp"||k==="ppp"){PIMG={k,i,c:b.dataset.c};return $("m_img").click()}
+  return pView()}
+ const C=pLire();
+ if(b.dataset.p==="lien"){const u=pLien(C);(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>{PMSG={t:"Lien du portail copié."};pView()}).catch(()=>{PMSG={t:"Copiez ce lien : "+u};pView()})}
+ if(b.dataset.p==="wa")window.open("https://wa.me/?text="+encodeURIComponent("🌐 "+C.nom+" — notre site et notre boutique en ligne : "+pLien(C)),"_blank","noopener");
+ if(b.dataset.p==="def"&&confirm("Rétablir les réglages par défaut du portail ?")){localStorage.removeItem(PKEY);PCUR=null;PMSG={t:"Réglages par défaut rétablis."};pView()}});
+
+/* ---------- Médias publiables (stockés dans IndexedDB de cet appareil) ---------- */
+const PMCAT=[["accueil","Accueil (diaporama ou vidéo d'ouverture)"],["galerie","Galerie photos et vidéos"],["activite","Photos / vidéos d'une activité"],["societe","Société (équipe, locaux)"]];
+function idbOpen(){return new Promise((ok,ko)=>{if(!window.indexedDB)return ko(new Error("Stockage indisponible sur ce navigateur."));const r=indexedDB.open("angels_portail",2);r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains("media"))d.createObjectStore("media",{keyPath:"id"});if(!d.objectStoreNames.contains("veh"))d.createObjectStore("veh",{keyPath:"id"})};r.onsuccess=()=>ok(r.result);r.onerror=()=>ko(r.error)})}
+const idbTx=async(mode,f)=>{const db=await idbOpen();return new Promise((ok,ko)=>{const t=db.transaction("media",mode),st=t.objectStore("media"),q=f(st);t.oncomplete=()=>ok(q&&q.result);t.onerror=()=>ko(t.error)})};
+const mAll=()=>idbTx("readonly",st=>st.getAll()).then(L=>(L||[]).sort((a,b)=>a.t-b.t));
+const mPut=m=>idbTx("readwrite",st=>st.put(m)),mDel=id=>idbTx("readwrite",st=>st.delete(id));
+function imgCompress(file,max,q,type){return new Promise((ok,ko)=>{const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));const x=c.getContext("2d");if(type==="image/jpeg"){x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height)}x.drawImage(im,0,0,c.width,c.height);ok(c.toDataURL(type||"image/jpeg",q))};im.onerror=()=>ko(new Error("Image illisible : "+file.name));im.src=fr.result};fr.onerror=()=>ko(new Error("Lecture impossible : "+file.name));fr.readAsDataURL(file)})}
+const fileData=f=>new Promise((ok,ko)=>{const fr=new FileReader();fr.onload=()=>ok(fr.result);fr.onerror=()=>ko(new Error("Lecture impossible"));fr.readAsDataURL(f)});
+const pVideoLien=u=>{u=String(u||"").trim();return /^https:\/\/(?:www\.)?youtube\.com\/watch\?(?:[^#]*&)?v=[A-Za-z0-9_-]{6,15}/i.test(u)||/^https:\/\/youtu\.be\/[A-Za-z0-9_-]{6,15}/i.test(u)||/^https:\/\/(?:www\.)?youtube\.com\/embed\/[A-Za-z0-9_-]{6,15}/i.test(u)||/^https:\/\/(?:www\.)?vimeo\.com\/\d{5,12}/i.test(u)||/^https:\/\/player\.vimeo\.com\/video\/\d{5,12}/i.test(u)||/^https:\/\/[^\s"'<>]+\.(mp4|webm|ogg)(\?[^\s"'<>]*)?$/i.test(u)};
+let PMM=null,MCUR={cat:"galerie",titre:"",act:"",comment:""};
+const pBc=(()=>{try{return new BroadcastChannel("angels_portail")}catch(e){return null}})();
+function pDiffuse(){try{pBc&&pBc.postMessage("maj")}catch(e){}}
+const mAct=C=>[["","Général (groupe)"],...C.activites.map((a,i)=>["act"+(i+1),a.nom||"Nouvelle activité"])];
+async function mView(){
+ const el=$("pmed");if(!el)return;const C=pLire(),ok=pDebloque(),dis=ok?"":"disabled";let L=[];try{L=await mAll()}catch(e){PMM={er:1,t:e.message}}
+ const e=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+ const ko=Math.round(L.reduce((t,m)=>t+(m.type!=="video"?String(m.src).length*0.75:0),0)/1024);
+ el.innerHTML=(PMM?`<div class="umsg ${PMM.er?"er":""}">${e(PMM.t)}</div>`:"")+(ok?"":'<div class="umsg er">Lecture seule : déverrouillez une application avec le mot de passe d\'un administrateur pour modifier les médias.</div>')+
+ `<div class="pan" style="margin-bottom:12px"><h4>➕ Ajouter des médias</h4><form id="mform" onsubmit="return false"><div class="uf"><label>Catégorie<select name="cat">${PMCAT.map(c=>`<option value="${c[0]}" ${MCUR.cat===c[0]?"selected":""}>${c[1]}</option>`).join("")}</select></label><label>Titre / légende<input name="titre" value="${e(MCUR.titre)}" maxlength="100" placeholder="Ex : Livraison à Cocody, notre équipe…"></label>
+  <label>Rattacher à<select name="act">${mAct(C).map(a=>`<option value="${a[0]}" ${MCUR.act===a[0]?"selected":""}>${e(a[1])}</option>`).join("")}</select></label></div>
+  <label style="display:block">Commentaire / description (affiché sous le média sur le portail)<textarea name="comment" rows="2" maxlength="400" style="width:100%;font:inherit;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx)">${e(MCUR.comment)}</textarea></label>
+  <div class="uf"><button type="button" class="sb" ${dis} data-m="photos">📷 Ajouter des photos</button><button type="button" class="sb" ${dis} data-m="video">🎬 Vidéo par lien (YouTube / Vimeo / .mp4)</button><button type="button" class="sb g" ${dis} data-m="pdf">📄 Téléverser un document (PDF)</button><button type="button" class="sb g" ${dis} data-m="doclien">🔗 Document par lien</button></div>
+  <input type="file" id="m_photos" accept="image/*" multiple hidden><input type="file" id="m_pdf" accept="application/pdf" hidden><input type="file" id="m_logo" accept="image/*" hidden><input type="file" id="m_img" accept="image/*" hidden></form></div>
+ <p class="note">${L.length} média(s) · environ ${ko.toLocaleString("fr-FR")} Ko sur cet appareil.</p>
+ <div style="overflow-x:auto"><table class="ut" style="min-width:640px"><tr><th>Aperçu</th><th>Type</th><th>Catégorie</th><th>Titre</th><th>Rattaché à</th><th></th></tr>`+
+ (L.map(m=>`<tr><td>${m.type==="photo"?`<img src="${e(m.src)}" alt="" style="height:40px;border-radius:6px">`:m.type==="video"?"🎬":"📄"}</td><td>${m.type==="photo"?"Photo":m.type==="video"?"Vidéo":"Document"}</td><td>${e((PMCAT.find(c=>c[0]===m.cat)||[0,"Document"])[1])}</td><td>${e(m.titre)}<div class="note">${e(m.comment)}</div></td><td>${e((mAct(C).find(a=>a[0]===m.act)||[0,"Général"])[1])}</td><td><button class="sb g" ${dis} data-m="del" data-id="${e(m.id)}">🗑</button></td></tr>`).join("")||'<tr><td colspan="6" class="note">Aucun média pour le moment.</td></tr>')+`</table></div>`;
+}
+function mVals(){const f=$("mform");return{cat:f.cat.value,titre:f.titre.value.trim().slice(0,100),act:f.act.value,comment:f.comment.value.trim().slice(0,400)}}
+async function mAjout(kind,files){
+ try{if(!pDebloque())throw new Error("Déverrouillez d'abord une application avec le mot de passe d'un administrateur.");
+  const v=mVals();MCUR={...v};if(kind!=="doc"&&v.cat==="activite"&&!v.act)throw new Error("Catégorie « Activité » : choisissez l'activité dans « Rattacher à ».");
+  const base={cat:v.cat,titre:v.titre,comment:v.comment,act:v.cat==="activite"?v.act:v.act,t:Date.now()};let n=0;
+  if(kind==="photos"){if(!files.length)return;if(files.length>30)throw new Error("30 photos maximum à la fois.");
+   for(const f of files){if(!/^image\//.test(f.type))throw new Error(f.name+" : ce n'est pas une image.");const src=await imgCompress(f,1280,0.72,"image/jpeg");await mPut({...base,id:"m"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),type:"photo",src,t:Date.now()+n++,titre:v.titre||f.name.replace(/\.[^.]+$/,"")})}}
+  else if(kind==="video"){const u=prompt("Adresse (https://) de la vidéo : YouTube, Vimeo ou fichier .mp4 / .webm");if(!u)return;if(!pVideoLien(u))throw new Error("Adresse de vidéo non reconnue : utilisez un lien https:// YouTube, Vimeo ou un fichier .mp4 / .webm.");await mPut({...base,id:"m"+Date.now().toString(36),type:"video",src:u.trim()})}
+  else if(kind==="pdf"){const f=files[0];if(!f)return;if(f.type!=="application/pdf")throw new Error("Seuls les fichiers PDF sont acceptés.");if(f.size>1.5*1024*1024)throw new Error("PDF trop volumineux ("+Math.round(f.size/1024)+" Ko) : 1,5 Mo maximum. Réduisez-le ou utilisez « Document par lien ».");
+   await mPut({...base,cat:"document",act:"",id:"m"+Date.now().toString(36),type:"doc",src:await fileData(f),titre:v.titre||f.name.replace(/\.pdf$/i,"")})}
+  else if(kind==="doclien"){const u=prompt("Adresse (https://) du document PDF");if(!u)return;if(!/^https:\/\/[^\s"'<>]+$/i.test(u.trim()))throw new Error("Adresse invalide : https:// obligatoire.");await mPut({...base,cat:"document",act:"",id:"m"+Date.now().toString(36),type:"doc",src:u.trim(),titre:v.titre||"Document"})}
+  PMM={t:"Média ajouté."};MCUR={cat:v.cat,titre:"",act:v.act,comment:""};pDiffuse()}
+ catch(e){PMM={er:1,t:e&&e.message||String(e)}}
+ return mView()}
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-m]");if(!b)return;const k=b.dataset.m;
+ if(k==="photos")$("m_photos").click();else if(k==="pdf")$("m_pdf").click();else if(k==="video"||k==="doclien")mAjout(k,[]);
+ else if(k==="del"){if(!pDebloque()){PMM={er:1,t:"Déverrouillez d'abord une application avec le mot de passe d'un administrateur."};return mView()}if(confirm("Retirer ce média du portail ?"))mDel(b.dataset.id).then(()=>{PMM={t:"Média retiré."};pDiffuse();mView()})}});
+document.addEventListener("change",ev=>{const t=ev.target;if(t.id==="m_photos"){const f=[...t.files];t.value="";mAjout("photos",f)}else if(t.id==="m_pdf"){const f=[...t.files];t.value="";mAjout("pdf",f)}
+ else if(t.id==="m_img"){const f=t.files[0];t.value="";if(!f||!PIMG)return;const q=PIMG;PIMG=null;(async()=>{try{if(!pDebloque())throw new Error("Déverrouillez d'abord une application avec le mot de passe d'un administrateur.");if(!/^image\//.test(f.type))throw new Error("Choisissez une image (PNG, JPG, WEBP).");
+  const C=pSync(),src=await imgCompress(f,q.k==="dgp"?640:q.k==="abn"?1280:320,0.78,"image/jpeg");if(q.k==="dgp")C.motdg.photo=src;else if(q.k==="atp"){while(C.atouts.length<=q.i)C.atouts.push({photo:"",titre:"",texte:""});C.atouts[q.i].photo=src}else if(q.k==="ppp"){C.photosProduits=C.photosProduits||{};C.photosProduits[q.c]=src}else C.activites[q.i].banniere=src;PMSG={t:"Photo importée : pensez à enregistrer le portail."}}catch(e){PMSG={er:1,t:e.message}}pView()})()}
+ else if(t.id==="m_logo"){const f=t.files[0];t.value="";if(!f)return;(async()=>{try{if(!pDebloque())throw new Error("Déverrouillez d'abord une application avec le mot de passe d'un administrateur.");if(!/^image\//.test(f.type))throw new Error("Le logo doit être une image (PNG, JPG, SVG, WEBP).");if(f.size>2*1024*1024)throw new Error("Logo : 2 Mo maximum.");
+  const C=pLire();C.logo=await imgCompress(f,360,0.9,"image/png");localStorage.setItem(PKEY,JSON.stringify(C));PCUR=null;PMSG={t:"Logo importé."};pDiffuse()}catch(e){PMSG={er:1,t:e.message}}pView()})()}});
+/* ---------- Publication : portail-data.js ou portail autonome ---------- */
+async function pVeh(){try{const db=await idbOpen();return await new Promise((ok,ko)=>{const q=db.transaction("veh").objectStore("veh").get("catalogue");q.onsuccess=()=>ok(q.result||null);q.onerror=()=>ko(q.error)})}catch(e){return null}}
+async function pDonnees(){const C=pLire();let L=[];try{L=await mAll()}catch(e){}const V=await pVeh();const PI=typeof ANGELS_PRINT!=="undefined"?ANGELS_PRINT.cfg():null,print=PI?{keys:ANGELS_PRINT.pubs(),site:PI.site,noms:Object.fromEntries(ANGELS_PRINT.DIVS.map(([k])=>[k,ANGELS_PRINT.ident(k).nom]))}:{keys:[],noms:{}};return{v:1,publie:new Date().toISOString(),cfg:C,media:L,print,veh:C.vehicules_actif===false?{items:[]}:{t:V?V.t:"",items:V?V.items:[]}}}
+const pJs=o=>JSON.stringify(o).replace(/</g,"\\u003c").replace(/\u2028/g,"\\u2028").replace(/\u2029/g,"\\u2029");
+function pTelecharge(nom,txt,type){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type}));a.download=nom;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+async function pPublie(mode){
+ try{const D=await pDonnees(),js="window.__PORTAIL_DATA="+pJs(D)+";";
+  if(mode==="data"){pTelecharge("portail-data.js",js,"text/javascript");PMSG={t:"portail-data.js téléchargé : déposez-le à côté de portail.html sur le site, puis redéployez."}}
+  else{const r=await fetch("portail.html",{cache:"no-store"});if(!r.ok)throw new Error("portail.html introuvable : ouvrez cette page depuis le site (https://), pas depuis un fichier.");let h=await r.text();
+   const MARQ='<scr'+'ipt src="portail-data.js"></scr'+'ipt>';if(!h.includes(MARQ))throw new Error("portail.html n'a pas l'emplacement de publication attendu.");
+   h=h.replace(MARQ,()=>"<scr"+"ipt>"+js+"</scr"+"ipt>");pTelecharge("portail.html",h,"text/html");PMSG={t:"Portail autonome généré (réglages et médias inclus) : remplacez portail.html sur le site par ce fichier."}}}
+ catch(e){PMSG={er:1,t:e.message}}pView()}
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-p]");if(!b)return;if(b.dataset.p==="data")pPublie("data");if(b.dataset.p==="auto")pPublie("auto");
+ if(b.dataset.p==="logo"){if(!pDebloque()){PMSG={er:1,t:"Déverrouillez d'abord une application avec le mot de passe d'un administrateur."};return pView()}$("m_logo").click()}
+ if(b.dataset.p==="logox"&&pDebloque()){const C=pLire();C.logo="";localStorage.setItem(PKEY,JSON.stringify(C));PCUR=null;PMSG={t:"Logo retiré."};pDiffuse();pView()}});
+
+
+/* ---------- Statistiques portail et accès portail (lus dans les données de Distributions) ---------- */
+const eE=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fF=n=>Math.round(+n||0).toLocaleString("fr-FR").replace(/[  ]/g," ")+" F";
+const telWA=t=>{t=String(t||"").replace(/\D/g,"");return t.length===10?"225"+t:t};
+const donneesDist=()=>{const G=lire("angels_erp_v1");return G&&Array.isArray(G.commandes)&&Array.isArray(G.clients)?G:null};
+const estWeb=c=>!!(c.web||c.canal==="Vente en ligne");
+let SJ=30;
+function sCalc(G,jours){
+ const lim=jours?Date.now()-jours*864e5:0,dans=t=>!lim||new Date(t).getTime()>=lim;
+ const W=G.commandes.filter(c=>estWeb(c)&&dans(c.date)),liv=W.filter(c=>c.statut==="livree"),ann=W.filter(c=>c.statut==="annulee"),cours=W.filter(c=>!["livree","annulee"].includes(c.statut));
+ const ca=liv.reduce((t,c)=>t+(+c.total||0),0),mm=W.filter(c=>c.web&&c.web.pm==="mm"),esp=W.length-mm.length;
+ const prod={};W.filter(c=>c.statut!=="annulee").forEach(c=>(c.lignes||[]).forEach(l=>{const p=(G.produits||[]).find(x=>x.id===l.produit_id),nom=l.desig||(p&&p.nom)||"Article";const r=prod[nom]||(prod[nom]={n:nom,q:0,ca:0});r.q+=+l.qte||0;r.ca+=(+l.qte||0)*(+l.pu||0)}));
+ const zones={};W.forEach(c=>{const z=(c.adr&&c.adr.zone)||"—";zones[z]=(zones[z]||0)+1});
+ const premiers={};G.commandes.filter(estWeb).forEach(c=>{const k=c.client_id,t=new Date(c.date).getTime();if(!(k in premiers)||t<premiers[k])premiers[k]=t});
+ const nouveaux=Object.values(premiers).filter(t=>!lim||t>=lim).length;
+ const n=jours||30,jour={};for(let i=n-1;i>=0;i--){jour[new Date(Date.now()-i*864e5).toISOString().slice(0,10)]=0}
+ W.forEach(c=>{const d=String(c.date).slice(0,10);if(d in jour)jour[d]++});
+ const C=(G.candidatures||[]).filter(c=>dans(c.t));
+ return{W,liv,ann,cours,ca,mm,esp,prod:Object.values(prod).sort((a,b)=>b.ca-a.ca).slice(0,8),zones:Object.entries(zones).sort((a,b)=>b[1]-a[1]),nouveaux,jour,C,
+  cand:{tot:C.length,att:C.filter(c=>c.statut==="attente").length,ok:C.filter(c=>c.statut==="approuvee").length,ko:C.filter(c=>c.statut==="refusee").length}}}
+function sView(){
+ const el=$("pstat");if(!el)return;const G=donneesDist();
+ if(!G){el.innerHTML='<div class="umsg er">Aucune donnée de Distributions sur cet appareil : ouvrez Distributions une fois, puis revenez ici.</div>';return}
+ const R=sCalc(G,SJ),pm={valide:0,a_verifier:0,rejete:0};R.mm.forEach(c=>{const k=c.web.pay;if(k in pm)pm[k]++});
+ const kp=(v,l,c)=>`<div class="pan" style="text-align:center"><div style="font-size:24px;font-weight:800;${c?"color:"+c:""}">${v}</div><div class="note" style="margin:2px 0 0">${l}</div></div>`;
+ const mx=Math.max(1,...Object.values(R.jour)),d=Object.entries(R.jour);
+ const taux=R.W.length?Math.round(R.liv.length*100/R.W.length):0,tauxC=R.cand.tot?Math.round(R.cand.ok*100/R.cand.tot):0;
+ el.innerHTML=`<div class="uf"><label>Période<select id="sper">${[[7,"7 derniers jours"],[30,"30 derniers jours"],[90,"90 derniers jours"],[0,"Depuis le début"]].map(x=>`<option value="${x[0]}" ${SJ===x[0]?"selected":""}>${x[1]}</option>`).join("")}</select></label><button type="button" class="sb g" data-s="csv">⬇️ Exporter (CSV)</button></div>
+ <h3 style="margin:10px 0 6px;font-size:14px">🛒 Boutique en ligne</h3>
+ <div class="two" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">${kp(R.W.length,"commandes reçues")}${kp(R.liv.length,"livrées ("+taux+" %)","var(--ok)")}${kp(R.cours.length,"en cours / à confirmer","var(--wa)")}${kp(R.ann.length,"annulées")}${kp(fF(R.ca),"chiffre d'affaires livré")}${kp(R.liv.length?fF(R.ca/R.liv.length):"—","panier moyen")}${kp(R.nouveaux,"nouveaux clients en ligne")}</div>
+ <div class="two" style="margin-top:12px"><div class="pan"><h4>Commandes par jour</h4><div class="bars">${d.map(([k,v])=>`<div class="bar" title="${eE(k)} : ${v}">${v?`<span>${v}</span>`:""}<i style="height:${Math.round(v*100/mx)}%"></i></div>`).join("")}</div></div>
+  <div class="pan"><h4>Paiement</h4><ul class="det"><li><span>Espèces à la livraison</span><b>${R.esp}</b></li><li><span>Mobile Money — vérifiés</span><b>${pm.valide}</b></li><li><span>Mobile Money — à vérifier</span><b style="color:var(--wa)">${pm.a_verifier}</b></li><li><span>Mobile Money — non reçus</span><b>${pm.rejete}</b></li></ul></div></div>
+ <div class="two" style="margin-top:12px"><div class="pan"><h4>Produits les plus commandés</h4><ul class="det">${R.prod.map(p=>`<li><span>${eE(p.n)} × ${p.q}</span><b>${fF(p.ca)}</b></li>`).join("")||'<li class="note">Aucune commande.</li>'}</ul></div>
+  <div class="pan"><h4>Zones de livraison</h4><ul class="det">${R.zones.map(z=>`<li><span>${eE(z[0])}</span><b>${z[1]}</b></li>`).join("")||'<li class="note">Aucune commande.</li>'}</ul></div></div>
+ <h3 style="margin:16px 0 6px;font-size:14px">🤝 Candidatures de vendeurs partenaires</h3>
+ <div class="two" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">${kp(R.cand.tot,"candidatures reçues")}${kp(R.cand.att,"à étudier","var(--wa)")}${kp(R.cand.ok,"approuvées ("+tauxC+" %)","var(--ok)")}${kp(R.cand.ko,"refusées")}${kp((G.vendeurs||[]).length,"vendeurs partenaires au total")}</div>
+ <h3 style="margin:16px 0 6px;font-size:14px">Dernières commandes en ligne</h3>
+ <div style="overflow-x:auto"><table class="ut" style="min-width:560px"><tr><th>Date</th><th>N°</th><th>Client</th><th>Zone</th><th>Total</th><th>Statut</th></tr>${R.W.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,10).map(c=>{const cl=G.clients.find(x=>x.id===c.client_id)||{};return`<tr><td>${eE(String(c.date).slice(0,10))}</td><td>${eE(c.numero)}</td><td>${eE(cl.nom||"—")}</td><td>${eE((c.adr||{}).zone||"—")}</td><td>${fF(c.total)}</td><td>${eE(c.statut)}</td></tr>`}).join("")||'<tr><td colspan="6" class="note">Aucune commande en ligne sur la période.</td></tr>'}</table></div>`;
+}
+let AF={t:"tous",q:""},AMSG=null;
+function aActeurs(G){
+ const web=G.commandes.filter(estWeb),A=[];
+ const parCl={};web.forEach(c=>{(parCl[c.client_id]||(parCl[c.client_id]=[])).push(c)});
+ Object.entries(parCl).forEach(([id,L])=>{const cl=G.clients.find(x=>x.id===id);if(!cl)return;const last=L.map(c=>c.date).sort().pop();A.push({k:"client",id,nom:cl.nom,tel:cl.tel,info:L.length+" commande(s) · "+fF(L.filter(c=>c.statut==="livree").reduce((t,c)=>t+(+c.total||0),0))+" livré",statut:"Client en ligne",der:last})});
+ (G.candidatures||[]).forEach(c=>A.push({k:"candidat",id:c.id,nom:c.nom,tel:c.tel,info:[c.ville,c.activite].filter(Boolean).join(" · "),statut:c.statut==="attente"?"Candidature à étudier":c.statut==="approuvee"?"Candidature approuvée":"Candidature refusée"+(c.motif?" ("+c.motif+")":""),der:c.t}));
+ (G.vendeurs||[]).forEach(v=>{const u=G.users.find(x=>x.id===v.user_id),cm=G.commandes.filter(c=>c.vendeur_id===v.id),last=cm.map(c=>c.date).sort().pop();A.push({k:"vendeur",id:v.id,uid:v.user_id,nom:v.nom,tel:v.tel,info:cm.length+" commande(s) · commission "+(v.commission_pct||0)+" %",statut:u?(u.actif!==false?"Accès actif":"Accès désactivé"):"Sans compte",actif:u&&u.actif!==false,der:last||""})});
+ return A}
+function aView(){
+ const el=$("pacc");if(!el)return;const G=donneesDist();
+ if(!G){el.innerHTML='<div class="umsg er">Aucune donnée de Distributions sur cet appareil : ouvrez Distributions une fois, puis revenez ici.</div>';return}
+ const q=AF.q.trim().toLowerCase(),A=aActeurs(G).filter(a=>(AF.t==="tous"||a.k===AF.t)&&(!q||(a.nom+" "+a.tel).toLowerCase().includes(q))),N=k=>aActeurs(G).filter(a=>a.k===k).length;
+ const lib={client:"🛍️ Client",candidat:"📝 Candidat vendeur",vendeur:"🤝 Vendeur partenaire"},adm=!!uSess("dist");
+ el.innerHTML=(AMSG?`<div class="umsg ${AMSG.er?"er":""}">${eE(AMSG.t)}</div>`:"")+
+ `<div class="tabs">${[["tous","Tous ("+aActeurs(G).length+")"],["client","Clients ("+N("client")+")"],["candidat","Candidats ("+N("candidat")+")"],["vendeur","Vendeurs partenaires ("+N("vendeur")+")"]].map(x=>`<button type="button" class="tab ${AF.t===x[0]?"on":""}" data-af="${x[0]}">${x[1]}</button>`).join("")}</div>
+ <div class="uf"><label>Rechercher (nom ou téléphone)<input id="aq" value="${eE(AF.q)}"></label><button type="button" class="sb g" data-s="acsv">⬇️ Exporter (CSV)</button></div>
+ ${adm?"":'<p class="note">Pour activer ou désactiver un accès vendeur : onglet « Utilisateurs et rôles » → Distributions → saisissez le mot de passe d\'un administrateur.</p>'}
+ <div style="overflow-x:auto"><table class="ut" style="min-width:680px"><tr><th>Type</th><th>Nom</th><th>Téléphone</th><th>Détail</th><th>Accès / statut</th><th>Dernière activité</th><th></th></tr>`+
+ (A.map(a=>`<tr><td>${lib[a.k]}</td><td><b>${eE(a.nom)}</b></td><td>${eE(a.tel)}</td><td>${eE(a.info)}</td><td>${eE(a.statut)}</td><td>${eE(String(a.der||"").slice(0,10)||"—")}</td><td><div style="display:flex;gap:6px;flex-wrap:wrap">${telWA(a.tel).length>=8?`<a class="sb g" style="text-decoration:none;display:inline-flex;align-items:center" href="https://wa.me/${telWA(a.tel)}" target="_blank" rel="noopener">💬</a>`:""}${a.k==="vendeur"&&a.uid?`<button type="button" class="sb g" ${adm?"":"disabled"} data-av="${eE(a.uid)}">${a.actif?"Désactiver l'accès":"Réactiver l'accès"}</button>`:""}</div></td></tr>`).join("")||'<tr><td colspan="7" class="note">Aucun acteur pour ce filtre.</td></tr>')+`</table></div>`;
+}
+const csvTel=(nom,rows)=>{const t="﻿"+rows.map(r=>r.map(x=>'"'+String(x==null?"":x).replace(/"/g,'""')+'"').join(";")).join("\r\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"text/csv;charset=utf-8"}));a.download=nom;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)};
+document.addEventListener("click",ev=>{
+ const f=ev.target.closest("[data-af]");if(f){AF.t=f.dataset.af;return aView()}
+ const v=ev.target.closest("[data-av]");if(v){const id=v.dataset.av;const av=UMSG;
+  uAgir("dist",(G,R,me)=>{const u=G.users.find(x=>x.id===id&&x.role==="vendeur");if(!u)throw new Error("Compte vendeur introuvable.");u.actif=u.actif===false;R.aud(G,"Accès portail vendeur "+(u.actif?"réactivé":"désactivé")+" (via Hub)",u.nom,me);return u.nom+" : accès "+(u.actif?"réactivé":"désactivé")+"."});
+  AMSG=UMSG;UMSG=av;return aView()}
+ const b=ev.target.closest("[data-s]");if(!b)return;const G=donneesDist();if(!G)return;
+ if(b.dataset.s==="csv"){const R=sCalc(G,SJ);csvTel("statistiques-portail.csv",[["Date","N°","Client","Zone","Total","Statut","Paiement"],...R.W.map(c=>{const cl=G.clients.find(x=>x.id===c.client_id)||{};return[String(c.date).slice(0,10),c.numero,cl.nom||"",(c.adr||{}).zone||"",c.total,c.statut,c.web&&c.web.pm==="mm"?"Mobile Money":"Espèces"]})])}
+ if(b.dataset.s==="acsv")csvTel("acces-portail.csv",[["Type","Nom","Téléphone","Détail","Statut","Dernière activité"],...aActeurs(G).map(a=>[a.k,a.nom,a.tel,a.info,a.statut,String(a.der||"").slice(0,10)])])});
+document.addEventListener("change",ev=>{if(ev.target.id==="sper"){SJ=+ev.target.value;sView()}});
+document.addEventListener("input",ev=>{if(ev.target.id==="aq"){AF.q=ev.target.value;const pos=ev.target.selectionStart;aView();const i=$("aq");i.focus();i.setSelectionRange(pos,pos)}});
+/* ---------- Onglets de la page ---------- */
+
+/* ---------- Impression : en-têtes par division, pied de page, QR de sécurité (moteur partagé print-engine.js) ---------- */
+let IMSG=null;
+const iE=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const IF=[["raison","Raison sociale (en-tête)"],["forme","Forme juridique"],["capital","Capital"],["rccm","RCCM"],["ncc","N° compte contribuable (NCC)"],["siege","Siège / adresse"],["tel","Téléphone"],["email","E-mail"],["pied","Pied de page spécifique"]];
+function iView(){
+ const el=$("pimp");if(!el||typeof ANGELS_PRINT==="undefined")return;const ok=pDebloque(),dis=ok?"":"disabled",C=ANGELS_PRINT.cfg(),K=ANGELS_PRINT.cleInfo(),R=ANGELS_PRINT.registre();
+ const card=d=>{const [k,n]=d,x=C.div[k];return `<div class="card" data-idiv="${k}" style="margin:12px 0"><h3 style="margin:0 0 6px;font-size:14px">${k==="groupe"?"🏢 Groupe — valeurs par défaut de toutes les divisions":"🏷️ Division "+iE(n)}</h3>
+  <div class="uf" style="align-items:center"><div style="width:84px;height:84px;border:1px dashed var(--bd);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fff">${x.logo?`<img src="${iE(x.logo)}" alt="Logo ${iE(n)}" style="max-width:80px;max-height:80px">`:'<span class="mu sm" style="text-align:center">Pas de logo</span>'}</div>
+  <div><label class="sb g" style="cursor:pointer;display:inline-block;padding:8px 12px">Importer le logo<input type="file" accept="image/png,image/jpeg,image/webp" data-ilogo="${k}" ${dis} hidden></label> ${x.logo?`<button type="button" class="sb g" data-ilogoclr="${k}" ${dis}>Retirer</button>`:""}<div class="mu sm">${k==="groupe"?"Utilisé par les divisions sans logo propre.":"Sans logo : celui du groupe, puis un monogramme."}</div></div>
+  <label>Couleur<input type="color" name="${k}__couleur" value="${iE(x.couleur||"#1f3a5f")}" ${dis} style="width:56px;height:38px;padding:2px"></label></div>
+  <div class="uf">${IF.map(([f,l])=>`<label style="flex:1;min-width:${f==="pied"||f==="siege"?"260":"170"}px">${l}<input name="${k}__${f}" value="${iE(x[f])}" maxlength="${f==="pied"?200:90}" ${dis} style="width:100%"></label>`).join("")}</div></div>`};
+ el.innerHTML=(IMSG?`<div class="umsg ${IMSG.er?"er":""}">${iE(IMSG.t)}</div>`:"")+(ok?"":'<div class="umsg er">Lecture seule : déverrouillez une application avec le mot de passe d\'un administrateur pour modifier l\'impression.</div>')+
+ `<form id="iform"><div class="card" style="margin:12px 0"><h3 style="margin:0 0 6px;font-size:14px">🔐 QR code de sécurité et pied de page</h3>
+  <div class="uf"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="qr" ${C.qr?"checked":""} ${dis}> QR de sécurité signé sur chaque document imprimé</label></div>
+  <div class="uf"><label style="flex:1;min-width:260px">Adresse publique du site (https) — le QR ouvre la page de vérification<input name="site" value="${iE(C.site)}" placeholder="https://votre-site.vercel.app" maxlength="120" ${dis} style="width:100%"></label>
+  <label style="flex:1;min-width:260px">Pied de page commun à tous les documents<input name="pied" value="${iE(C.pied)}" maxlength="200" placeholder="Merci de votre confiance" ${dis} style="width:100%"></label></div>
+  <div class="uf"><label style="flex:1;min-width:260px">Mentions légales (bas de page)<textarea name="mentions" rows="2" maxlength="300" ${dis} style="width:100%;font:inherit;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx)">${iE(C.mentions)}</textarea></label></div></div>
+  ${ANGELS_PRINT.DIVS.map(card).join("")}<div class="uf"><button type="submit" class="sb" ${dis}>Enregistrer les réglages d'impression</button></div></form>
+ <div class="card" style="margin:12px 0"><h3 style="margin:0 0 6px;font-size:14px">🗝️ Clé de signature des documents</h3>
+  <p class="note">Chaque document porte un QR signé (ECDSA P-256). La clé privée reste sur cet appareil ; la clé publique est publiée avec le portail (onglet Publication) et permet de vérifier l'authenticité sur <a href="verifier.html">verifier.html</a>. Pour émettre depuis plusieurs appareils, exportez la clé ici puis importez-la sur les autres appareils.</p>
+  <p>${K.existe?`Clé active : <b>${iE(K.kid)}</b> · créée le ${iE(String(K.t).slice(0,10))}`:"Aucune clé : elle sera créée au premier document imprimé."} · <b>${R.length}</b> document(s) enregistré(s) sur cet appareil.</p>
+  <div class="uf"><button type="button" class="sb g" data-ik="gen" ${dis}>${K.existe?"Régénérer la clé":"Créer la clé"}</button><button type="button" class="sb g" data-ik="exp" ${K.existe?"":"disabled"}>Exporter la clé</button><label class="sb g" style="cursor:pointer;padding:8px 12px">Importer une clé<input type="file" accept="application/json,.json" data-ik="imp" ${dis} hidden></label><button type="button" class="sb g" data-ik="essai">Imprimer un document d'essai</button></div>
+  <p class="note">Régénérer la clé : les documents déjà imprimés avec l'ancienne clé ne seront plus confirmés par la page de vérification si l'ancienne clé n'est plus publiée. Gardez une copie de la clé exportée en lieu sûr.</p></div>`;
+}
+async function iEnregistrer(f){
+ const C=ANGELS_PRINT.cfg(),d=new FormData(f);C.qr=!!d.get("qr");C.site=String(d.get("site")||"").trim();C.pied=String(d.get("pied")||"").trim();C.mentions=String(d.get("mentions")||"").trim();
+ if(C.site&&!/^https:\/\/[^\s"'<>]+$/.test(C.site))throw new Error("Adresse du site : https:// obligatoire.");
+ ANGELS_PRINT.DIVS.forEach(([k])=>{IF.forEach(([f])=>{C.div[k][f]=String(d.get(k+"__"+f)||"").trim()});const c=String(d.get(k+"__couleur")||"");C.div[k].couleur=/^#[0-9a-f]{6}$/i.test(c)?c:""});
+ if(!ANGELS_PRINT.sauver(C))throw new Error("Stockage plein.");
+}
+document.addEventListener("submit",ev=>{if(ev.target.id!=="iform")return;ev.preventDefault();(async()=>{try{if(!pDebloque())throw new Error("Déverrouillez d'abord une application avec le mot de passe d'un administrateur.");const logos=ANGELS_PRINT.cfg();await iEnregistrer(ev.target);const C=ANGELS_PRINT.cfg();ANGELS_PRINT.DIVS.forEach(([k])=>{C.div[k].logo=logos.div[k].logo});ANGELS_PRINT.sauver(C);IMSG={t:"Réglages d'impression enregistrés : tous les documents imprimés les utilisent."}}catch(e){IMSG={er:1,t:e.message}}iView()})()});
+document.addEventListener("change",ev=>{const t=ev.target;if(t.dataset&&t.dataset.ilogo){const f=t.files[0];if(!f)return;(async()=>{try{if(!pDebloque())throw new Error("Déverrouillez d'abord une application avec le mot de passe d'un administrateur.");if(!/^image\//.test(f.type))throw new Error("Ce n'est pas une image.");const src=await imgCompress(f,360,0.9,"image/png"),C=ANGELS_PRINT.cfg();C.div[t.dataset.ilogo].logo=src;ANGELS_PRINT.sauver(C);IMSG={t:"Logo importé."}}catch(e){IMSG={er:1,t:e.message}}iView()})()}
+ if(t.dataset&&t.dataset.ik==="imp"){const f=t.files[0];if(!f)return;(async()=>{try{if(!pDebloque())throw new Error("Déverrouillez d'abord une application avec le mot de passe d'un administrateur.");const K=await ANGELS_PRINT.cleImporter(await f.text());IMSG={t:"Clé importée : "+K.kid}}catch(e){IMSG={er:1,t:e.message}}iView()})()}});
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-ilogoclr],[data-ik]");if(!b||b.tagName==="INPUT")return;
+ if(b.dataset.ilogoclr){if(!pDebloque()){IMSG={er:1,t:"Déverrouillez d'abord une application avec le mot de passe d'un administrateur."};return iView()}const C=ANGELS_PRINT.cfg();C.div[b.dataset.ilogoclr].logo="";ANGELS_PRINT.sauver(C);IMSG={t:"Logo retiré."};return iView()}
+ const k=b.dataset.ik;if(k==="essai"){ANGELS_PRINT.ouvrir({division:"groupe",titre:"Document d'essai",ref:"ESSAI-"+new Date().getFullYear()+"-0001",montant:125000,corps:"<p>Ce document d'essai vérifie l'en-tête, le pied de page et le QR de sécurité de votre entreprise.</p><table><tr><th>Désignation</th><th>Montant</th></tr><tr><td>Prestation d'essai</td><td>125 000 F</td></tr></table>",signatures:[["Pour l'entreprise","Nom, qualité, signature"],["Le client","Lu et approuvé"]],emetteur:"Paramètres"});return}
+ if(k==="exp"){if(!pDebloque())return alert("Déverrouillez d'abord une application avec le mot de passe d'un administrateur : la clé privée permet de signer de faux documents.");const t=ANGELS_PRINT.cleExporter();if(!t)return;const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"application/json"}));a.download="cle-signature-angels.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);return}
+ if(k==="gen"){if(!pDebloque()){IMSG={er:1,t:"Déverrouillez d'abord une application avec le mot de passe d'un administrateur."};return iView()}if(ANGELS_PRINT.cleInfo().existe&&!confirm("Régénérer la clé ? Les documents déjà imprimés ne seront plus confirmés si l'ancienne clé n'est plus publiée."))return;(async()=>{try{const K=await ANGELS_PRINT.cleRegenerer();IMSG={t:"Clé active : "+K.kid+". Republiez le portail pour publier la clé publique."}}catch(e){IMSG={er:1,t:e.message}}iView()})()}});
+
+/* Cloud / Supabase : configuration partagée par les applications (stockée sur l'appareil). Seule la clé « anon » est acceptée. */
+const esc=t=>String(t==null?"":t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const CL_K="angels_supabase",clDef=()=>window.ANGELS_PASSERELLE||{url:"",key:""};
+const clLire=()=>{try{return JSON.parse(localStorage.getItem(CL_K)||"null")}catch(e){return null}};
+const clEff=()=>{const o=clLire();if(o&&o.off)return{url:"",key:"",off:true};if(o&&o.url&&o.key)return{url:o.url,key:o.key,perso:true};const d=clDef();return{url:d.url||"",key:d.key||"",defaut:true}};
+function clRole(k){try{const j=JSON.parse(atob(String(k).split(".")[1].replace(/-/g,"+").replace(/_/g,"/")));return j.role||""}catch(e){return""}}
+function clValide(url,key){url=String(url||"").trim().replace(/\/+$/,"").replace(/\/(rest|auth|functions)\/v1$/,"");key=String(key||"").trim();
+ if(!/^https:\/\/[a-z0-9-]+\.supabase\.(co|in)$/i.test(url)&&!/^https:\/\/[a-z0-9.-]+\.[a-z]{2,}$/i.test(url))throw new Error("URL invalide : elle doit ressembler à https://xxxx.supabase.co");
+ if(/^sb_secret_/i.test(key))throw new Error("Cette clé est SECRÈTE : seule la clé anonyme (publique) peut être saisie ici.");
+ if(clRole(key)==="service_role")throw new Error("Cette clé est la clé « service_role » (secrète) : refusée. Utilisez la clé anonyme (anon / publishable).");
+ if(!/^(eyJ[\w-]+\.[\w-]+\.[\w-]+|sb_publishable_[\w-]+)$/.test(key))throw new Error("Clé anonyme invalide (elle commence par eyJ… ou sb_publishable_…)");
+ return{url,key}}
+function clView(){csView();if(!ssView._n){ssView._n=1;ssRender()}const e=clEff(),u=$("cl-url"),k=$("cl-key");if(!u)return;if(document.activeElement!==u&&document.activeElement!==k){u.value=e.url;k.value=e.key}
+ $("cl-badge").innerHTML=e.off?'<b style="color:#c62828">● Mode local — aucune connexion Supabase</b>':`<b style="color:#118a4b">● Connecté — ${esc(e.url)}${e.defaut?" (projet par défaut)":""}</b>`;
+ const A=(()=>{try{return JSON.parse(localStorage.getItem("angels_erp_v1")||"null")}catch(x){return null}})(),c=(A&&A.config)||{};
+ $("cl-apps").innerHTML=[["Synchronisation entre postes (cet appareil)",ANGELS_SYNC.actif()],["Passerelle livreur (Distributions)",c.passerelle_actif===true],["Pont téléphonique (Distributions)",!!(c.appel_pont&&c.appel_pont.actif)],["Application des livreurs (livreur.html)",!e.off&&!!e.url]].map(x=>`<li><span>${x[0]}</span><b style="color:${x[1]?"#118a4b":"#6b7390"}">${x[1]?"● Actif":"○ Inactif"}</b></li>`).join("")}
+/* État de la synchronisation (envoi ↔ réception) : lecture et actions sur les trois applications. */
+const SS_APPS=[["distribution","Distributions"],["transport","Transport"],["agro","Agro"],["placement","Placement"],["assurance","Assurance"],["crm","CRM"]].filter(a=>(MQ_.modules||[]).includes(a[0])||(MQ_.outils||[]).includes(a[0]));
+const ssSel=()=>{const v=$("ss-app").value;return v==="tous"?SS_APPS:SS_APPS.filter(a=>a[0]===v)};
+const ssHeure=t=>t?new Date(t).toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"}):"—";
+let SSD={};
+const ssOut=h=>{$("ss-out").innerHTML=h};
+function ssRender(erreur){const ds=SS_APPS.map(a=>SSD[a[0]]).filter(Boolean),conn=$("ss-conn");
+ if(!ANGELS_SYNC.actif()){conn.className="bd0";conn.textContent="○ Synchronisation non configurée";}
+ else if(erreur){conn.className="bd0 er";conn.textContent="⚠ Cloud injoignable";}
+ else if(ds.length){conn.className="bd0 ok";conn.textContent="● Connecté au cloud";}
+ const mx=k=>Math.max(0,...ds.map(d=>d[k]||0));$("ss-envoi").textContent="⬆ Dernier envoi : "+ssHeure(mx("envoi"));$("ss-recep").textContent="⬇ Dernière réception : "+ssHeure(mx("reception"));
+ const som=k=>ds.reduce((n,d)=>n+(d[k]||0),0);
+ $("ss-kpi").innerHTML=ds.length?`📦 <b>${som("elements")}</b> éléments · <span style="color:#118a4b">✔ <b>${som("aJour")}</b> à jour</span> · <span style="color:#1565c0">⬆ <b>${som("aEnvoyer")}</b> à envoyer</span> · <span style="color:#1565c0">⬇ <b>${som("aRecuperer")}</b> à récupérer</span> · 📝 <b>${som("enFile")}</b> en file d'attente · 🗑 <b>${som("suppressions")}</b> suppression(s)`:"Cliquez sur « Vérifier l'état ».";
+ $("ss-tab").innerHTML=ds.length?`<thead><tr><th>Application</th><th>Éléments</th><th>À jour</th><th>À envoyer</th><th>À récupérer</th><th>Sur le serveur</th><th>État</th></tr></thead><tbody>${ds.map(d=>`<tr><td><b>${esc(d.nom)}</b></td><td>${d.elements}</td><td>${d.aJour}</td><td>${d.aEnvoyer+d.suppressions?`<b style="color:#1565c0">${d.aEnvoyer+d.suppressions}</b>`:0}</td><td>${d.aRecuperer?`<b style="color:#1565c0">${d.aRecuperer}</b>`:0}</td><td>${d.serveur==null?"—":d.serveur}</td><td>${!d.actif?"Non configurée":!d.amorce?"Première synchro à faire":d.aEnvoyer+d.suppressions+d.aRecuperer?"En attente":"✔ À jour"}</td></tr>`).join("")}</tbody>`:""}
+function ssView(){}
+async function ssDiag(){if(!ANGELS_SYNC.actif()){ssRender();return ssOut('<div class="umsg er">Synchronisation non configurée : renseignez la clé ci-dessus.</div>')}
+ ssOut("Vérification en cours…");let erreur=null;
+ for(const [k,n] of SS_APPS){try{SSD[k]=await ANGELS_SYNC.commande(k,"diagnostic")}catch(e){erreur=e;SSD[k]=Object.assign(SSD[k]||{app:k,nom:n,elements:0,aJour:0,aEnvoyer:0,suppressions:0,enFile:0,aRecuperer:0,serveur:null,actif:true,amorce:false},{})}}
+ ssRender(erreur);ssOut(erreur?`<div class="umsg er">${esc(erreur.message||erreur)}</div>`:"")}
+const ssTypes={nouveau:"🆕 nouveau",modifié:"✏️ modifié",supprimé:"🗑 supprimé"};
+async function ssAction(k){
+ const write=["send","recv","resync","purge","retry"].includes(k);
+ if(k==="diag")return ssDiag();
+ if(!ANGELS_SYNC.actif())return ssOut('<div class="umsg er">Synchronisation non configurée : renseignez la clé ci-dessus.</div>');
+ if(write&&!pDebloque())return ssOut('<div class="umsg er">Déverrouillez d\'abord une application avec le mot de passe d\'un administrateur.</div>');
+ const apps=ssSel(),act={send:"envoyerTout",recv:"recupererTout",resync:"resynchro",retry:"reessayer",purge:"purgerCache",file:"file",cloud:"cloud",ecart:"ecart"}[k];let h="";
+ if(k==="purge"){
+  let perdues=0,nonSync=[];for(const [a,n] of apps){try{const d=await ANGELS_SYNC.commande(a,"diagnostic");perdues+=d.aEnvoyer+d.suppressions;if(!d.amorce)nonSync.push(n)}catch(e){nonSync.push(n)}}
+  if(nonSync.length)return ssOut(`<div class="umsg er">Purge impossible pour ${esc(nonSync.join(", "))} : cet appareil n'est pas encore synchronisé, les données ne pourraient pas être rechargées depuis le serveur. Lancez d'abord « Resynchro complète ».</div>`);
+  if(!confirm("PURGER LE CACHE LOCAL — "+apps.map(a=>a[1]).join(", ")+"\n\nLes données de cet appareil seront effacées puis rechargées depuis le serveur à la prochaine ouverture."+(perdues?"\n\n⚠ "+perdues+" modification(s) non envoyée(s) seront PERDUES.":"")+"\n\nContinuer ?"))return;
+ }
+ ssOut("Action en cours…");
+ for(const [a,n] of apps){
+  try{const r=await ANGELS_SYNC.commande(a,act);
+   if(k==="file")h+=`<div style="margin:6px 0"><b>${esc(n)}</b> — ${r.length} modification(s) en attente</div>${r.length?`<table class="ut" style="width:100%"><thead><tr><th>Nature</th><th>Table</th><th>Élément</th></tr></thead><tbody>${r.slice(0,50).map(x=>`<tr><td>${ssTypes[x.type]||x.type}</td><td>${esc(x.coll)}</td><td>${esc(x.nom)}</td></tr>`).join("")}</tbody></table>${r.length>50?`<div class="note">… et ${r.length-50} autres</div>`:""}`:""}`;
+   else if(k==="cloud")h+=`<div class="umsg" style="background:#eef2f6;color:#1c2430"><b>${esc(n)}</b> — ${esc(r.url)}<br>Réponse en ${r.ms} ms · serveur : Distributions ${r.serveur.distribution} · Transport ${r.serveur.transport} · Agro ${r.serveur.agro} enregistrement(s) · curseur local ${r.curseur} · ${r.amorce?"poste amorcé":"première synchronisation à faire"}${r.erreurs.length?`<br>Erreurs récentes : ${r.erreurs.map(e=>esc(ssHeure(e.t))+" — "+esc(e.m)).join(" ; ")}`:""}</div>`;
+   else if(k==="ecart")h+=`<div style="margin:6px 0"><b>${esc(n)}</b> — ${r.ecarts?`<span style="color:#c62828">${r.ecarts} écart(s)</span>`:'<span style="color:#118a4b">aucun écart</span>'}</div><table class="ut" style="width:100%"><thead><tr><th>Table</th><th>Local</th><th>Serveur</th><th>Seulement ici</th><th>Seulement serveur</th><th>Différents</th></tr></thead><tbody>${r.lignes.slice(0,40).map(x=>`<tr><td>${esc(x.coll==="_doc"?"réglages":x.coll)}</td><td>${x.local}</td><td>${x.serveur}</td><td>${x.seulLocal||0}</td><td>${x.seulServeur||0}</td><td>${x.different||0}</td></tr>`).join("")}</tbody></table>`;
+   else if(k==="purge")h+=`<div class="umsg">${esc(n)} : cache local purgé. Ouvrez l'application : elle récupère ses données depuis le serveur.</div>`;
+   else{SSD[a]=r;h+=`<div class="umsg">${esc(n)} : ${k==="send"?"envoi":k==="recv"?"réception":k==="resync"?"resynchronisation":"file relancée"} terminé — ${r.aEnvoyer+r.suppressions} à envoyer, ${r.aRecuperer} à récupérer.</div>`}
+  }catch(e){h+=`<div class="umsg er">${esc(n)} : ${esc(e.message||e)}</div>`}
+ }
+ ssOut(h);if(write)ssDiag().then(()=>ssOut(h));
+}
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-ss]");if(b)ssAction(b.dataset.ss)});
+const CS_K="angels_sync";
+function csView(){const o=(()=>{try{return JSON.parse(localStorage.getItem(CS_K)||"null")}catch(e){return null}})(),k=$("cs-key"),on=$("cs-on");if(!k)return;if(document.activeElement!==k){k.value=(o&&o.cle)||""}on.checked=!!(o&&o.actif);
+ $("cs-badge").innerHTML=o&&o.actif&&o.cle?'<b style="color:#118a4b">● Synchronisation activée sur cet appareil</b>':'<b style="color:#6b7390">○ Synchronisation désactivée (mode local)</b>'}
+function csMsg(t,er){$("cs-res").innerHTML=`<div class="umsg${er?" er":""}">${esc(t)}</div>`}
+async function csTester(){const e=clEff(),cle=$("cs-key").value.trim();if(!e.url)return csMsg("Renseignez d'abord le projet Supabase (à gauche).",1);if(!cle)return csMsg("Saisissez la clé de synchronisation.",1);csMsg("Test en cours…");
+ try{const r=await fetch(e.url.replace(/\/+$/,"")+"/functions/v1/sync",{method:"POST",headers:{"content-type":"application/json","x-sync-key":cle},body:JSON.stringify({action:"etat"})});const j=await r.json().catch(()=>({}));
+  if(r.status===404)return csMsg("Fonction « sync » non déployée sur ce projet.",1);if(r.status===401)return csMsg("Clé refusée : elle ne correspond pas au secret SYNC_KEY.",1);if(!r.ok||!j.ok)return csMsg(j.erreur||("Erreur "+r.status),1);
+  const n=j.enregistrements||{};csMsg("Clé acceptée. Serveur : Distributions "+(n.distribution||0)+" · Transport "+(n.transport||0)+" · Agro "+(n.agro||0)+" enregistrement(s).")}catch(x){csMsg("Projet injoignable : "+(navigator.onLine?"vérifiez l'URL":"pas de connexion Internet"),1)}}
+function clMsg(t,er){$("cl-res").innerHTML=`<div class="umsg${er?" er":""}">${esc(t)}</div>`}
+async function clTester(){const r=$("cl-res");r.innerHTML="Test en cours…";let c;try{c=clValide($("cl-url").value,$("cl-key").value)}catch(e){return clMsg(e.message,1)}
+ const H={apikey:c.key},L=[];let ok=false;
+ try{const a=await fetch(c.url+"/auth/v1/settings",{headers:H});ok=a.ok;L.push(a.ok?"✅ Projet joignable, clé acceptée":"❌ Réponse "+a.status+" : vérifiez l'URL et la clé")}catch(e){return clMsg("Projet injoignable : "+(navigator.onLine?"vérifiez l'URL":"pas de connexion Internet"),1)}
+ if(ok){try{const t=await fetch(c.url+"/rest/v1/pg_livreurs?select=livreur_ref&limit=1",{headers:H});L.push(t.status===404?"⚠️ Passerelle livreur : tables non installées (appliquer la migration 005)":"✅ Passerelle livreur : tables installées")}catch(e){}
+  try{const f=await fetch(c.url+"/functions/v1/mission-action",{method:"OPTIONS"});L.push(f.status<400?"✅ Fonction mission-action déployée":"⚠️ Fonction mission-action non déployée")}catch(e){L.push("⚠️ Fonctions non testables depuis ce navigateur")}}
+ r.innerHTML=L.map(x=>`<div class="umsg${/^❌/.test(x)?" er":""}">${esc(x)}</div>`).join("")}
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-cl]");if(!b)return;const k=b.dataset.cl;
+ if(k==="test")return clTester();if(k==="sync-test")return csTester();
+ if(k==="sync-save"){if(!pDebloque())return csMsg("Déverrouillez d'abord une application avec le mot de passe d'un administrateur.",1);const cle=$("cs-key").value.trim(),on=$("cs-on").checked;if(on&&cle.length<16)return csMsg("Clé trop courte : collez la valeur du secret SYNC_KEY (16 caractères minimum).",1);localStorage.setItem(CS_K,JSON.stringify({actif:on&&!!cle,cle}));clView();return csMsg(on?"Synchronisation activée : ouvrez les applications, la première synchronisation démarre toute seule.":"Synchronisation désactivée sur cet appareil.")}
+ if(!pDebloque())return clMsg("Déverrouillez d'abord une application avec le mot de passe d'un administrateur.",1);
+ if(k==="save"){try{const c=clValide($("cl-url").value,$("cl-key").value);localStorage.setItem(CL_K,JSON.stringify(c));clView();clMsg("Configuration Supabase enregistrée.")}catch(e){clMsg(e.message,1)}}
+ else if(k==="clear"){if(!confirm("Effacer la configuration Supabase ? Les applications passeront en mode local."))return;localStorage.setItem(CL_K,JSON.stringify({off:true}));$("cl-url").value=$("cl-key").value="";clView();clMsg("Configuration effacée : mode local activé.")}
+ else if(k==="def"){localStorage.removeItem(CL_K);clView();clMsg("Projet par défaut rétabli.")}});
+/* ---------- Historique de connexion par utilisateur ----------
+   Lit le journal « connexions » de chaque application (Distributions, Transport, Agro), enregistré avec son état. Chaque application se consulte après déverrouillage par un de ses administrateurs
+   (même règle que la gestion des comptes). Les connexions antérieures au journal sont reprises du journal d'audit de l'application (« Connexion »). */
+const APPN={dist:"distribution",trans:"transport",agro:"agro"},CXAPP={distribution:"Distributions",transport:"Transport",agro:"Agro"},CX={app:"",uid:"",ev:"",per:"30",n:100};
+const CXEV={ok:["Connexion","ok"],demo:["Connexion (accès démo)","ok"],out:["Déconnexion","mu"],ko:["Échec : mot de passe incorrect","er"],bloque:["Tentative pendant un blocage","er"],inactif:["Compte désactivé","er"],param_ok:["Gestion des comptes via le hub","ok"],param_ko:["Gestion des comptes : échec","er"]};
+const cxOk=e=>e==="ok"||e==="demo"||e==="param_ok",cxKo=e=>e==="ko"||e==="bloque"||e==="inactif"||e==="param_ko";
+const cxDt=t=>t?new Date(t).toLocaleString("fr-FR",{dateStyle:"short",timeStyle:"medium"}):"—";
+function cxHub(m,G,u,ev,motif){try{ANGELS_AUTH.trace(G,{app:APPN[m],uid:u.id||"",nom:u.nom||"",role:u.role||"",ev,motif,via:"hub"});localStorage.setItem(RL[m].key,JSON.stringify(G))}catch(e){}}
+function cxDonnees(){const out={ent:[],users:[],verr:[]};
+ MODS.forEach(mod=>{const m=mod.id,R=RL[m],G=uEtat(m),app=APPN[m];
+  if(!G){out.verr.push({m,mod,raison:"absente"});return}
+  if(!uSess(m)){out.verr.push({m,mod,raison:"verrou"});return}
+  rlSync(R,G);const L=(G.connexions||[]).map(x=>Object.assign({},x,{app:x.app||app})),prem=L.length?L.map(x=>x.t).sort()[0]:"9999";
+  (G.audit||[]).forEach(a=>{const t=a.ts||a.t,nom=a.user||a.u,ac=a.action||a.a;if(ac==="Connexion"&&t&&t<prem){const u=G.users.find(x=>x.nom===nom);L.push({id:"au"+t+nom,t,app,uid:u?u.id:"",nom,role:u?u.role:(a.role||a.r||""),ev:"ok",motif:"",app_:"",ancien:true})}});
+  L.forEach(x=>out.ent.push(x));G.users.forEach(u=>out.users.push({app,uid:u.id,nom:u.nom,role:u.role,roleL:R.roles[u.role]||u.role,actif:u.actif!==false}))});
+ return out}
+function rpCard(){const c=ANGELS_RAPPORT.cfg(),sv=ANGELS_RAPPORT.serveur();
+ return `<div class="note" id="rp-card" style="margin:10px 0;padding:12px 14px;border:1px solid var(--bd);border-radius:12px;background:var(--card)"><h3 style="margin:0 0 6px;font-size:14px">📨 Rapport quotidien au DG</h3>
+ <p class="note" style="margin:0 0 8px">Chaque jour à l'heure choisie, le rapport des dernières 24 h est préparé : un bandeau « Rapport prêt » avec le message WhatsApp déjà rédigé s'affiche sur les postes, et le serveur envoie le même rapport par e-mail${sv?"":" (synchronisation non activée sur cet appareil : réglage e-mail indisponible ici)"}.</p>
+ <div class="uf" style="gap:8px;flex-wrap:wrap"><label><input type="checkbox" data-rp="actif" ${c.actif?"checked":""}> Envoi quotidien actif</label>
+ <label>Heure<input type="time" data-rp="heure" value="${E(c.heure.length===4?"0"+c.heure:c.heure)}"></label>
+ <label>Nom du DG<input type="text" data-rp="nom" value="${E(c.nom)}" maxlength="60"></label>
+ <label>WhatsApp du DG<input type="tel" data-rp="tel" value="${E(c.tel)}" placeholder="07 00 00 00 00" maxlength="20"></label>
+ <label>E-mail(s) du DG<input type="text" data-rp="emails" value="${E(c.emails)}" placeholder="dg@exemple.com" maxlength="200"></label></div>
+ <div class="uf" style="gap:8px;flex-wrap:wrap;margin-top:8px"><button type="button" class="tab" data-rpb="save">💾 Enregistrer</button><button type="button" class="tab" data-rpb="apercu">👁 Aperçu maintenant</button><button type="button" class="tab" data-rpb="wa">💬 WhatsApp maintenant</button><button type="button" class="tab" data-rpb="mail" ${sv?"":"disabled"}>✉ E-mail de test</button></div>
+ <div id="rp-msg" class="note" role="status" style="margin-top:6px"></div></div>`}
+async function rpAct(k){const R=ANGELS_RAPPORT,msg=t=>{const m=$("rp-msg");if(m)m.textContent=t};
+ document.querySelectorAll("#rp-card [data-rp]").forEach(i=>{R.setCfg({[i.dataset.rp]:i.type==="checkbox"?i.checked:i.value.trim()})});
+ try{if(k==="save"){msg("Enregistré sur cet appareil.");if(R.serveur()){await R.regler();msg("Enregistré ici et sur le serveur (e-mail quotidien à "+R.cfg().heure+").")}}
+  else if(k==="apercu"){const x=R.generer(Date.now(),true);R.voir(x.id)}
+  else if(k==="wa"){const x=R.generer(Date.now(),true);R.envoyerWA(x.id)}
+  else if(k==="mail"){const j=await R.tester();msg("E-mail de test envoyé à "+j.a+" adresse(s).")}}
+ catch(e){msg("⚠ "+e.message)}}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-rpb]");if(b)rpAct(b.dataset.rpb)});
+document.addEventListener("change",e=>{const i=e.target;if(i.dataset&&i.dataset.rp&&i.closest("#rp-card"))ANGELS_RAPPORT.setCfg({[i.dataset.rp]:i.type==="checkbox"?i.checked:i.value.trim()})});
+function cxView(){const box=$("s-cx");if(!box)return;const D=cxDonnees(),jours=CX.per==="all"?0:+CX.per,seuil=jours?Date.now()-jours*864e5:0,dans=x=>!seuil||new Date(x.t).getTime()>=seuil;
+ const apps=Object.keys(CXAPP).filter(a=>!CX.app||a===CX.app),cle=(a,u)=>a+"|"+u;
+ const E_=D.ent.filter(x=>apps.includes(x.app)),pers={};
+ D.users.filter(u=>apps.includes(u.app)).forEach(u=>{pers[cle(u.app,u.uid)]={app:u.app,uid:u.uid,nom:u.nom,role:u.roleL,actif:u.actif,ok:0,ko:0,der:"",app_:"",dko:""}});
+ E_.forEach(x=>{const k=cle(x.app,x.uid||("n:"+x.nom));const p=pers[k]||(pers[k]={app:x.app,uid:x.uid||("n:"+x.nom),nom:x.nom||"?",role:x.role||"",actif:null,ok:0,ko:0,der:"",app_:"",dko:""});
+  if(cxOk(x.ev)&&x.ev!=="param_ok"){if(x.t>p.der){p.der=x.t;p.app_=x.app_||""}}if(cxKo(x.ev)&&x.t>p.dko)p.dko=x.t;if(dans(x)){if(cxOk(x.ev)&&x.ev!=="param_ok")p.ok++;else if(cxKo(x.ev))p.ko++}});
+ const P=Object.values(pers).sort((a,b)=>(b.der||"").localeCompare(a.der||"")||a.nom.localeCompare(b.nom));
+ const ok=E_.filter(x=>dans(x)&&(x.ev==="ok"||x.ev==="demo")).length,ko=E_.filter(x=>dans(x)&&cxKo(x.ev)).length,jam=P.filter(p=>!p.der&&p.actif!==false).length,act=P.filter(p=>p.ok>0).length;
+ const j24=Date.now()-864e5,alertes=P.filter(p=>E_.filter(x=>x.app===p.app&&(x.uid||("n:"+x.nom))===p.uid&&cxKo(x.ev)&&new Date(x.t).getTime()>=j24).length>=3);
+ let J=E_.filter(x=>dans(x)&&(!CX.uid||cle(x.app,x.uid||("n:"+x.nom))===CX.uid)&&(!CX.ev||(CX.ev==="ok"?(x.ev==="ok"||x.ev==="demo"):CX.ev==="ko"?cxKo(x.ev):x.ev==="out"))).sort((a,b)=>b.t.localeCompare(a.t));
+ const tot=J.length,sel=CX.uid?P.find(p=>cle(p.app,p.uid)===CX.uid):null;
+ const verr=D.verr.map(v=>`<div class="note" style="margin:6px 0">🔒 <b>${E(v.mod.nom)}</b> : ${v.raison==="absente"?"application pas encore utilisée sur cet appareil.":`déverrouillez-la pour voir son historique (mot de passe d'un administrateur de l'application).`} ${v.raison==="verrou"?`<button type="button" class="tab" data-cx="deverrouiller" data-m="${v.m}">Déverrouiller</button>`:""}</div>`).join("");
+ box.innerHTML=`<h2 style="margin:6px 0 10px;font-size:16px">🔐 Historique de connexion par utilisateur</h2>
+ <p class="note">Qui s'est connecté, quand, depuis quel appareil, et les tentatives refusées, pour Distributions, Transport et Agro. Chaque application se consulte après déverrouillage par un de ses administrateurs. Les connexions des livreurs sur l'application livreur sont suivies par le serveur et n'apparaissent pas ici.</p>${rpCard()}${verr}
+ <div class="uf" style="margin:10px 0;gap:8px;flex-wrap:wrap"><label>Application<select data-cx="app"><option value="">Toutes</option>${Object.entries(CXAPP).map(([k,v])=>`<option value="${k}" ${CX.app===k?"selected":""}>${v}</option>`).join("")}</select></label>
+ <label>Période<select data-cx="per">${[["1","24 heures"],["7","7 jours"],["30","30 jours"],["90","90 jours"],["all","Tout"]].map(([k,v])=>`<option value="${k}" ${CX.per===k?"selected":""}>${v}</option>`).join("")}</select></label>
+ <label>Événements<select data-cx="ev">${[["","Tous"],["ok","Connexions réussies"],["ko","Échecs et blocages"],["out","Déconnexions"]].map(([k,v])=>`<option value="${k}" ${CX.ev===k?"selected":""}>${v}</option>`).join("")}</select></label>
+ <button type="button" class="tab" data-cx="csv">⬇ Exporter (CSV)</button>${CX.uid?`<button type="button" class="tab" data-cx="tous">✖ Tous les utilisateurs</button>`:""}</div>
+ <div class="cxk"><div><b>${ok}</b><span>connexions réussies</span></div><div><b style="color:${ko?"#c62828":"inherit"}">${ko}</b><span>échecs et blocages</span></div><div><b>${act}</b><span>utilisateurs connectés</span></div><div><b>${jam}</b><span>comptes jamais connectés</span></div></div>
+ ${alertes.length?`<div class="umsg er" role="alert">⚠ Plusieurs échecs de connexion en 24 h : ${alertes.map(p=>"<b>"+E(p.nom)+"</b> ("+E(CXAPP[p.app])+")").join(", ")}. Vérifiez qu'il s'agit bien de la personne concernée ; réinitialisez son mot de passe si besoin.</div>`:""}
+ <h3 style="margin:14px 0 6px;font-size:14px">Par utilisateur</h3><div class="tw"><table class="ut"><thead><tr><th>Utilisateur</th><th>Application</th><th>Profil</th><th>Dernière connexion</th><th>Appareil</th><th>Connexions</th><th>Échecs</th><th></th></tr></thead><tbody>${P.length?P.map(p=>`<tr${CX.uid===cle(p.app,p.uid)?' style="background:#e8f4f8"':""}><td><b>${E(p.nom)}</b>${p.actif===false?' <span class="note" style="margin:0">(désactivé)</span>':p.actif===null?' <span class="note" style="margin:0">(compte supprimé)</span>':""}</td><td>${E(CXAPP[p.app]||p.app)}</td><td>${E(p.role)}</td><td>${p.der?cxDt(p.der):'<span style="color:#b86e00">Jamais</span>'}</td><td class="sm">${E(p.app_||"—")}</td><td>${p.ok}</td><td${p.ko?' style="color:#c62828;font-weight:700"':""}>${p.ko}</td><td><button type="button" class="tab" data-cx="user" data-k="${E(cle(p.app,p.uid))}">Historique</button></td></tr>`).join(""):`<tr><td colspan="8" class="note">Aucun utilisateur à afficher : déverrouillez une application ci-dessus.</td></tr>`}</tbody></table></div>
+ <h3 style="margin:14px 0 6px;font-size:14px" id="cx-j">Journal${sel?" — "+E(sel.nom)+" ("+E(CXAPP[sel.app]||"")+")":""} <span class="note" style="margin:0">${tot} événement(s)</span></h3><div class="tw"><table class="ut"><thead><tr><th>Date et heure</th><th>Utilisateur</th><th>Application</th><th>Événement</th><th>Appareil</th></tr></thead><tbody>${J.slice(0,CX.n).map(x=>{const e=CXEV[x.ev]||[x.ev,"mu"];return`<tr><td class="nw">${cxDt(x.t)}</td><td><b>${E(x.nom||"?")}</b></td><td>${E(CXAPP[x.app]||x.app)}</td><td><span style="color:${e[1]==="er"?"#c62828":e[1]==="ok"?"#118a4b":"#6b7390"};font-weight:700">${E(e[0])}</span>${x.motif&&x.ev!=="ko"?" · "+E(x.motif):""}${x.ancien?' <span class="note" style="margin:0">(repris de l\'audit)</span>':""}</td><td class="sm">${E(x.app_||"—")}</td></tr>`}).join("")||`<tr><td colspan="5" class="note">Aucun événement sur cette sélection.</td></tr>`}</tbody></table></div>
+ ${tot>CX.n?`<p><button type="button" class="tab" data-cx="plus">Afficher 100 de plus (${tot-CX.n} restants)</button></p>`:""}`;
+ box._J=J}
+function cxCsv(){const J=($("s-cx")||{})._J||[],q=v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"',L=[["Date","Utilisateur","Application","Événement","Détail","Appareil"].map(q).join(";")].concat(J.map(x=>[x.t,x.nom,CXAPP[x.app]||x.app,(CXEV[x.ev]||[x.ev])[0],x.motif||"",x.app_||""].map(q).join(";")));
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["﻿"+L.join("\r\n")],{type:"text/csv;charset=utf-8"}));a.download="connexions_"+new Date().toISOString().slice(0,10)+".csv";document.body.appendChild(a);a.click();a.remove()}
+document.addEventListener("change",e=>{const k=e.target.dataset&&e.target.dataset.cx;if(!k||!["app","per","ev"].includes(k))return;CX[k]=e.target.value;CX.n=100;if(k==="app")CX.uid="";cxView()});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-cx]");if(!b||b.tagName==="SELECT")return;const k=b.dataset.cx;
+ if(k==="user"){CX.uid=b.dataset.k;CX.n=100;cxView();const j=$("cx-j");if(j)j.scrollIntoView({behavior:"smooth",block:"start"})}
+ else if(k==="tous"){CX.uid="";CX.n=100;cxView()}else if(k==="plus"){CX.n+=100;cxView()}else if(k==="csv")cxCsv()
+ else if(k==="deverrouiller"){UM=b.dataset.m;try{sessionStorage.setItem("hub_umod",UM)}catch(x){}pTab("users");uView()}});
+const PTABS=[["users","👥 Utilisateurs et rôles"],["connexions","🔐 Connexions"],["identite","🎨 Identité"],["accueil","🏠 Accueil et contenu"],["boutique","🛒 Boutique et vendeurs"],["contact","📞 Contact et légal"],["medias","🖼️ Médias"],["stats","📊 Statistiques portail"],["acces","🔑 Accès portail"],["impression","🖨️ Impression"],["cloud","☁️ Cloud / Supabase"],["publication","🚀 Publication"]];
+let PTAB=(()=>{try{const t=sessionStorage.getItem("angels_param_tab");return PTABS.some(x=>x[0]===t)?t:"users"}catch(e){return"users"}})();
+function pTab(t){if(!PTABS.some(x=>x[0]===t))t="users";PTAB=t;try{sessionStorage.setItem("angels_param_tab",t)}catch(e){}
+ $("ptabs").innerHTML=PTABS.map(x=>`<button type="button" role="tab" aria-selected="${x[0]===t}" class="tab ${x[0]===t?"on":""}" data-pt="${x[0]}">${x[1]}</button>`).join("");
+ $("s-users").hidden=t!=="users";$("s-cx").hidden=t!=="connexions";if(t==="connexions")cxView();$("s-med").hidden=t!=="medias";$("s-stats").hidden=t!=="stats";$("s-acces").hidden=t!=="acces";$("s-imp").hidden=t!=="impression";$("s-cloud").hidden=t!=="cloud";if(t==="cloud")clView();if(t==="impression")iView();if(t==="stats")sView();if(t==="acces")aView();const portail=!["users","connexions","medias","stats","acces","impression","cloud"].includes(t);$("s-ptl").hidden=!portail;
+ document.querySelectorAll("#ptl .pp").forEach(p=>{p.hidden=p.dataset.pp!==t});const bar=document.querySelector("#pform>.uf");if(bar)bar.style.display=t==="publication"?"none":"flex"}
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-pt]");if(b)pTab(b.dataset.pt)});
+pView();mView();pTab(PTAB);ANGELS_RAPPORT.init({peut:()=>true});
+{const _uv=uView;uView=function(){_uv();if(typeof pView==="function"){pView();mView();if(typeof iView==="function")iView()}}}
+uView();
+if("serviceWorker"in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>

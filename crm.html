@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#7a1d17">
+<meta name="referrer" content="no-referrer">
+<link rel="manifest" href="manifest-hub.webmanifest">
+<link rel="icon" type="image/png" href="icons/hub-192.png">
+<link rel="apple-touch-icon" href="icons/hub-apple-180.png">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Logistica"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>CRM — LOGISTICA</title>
+<style>
+:root{--b:#c8352b;--b2:#7a1d17;--a:#14b8a6;--bg:#edf3f6;--card:#fff;--tx:#14213d;--mu:#64748b;--ok:#118a4b;--wa:#b86e00;--er:#c62828;--bd:#dce8ee;--c:#c8352b;--soft:#f4f9fb;--sh:0 1px 2px rgba(15,40,60,.06),0 10px 28px rgba(15,40,60,.08);--r:16px}
+@media(prefers-color-scheme:dark){:root{--bg:#0a1a21;--card:#112832;--tx:#e6f0f3;--mu:#93a9b2;--bd:#1f3a46;--soft:#0e2129;--sh:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.35)}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font:15px/1.5 system-ui,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-tap-highlight-color:transparent}
+.w{max-width:1120px;margin:0 auto}
+header{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--b2),var(--b) 60%,#14b8a6);color:#fff;padding:calc(16px + env(safe-area-inset-top)) 16px 54px}
+header:before,header:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.08);pointer-events:none}
+header:before{width:260px;height:260px;right:-60px;top:-100px}header:after{width:160px;height:160px;left:30%;bottom:-90px}
+header h1{margin:0;font-size:22px;letter-spacing:-.2px}header p{margin:2px 0 0;opacity:.85;font-size:13px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;position:relative}
+.back{color:#fff;text-decoration:none;font-weight:700;font-size:13px;border:1px solid rgba(255,255,255,.4);border-radius:99px;padding:7px 13px;background:rgba(255,255,255,.1);font-family:inherit;cursor:pointer;transition:background .15s}
+.back:hover{background:rgba(255,255,255,.22)}
+.gs{position:relative;margin-top:14px;max-width:560px}
+.gs input{width:100%;margin:0;padding:12px 16px 12px 42px;border-radius:99px;border:0;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.18);background:#fff;color:#14213d;min-height:46px}
+.gs:before{content:"🔍";position:absolute;left:15px;top:11px;font-size:16px;z-index:1}
+.gs kbd{position:absolute;right:14px;top:12px;font:600 11px system-ui;color:#64748b;border:1px solid #cbd5e1;border-radius:6px;padding:2px 6px;background:#f8fafc}
+.gsr{position:absolute;left:0;right:0;top:54px;background:var(--card);color:var(--tx);border-radius:14px;box-shadow:var(--sh);overflow:hidden;z-index:40;border:1px solid var(--bd)}
+.gsr button{display:flex;gap:10px;align-items:center;width:100%;border:0;background:none;color:inherit;padding:9px 12px;text-align:left;font:inherit;cursor:pointer}
+.gsr button:hover,.gsr button:focus{background:var(--soft);outline:0}
+main{padding:0 16px 96px;margin-top:-34px;position:relative}
+h2{margin:18px 0 10px;font-size:17px}h3{margin:16px 0 8px;font-size:14px}
+.note{font-size:12.5px;color:var(--mu);margin:6px 0}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin:0 0 14px;padding:6px;background:var(--card);border-radius:99px;box-shadow:var(--sh);position:sticky;top:8px;z-index:30;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:0;background:none;color:var(--mu);border-radius:99px;padding:9px 14px;font:inherit;font-weight:700;min-height:42px;cursor:pointer;transition:background .18s,color .18s,transform .12s;white-space:nowrap;position:relative}
+.tab:hover{background:var(--soft);color:var(--tx)}.tab:active{transform:scale(.96)}
+.tab.on{background:linear-gradient(135deg,var(--b),#14b8a6);color:#fff;box-shadow:0 4px 12px rgba(14,116,144,.35)}
+.tab .ti{display:inline-block;margin-right:5px}
+.pill{font-style:normal;background:var(--er);color:#fff;border-radius:99px;padding:0 7px;font-size:11px;margin-left:5px;display:inline-block;min-width:18px;text-align:center}
+.vue{animation:rise .3s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.pan,.card{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:16px;box-shadow:var(--sh)}
+.hello{background:linear-gradient(135deg,var(--card),var(--soft));border:1px solid var(--bd);border-radius:var(--r);padding:18px;box-shadow:var(--sh);margin-bottom:14px}
+.hello h2{margin:0 0 2px;font-size:21px}.hello .sub{color:var(--mu);margin:0 0 12px}
+.today{display:flex;gap:8px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:99px;padding:7px 13px;font:inherit;font-weight:700;font-size:13px;cursor:pointer;transition:transform .12s,box-shadow .15s,background .15s;min-height:38px}
+.chip:hover{box-shadow:0 4px 12px rgba(15,40,60,.12);transform:translateY(-1px)}.chip:active{transform:scale(.97)}
+.chip.on{background:var(--c);color:#fff;border-color:var(--c)}.chip.warn{border-color:#f3c98b;background:#fff7ea;color:#8a5200}.chip.bad{border-color:#f1b0b0;background:#fdecec;color:#a11d1d}
+.chip small{font-weight:600;opacity:.7}
+.kpis{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:14px}
+.kpi{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:14px 14px 12px;box-shadow:var(--sh);position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s}
+.kpi:hover{transform:translateY(-2px)}
+.kpi .ic{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:17px;background:var(--soft);margin-bottom:8px}
+.kpi b.n{display:block;font-size:24px;letter-spacing:-.4px;line-height:1.1}.kpi span.l{font-size:12.5px;color:var(--mu)}
+.kpi .sp{position:absolute;right:10px;top:12px;opacity:.95}
+.two{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.donut{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.donut svg{flex:0 0 auto}
+.leg{list-style:none;margin:0;padding:0;flex:1;min-width:160px}.leg li{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px}.leg i{width:11px;height:11px;border-radius:50%;flex:0 0 auto}.leg a{margin-left:auto;font-weight:700;color:var(--tx);text-decoration:none}
+.ins{list-style:none;margin:0;padding:0;display:grid;gap:8px}.ins li{display:flex;gap:10px;align-items:center;background:var(--soft);border-radius:12px;padding:10px 12px;font-size:14px}.ins button{margin-left:auto}
+.av{--h:200;display:inline-grid;place-items:center;flex:0 0 auto;width:var(--s,40px);height:var(--s,40px);border-radius:50%;background:hsl(var(--h) 55% 46%);color:#fff;font-weight:800;font-size:calc(var(--s,40px)*.38);letter-spacing:.5px;user-select:none}
+.bar{height:6px;border-radius:99px;background:var(--soft);overflow:hidden;margin-top:5px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--b),#14b8a6);border-radius:99px;transition:width .6s ease}
+.rank{list-style:none;margin:0;padding:0}.rank li{display:flex;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--bd);cursor:pointer}.rank li:last-child{border:0}.rank .m{flex:1;min-width:0}.rank .m b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.f{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin:10px 0}.f label{display:block;font-size:12px;color:var(--mu);font-weight:600}
+input,select,textarea{font:inherit;padding:9px 12px;border:1px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx);min-height:42px;display:block;margin-top:3px;max-width:100%;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus,.btn:focus-visible,.tab:focus-visible,.chip:focus-visible,.cl:focus-visible{outline:0;border-color:var(--b);box-shadow:0 0 0 3px rgba(14,116,144,.25)}
+.btn{display:inline-flex;align-items:center;gap:6px;justify-content:center;padding:9px 15px;border-radius:12px;background:linear-gradient(135deg,var(--b),#139fb5);color:#fff;font:inherit;font-weight:700;text-decoration:none;min-height:42px;border:0;cursor:pointer;transition:transform .12s,box-shadow .15s,filter .15s}
+.btn:hover{filter:brightness(1.07);box-shadow:0 6px 16px rgba(14,116,144,.3)}.btn:active{transform:scale(.97)}
+.btn.g{background:var(--card);color:var(--tx);border:1px solid var(--bd)}.btn.er{background:var(--er);color:#fff}.btn.ok{background:var(--ok)}.btn.wa{background:#1fa855}.btn.sm{min-height:36px;padding:6px 12px;font-size:13px}.btn[disabled]{opacity:.45;pointer-events:none}
+.bd{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:700;background:#e3f5ea;color:var(--ok);margin-right:4px}.bd.wa{background:#fff1d6;color:var(--wa)}.bd.er{background:#fde3e3;color:var(--er)}.bd.mu{background:var(--soft);color:var(--mu)}.bd.vip{background:#fff3c4;color:#8a6500}
+.er{color:var(--er);font-weight:700}.ok{color:var(--ok);font-weight:700}
+.segs{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:none}.segs::-webkit-scrollbar{display:none}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;justify-content:space-between}
+.seg2{display:inline-flex;border:1px solid var(--bd);border-radius:12px;overflow:hidden}.seg2 button{border:0;background:var(--card);color:var(--mu);padding:8px 12px;font:inherit;font-weight:700;cursor:pointer;min-height:40px}.seg2 button.on{background:var(--c);color:#fff}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
+.cl{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:13px;box-shadow:var(--sh);cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;animation:rise .3s ease both}
+.cl:hover{transform:translateY(-2px);border-color:var(--b)}
+.cl .m{flex:1;min-width:0}.cl .m b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:15px}
+.cl .meta{font-size:12.5px;color:var(--mu);margin:2px 0 6px}
+.cl .st{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px;color:var(--mu);margin-top:6px}.cl .st span{white-space:nowrap}.cl .st b{display:inline;color:var(--tx);font-size:13px}
+.qa{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--soft);text-decoration:none;font-size:17px;transition:transform .12s,background .15s}
+.qa:hover{background:#d8f1ec;transform:scale(1.08)}.qa.wa{background:#dff6e8}
+.cl .acts{display:flex;flex-direction:column;gap:6px}
+.tw{overflow:auto;border:1px solid var(--bd);border-radius:var(--r);background:var(--card);box-shadow:var(--sh)}table{width:100%;border-collapse:collapse}th,td{padding:10px 12px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}th{font-size:12px;color:var(--mu);background:var(--soft)}td.r,th.r{text-align:right}tr.cl{cursor:pointer;display:table-row;box-shadow:none;border-radius:0;border:0;animation:none}tr.cl:hover{background:var(--soft);transform:none}
+.profile{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.profile h2{margin:0;font-size:22px}
+.quick{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 0}
+.kv{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));margin-top:14px}.kv div{background:var(--soft);border-radius:12px;padding:10px 12px}.kv b{display:block;font-size:17px}.kv span{font-size:12px;color:var(--mu)}
+.tl{list-style:none;margin:0;padding:0 0 0 18px;border-left:2px solid var(--bd)}.tl li{position:relative;padding:0 0 14px 14px}.tl li:before{content:attr(data-i);position:absolute;left:-31px;top:-2px;width:26px;height:26px;border-radius:50%;background:var(--card);border:2px solid var(--bd);display:grid;place-items:center;font-size:13px}
+.tl .d{font-size:12px;color:var(--mu)}
+.det{list-style:none;margin:0;padding:0}.det li{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--bd);font-size:13.5px}.det li:last-child{border:0}
+.kan{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));align-items:start}
+.col{background:var(--soft);border:1px solid var(--bd);border-top:4px solid var(--k,#94a3b8);border-radius:var(--r);padding:10px;min-height:120px;transition:background .15s,box-shadow .15s}
+.col.over{background:#dff3f6;box-shadow:inset 0 0 0 2px var(--b)}.col h4{margin:2px 4px 10px;font-size:13px;display:flex;justify-content:space-between;gap:6px}
+.opp{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px;margin-bottom:8px;box-shadow:0 1px 3px rgba(15,40,60,.08);cursor:grab;transition:transform .12s,box-shadow .15s}
+.opp:active{cursor:grabbing}.opp.drag{opacity:.45;transform:rotate(2deg)}.opp:hover{box-shadow:var(--sh)}
+.tk{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:10px 12px;margin-bottom:8px;box-shadow:var(--sh);transition:opacity .3s,transform .3s}
+.tk .cb{width:26px;height:26px;border-radius:50%;border:2px solid var(--bd);background:var(--card);display:grid;place-items:center;cursor:pointer;flex:0 0 auto;font-size:14px;color:#fff;transition:background .2s,border-color .2s;padding:0}
+.tk .cb:hover{border-color:var(--ok)}.tk.fait .cb{background:var(--ok);border-color:var(--ok)}.tk.fait .t{text-decoration:line-through;color:var(--mu)}
+.tk .t{flex:1;min-width:0}.due{font-size:12px;font-weight:700;border-radius:99px;padding:3px 9px;background:var(--soft);color:var(--mu)}.due.late{background:#fde3e3;color:var(--er)}.due.today{background:#fff1d6;color:var(--wa)}
+.addrow{display:flex;gap:8px;flex-wrap:wrap}.addrow input{flex:1;min-width:180px;margin:0}
+.rc{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:13px;margin-bottom:10px;box-shadow:var(--sh);animation:rise .3s ease both}
+.rc .m{flex:1;min-width:0}.rc .msgp{font-size:13px;color:var(--mu);background:var(--soft);border-radius:10px;padding:8px 10px;margin:6px 0;white-space:pre-wrap}
+.empty{text-align:center;padding:30px 16px;color:var(--mu)}.empty .big{font-size:42px;display:block;margin-bottom:6px}
+#toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);background:#7a1d17;color:#fff;padding:11px 18px;border-radius:99px;box-shadow:0 10px 30px rgba(0,0,0,.3);font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:60;max-width:92vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}#toast.er{background:var(--er)}
+.cf{position:fixed;top:-20px;z-index:70;font-size:22px;pointer-events:none;animation:fall 1.5s ease-in forwards}
+@keyframes fall{to{transform:translate(var(--dx),105vh) rotate(var(--rot));opacity:.9}}
+.msg{border-radius:12px;padding:10px 12px;margin:10px 0;font-size:14px;background:#e3f5ea;color:var(--ok)}.msg.er{background:#fde3e3;color:var(--er)}
+.gate{max-width:430px;margin:36px auto}
+footer{text-align:center;color:var(--mu);font-size:12px;padding:12px 12px 90px}
+@media(max-width:700px){
+ header{padding-bottom:48px}.hm{display:none}
+ .tabs{position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));top:auto;margin:0;border-radius:20px;justify-content:space-between;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+ .tab{flex:1 0 auto;padding:6px 10px;display:flex;flex-direction:column;align-items:center;gap:0;font-size:11px;min-height:50px}.tab .ti{margin:0;font-size:18px}
+ #toast{bottom:84px}
+ .gs kbd{display:none}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header><div class="w top"><div><h1>🤝 CRM — LOGISTICA</h1><p>Une fiche unique par personne pour tout le groupe · <span id="date"></span></p></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span id="who" style="font-size:13px"></span><button class="back" id="lock" hidden type="button" data-a="lock">🔒 Verrouiller</button><a class="back" href="index.html">← Hub</a></div></div>
+<div class="w"><div class="gs" id="gsw" hidden><input id="gs" type="search" placeholder="Rechercher un contact : nom, téléphone…" autocomplete="off" aria-label="Recherche rapide d'un contact"><kbd>/</kbd><div class="gsr" id="gsr" hidden role="listbox"></div></div></div></header>
+<main><div class="w" id="app"></div></main>
+<div id="toast" role="status" aria-live="polite"></div>
+<footer>© LOGISTICA · CRM · <a href="index.html">Retour au hub</a><br><small>Logiciel développé par <b>Sanix Africa Division Technologies</b> · Contact (WhatsApp) : +225 0779181075 / 0140017751</small></footer>
+<script src="passerelle-config.js"></script>
+<script src="sync-engine.js"></script>
+<script src="marque.js"></script><script src="auth-engine.js"></script>
+<script src="crm-engine.js"></script>
+<script>
+const $=s=>document.getElementById(s),C=ANGELS_CRM,E=C.esc,MQ=window.ERP_MARQUE||{modules:["distribution","transport","agro"]},APPS_UI=C.APPS.filter(a=>(MQ.modules||[]).includes(a[0])),fc=n=>Math.round(n||0).toLocaleString("fr-FR").replace(/[  ]/g," ")+" F";
+$("date").textContent=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+/* ---------- Accès : un administrateur, la direction ou un responsable commercial de l'une des trois applications ---------- */
+const ROLES_OK=["admin","direction","commercial"],DUREE=30*60*1000,SK="angels_crm_sess";
+let SESS=null,TRY={n:0,until:0},ST={tab:"pil",q:"",seg:"",app:"",page:0,sel:null,msg:null,er:false,mq:"",vue:"cartes",focus:null};
+try{const s=JSON.parse(sessionStorage.getItem(SK)||"null");if(s&&s.exp>Date.now())SESS=s}catch(e){}
+const lire=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}};
+function comptes(){const L=[];C.APPS.forEach(([id,key,nom])=>{const G=lire(key);if(!G)return;(G.users||[]).filter(u=>u.actif!==false&&ROLES_OK.includes(u.role)).forEach(u=>L.push({app:id,appNom:nom,key,id:u.id,nom:u.nom,role:u.role}))});return L}
+const par=()=>SESS?SESS.nom+" ("+SESS.appNom+")":"?";
+function msg(t,er){ST.msg=t;ST.er=!!er}
+function garde(){if(SESS&&SESS.exp<Date.now()){SESS=null;try{sessionStorage.removeItem(SK)}catch(e){}}if(SESS){SESS.exp=Date.now()+DUREE;try{sessionStorage.setItem(SK,JSON.stringify(SESS))}catch(e){}}return !!SESS}
+/* ---------- Données ---------- */
+let L=[],P=null;
+function charger(){L=C.contacts();P=C.pilotage(L)}
+const SEGC={vip:"#f5b301",fidele:"#118a4b",nouveau:"#14b8a6",actif:"#c8352b",risque:"#f59e0b",dormant:"#94a3b8",prospect:"#8b5cf6",partenaire:"#ec4899"};
+const fmt=(v,f)=>v==null||!isFinite(v)?"—":f==="fc"?fc(v):f==="p"?Math.round(v)+" %":Math.round(v).toLocaleString("fr-FR").replace(/[  ]/g," ");
+function ilya(d){if(!d)return"—";const j=Math.floor((Date.now()-Date.parse(String(d).slice(0,10)+"T00:00:00Z"))/864e5);if(!isFinite(j))return"—";if(j<=0)return"aujourd'hui";if(j===1)return"hier";if(j<31)return"il y a "+j+" j";if(j<365)return"il y a "+Math.round(j/30)+" mois";return"il y a "+Math.round(j/365)+" an"+(j>=730?"s":"")}
+const hue=s=>{let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))%360;return h};
+const ini=n=>String(n).replace(/[^\p{L}\s]/gu,"").trim().split(/\s+/).slice(0,2).map(w=>(w[0]||"").toUpperCase()).join("")||"?";
+const av=(n,s)=>`<span class="av" style="--h:${hue(n)};--s:${s||40}px" aria-hidden="true">${E(ini(n))}</span>`;
+const kpi=(ic,v,f,l,x)=>{x=x||{};return`<div class="kpi"><div class="ic" aria-hidden="true">${ic}</div><b class="n ${x.er?"er":""}" ${v!=null&&isFinite(v)?`data-n="${v}" data-f="${f}"`:""}>${fmt(v,f)}</b><span class="l">${l}</span>${x.sp?`<span class="sp">${x.sp}</span>`:""}</div>`};
+function spark(v,w,h){const mx=Math.max(1,...v),n=v.length,pts=v.map((x,i)=>[Math.round(2+i*(w-4)/(n-1)),Math.round(h-3-(x/mx)*(h-8))]),d=pts.map((p,i)=>(i?"L":"M")+p[0]+" "+p[1]).join(" ");
+ return`<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true"><path d="${d} L${w-2} ${h} L2 ${h} Z" fill="rgba(14,116,144,.13)"/><path d="${d}" fill="none" stroke="#c8352b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`}
+function donut(parts){const tot=parts.reduce((s,p)=>s+p.n,0),R=38,C2=2*Math.PI*R;let off=0;
+ return`<svg width="128" height="128" viewBox="0 0 100 100" role="img" aria-label="Répartition des contacts par segment"><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--soft)" stroke-width="14"/>${tot?parts.filter(p=>p.n).map(p=>{const len=p.n/tot*C2,s=`<circle cx="50" cy="50" r="${R}" fill="none" stroke="${p.c}" stroke-width="14" stroke-dasharray="${len.toFixed(2)} ${(C2-len).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 50 50)"/>`;off+=len;return s}).join(""):""}<text x="50" y="50" text-anchor="middle" font-size="17" font-weight="800" fill="currentColor">${tot}</text><text x="50" y="62" text-anchor="middle" font-size="7" fill="#64748b">contacts</text></svg>`}
+const segBd=s=>`<span class="bd ${s==="vip"?"vip":s==="risque"||s==="dormant"?"wa":s==="fidele"||s==="nouveau"||s==="actif"?"":"mu"}">${E(C.SEG[s]||s)}</span>`;
+
+const appsBd=f=>Object.keys(f.apps).map(k=>`<span class="bd mu">${E(f.apps[k])}</span>`).join("");
+/* ---------- Écrans ---------- */
+function gate(){const cs=comptes();
+ if(!cs.length)return`<div class="pan gate"><h2 style="margin-top:0">🔒 CRM verrouillé</h2><p class="note">Aucune application n'a encore de compte autorisé sur cet appareil (administrateur, direction ou responsable commercial). Ouvrez d'abord une application du groupe et connectez-vous une fois.</p></div>`;
+ return`<form id="gate" class="pan gate"><h2 style="margin-top:0">🔒 Accès au CRM</h2><p class="note">Réservé à l'administrateur, à la direction et aux responsables commerciaux. Saisissez votre mot de passe habituel.</p>
+ ${ST.msg?`<div class="msg ${ST.er?"er":""}" role="alert">${E(ST.msg)}</div>`:""}
+ <div class="f"><label>Compte<select name="u">${cs.map((c,i)=>`<option value="${i}">${E(c.nom)} — ${E(c.appNom)} (${E(c.role)})</option>`).join("")}</select></label>
+ <label>Mot de passe<input type="password" name="pwd" autocomplete="current-password" required></label></div><button class="btn" type="submit">Déverrouiller</button></form>`}
+function tabs(){const T=[["pil","🏠","Accueil"],["con","👥","Contacts"],["pip","🎯","Opportunités"],["tac","✅","Tâches"],["rel","📣","Relances"],["qua","🧹","Qualité"],["reg","⚙️","Réglages"]],ret=P.taches_retard,rel=P.a_relancer;
+ return`<nav class="tabs" role="tablist" aria-label="Sections du CRM">${T.map(([k,i,l])=>`<button class="tab ${ST.tab===k?"on":""}" data-a="tab" data-v="${k}" role="tab" aria-selected="${ST.tab===k}"><span class="ti">${i}</span>${l}${k==="tac"&&ret?`<i class="pill">${ret}</i>`:""}${k==="rel"&&rel?`<i class="pill">${rel}</i>`:""}</button>`).join("")}</nav>`}
+function pil(){const h=new Date().getHours(),sal=h<12?"Bonjour":h<18?"Bon après-midi":"Bonsoir",pre=String(SESS.nom||"").split(" ")[0],ser=C.serie(L),prim={};L.forEach(f=>{prim[f.seg]=(prim[f.seg]||0)+1});
+ const parts=Object.keys(SEGC).map(k=>({k,n:prim[k]||0,c:SEGC[k]})),tot=Math.max(1,L.length),mx=Math.max(1,...P.top.map(f=>f.ca));
+ const ins=[];
+ if(P.mauvais_payeurs)ins.push(["💸",`<b>${P.mauvais_payeurs} client(s)</b> en retard de paiement (${fc(P.encours)} d'encours).`,"rel","Relancer"]);
+ if(prim.dormant)ins.push(["😴",`<b>${prim.dormant} contact(s) dormants</b> : un message WhatsApp peut les réveiller.`,"rel","Voir"]);
+ if(prim.risque)ins.push(["⚠️",`<b>${prim.risque} client(s) à risque</b> : ils n'ont pas acheté depuis un moment.`,"rel","Voir"]);
+ if(P.taches_retard)ins.push(["⏰",`<b>${P.taches_retard} tâche(s) en retard</b> à traiter en priorité.`,"tac","Ouvrir"]);
+ if(P.pipeline_n)ins.push(["🎯",`<b>${P.pipeline_n} opportunité(s)</b> ouvertes pour ${fc(P.pipeline_val)}.`,"pip","Voir"]);
+ if(P.top[0])ins.push(["🏆",`Meilleur client : <b>${E(P.top[0].nom)}</b> (${fc(P.top[0].ca)}).`,"",""]);
+ return`<div class="hello"><h2>${sal}${pre?" "+E(pre):""} 👋</h2><p class="sub">Voici où en est le groupe aujourd'hui.</p><div class="today">
+ <button class="chip" data-a="tab" data-v="tac">✅ ${P.taches_jour} tâche(s) aujourd'hui</button>
+ ${P.taches_retard?`<button class="chip bad" data-a="tab" data-v="tac">⏰ ${P.taches_retard} en retard</button>`:""}
+ <button class="chip ${P.a_relancer?"warn":""}" data-a="tab" data-v="rel">📣 ${P.a_relancer} relance(s) à envoyer</button>
+ <button class="chip" data-a="tab" data-v="pip">🎯 ${P.pipeline_n} opportunité(s) ouverte(s)</button></div></div>
+ <div class="kpis">${kpi("👥",P.contacts,"n",`Contacts uniques · ${P.clients} clients`)}${kpi("💰",P.ca12,"fc","Chiffre d'affaires 12 mois",{sp:spark(ser.map(x=>x.ca),96,34)})}${kpi("🔥",P.actifs90,"n","Clients actifs (90 j)")}${kpi("🌱",P.nouveaux30,"n","Nouveaux clients (30 j)",{sp:spark(ser.map(x=>x.nouveaux),96,34)})}${kpi("🔁",P.retention,"p","Rétention (clients de +90 j)")}${kpi("🧾",P.encours,"fc",`Encours clients${P.mauvais_payeurs?" · "+P.mauvais_payeurs+" en retard":""}`,{er:P.encours>0})}${kpi("🎯",P.pipeline_val,"fc",`Opportunités ouvertes (${P.pipeline_n})`)}${kpi("🏁",P.conversion,"p","Taux de conversion")}</div>
+ <div class="two"><div class="pan"><h3 style="margin-top:0">Vos contacts par segment</h3><div class="donut">${donut(parts)}<ul class="leg">${parts.map(p=>`<li><i style="background:${p.c}"></i>${E(C.SEG[p.k])}<a href="#" data-a="seg" data-v="${p.k}">${p.n} · ${Math.round(p.n*100/tot)} %</a></li>`).join("")}</ul></div></div>
+ <div class="pan"><h3 style="margin-top:0">💡 Ce qu'il faut savoir</h3>${ins.length?`<ul class="ins">${ins.map(i=>`<li><span>${i[0]}</span><span>${i[1]}</span>${i[2]?`<button class="btn sm g" data-a="tab" data-v="${i[2]}">${i[3]}</button>`:""}</li>`).join("")}</ul>`:`<div class="empty"><span class="big">🎉</span>Tout est à jour, bravo !</div>`}<p class="note">Clients de passage hors CRM : ${L.divers||0} (ils restent dans l'application Distributions).</p></div></div>
+ <h2>🏆 Meilleurs clients</h2>${P.top.length?`<div class="pan"><ul class="rank">${P.top.map(f=>`<li class="cl" data-a="fiche" data-v="${E(f.cle)}" tabindex="0" role="button" aria-label="Ouvrir la fiche de ${E(f.nom)}">${av(f.nom,42)}<div class="m"><b>${E(f.nom)}</b><span class="note">${f.achats.length} achat(s) · ${segBd(f.seg)}</span><div class="bar"><i style="width:${Math.max(4,Math.round(f.ca*100/mx))}%"></i></div></div><div style="text-align:right"><b>${fc(f.ca)}</b>${f.encours?`<div class="er note">${fc(f.encours)} dû</div>`:""}</div></li>`).join("")}</ul></div>`:`<div class="pan empty"><span class="big">🛒</span>Aucun achat enregistré pour l'instant.</div>`}
+ ${Object.keys(L.apps_lues||{}).length<APPS_UI.length?`<p class="note">Applications lues : ${APPS_UI.filter(a=>L.apps_lues[a[0]]).map(a=>a[2]).join(", ")||"aucune"}. Les autres n'ont pas encore été ouvertes sur cet appareil.</p>`:""}`}
+const PAGE=24;
+function filtrer(){const q=C.norm(ST.q),qd=C.chiffres(ST.q);return L.filter(f=>(!ST.seg||f.segments.includes(ST.seg))&&(!ST.app||f.apps[ST.app])&&(!q||f.nom_n.includes(q)||(qd.length>=3&&f.tel_c.includes(qd))||f.tags.some(t=>C.norm(t).includes(q))))}
+function carte(f){const tel=C.waLien(f.tel);
+ return`<article class="cl" data-a="fiche" data-v="${E(f.cle)}" tabindex="0" role="button" aria-label="Ouvrir la fiche de ${E(f.nom)}">${av(f.nom,46)}<div class="m"><b>${E(f.nom)}</b><div class="meta">${E(f.tel||"Pas de téléphone")}${f.zone?" · "+E(f.zone):""}</div><div>${f.segments.map(segBd).join("")}${f.stop?`<span class="bd er">Opposé</span>`:""}${f.mauvais_payeur?`<span class="bd er">Retard</span>`:""}</div><div>${appsBd(f)}</div><div class="st"><span><b>${f.achats.length}</b> achat(s)</span><span><b>${fc(f.ca)}</b></span><span>${E(ilya(f.der_achat))}</span></div></div>
+ <div class="acts">${f.tel&&f.tel_c.length>=8?`<a class="qa" href="tel:${E(f.tel_c)}" aria-label="Appeler ${E(f.nom)}" title="Appeler">📞</a>`:""}${tel?`<a class="qa wa" href="${E(tel)}" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp ${E(f.nom)}" title="WhatsApp">💬</a>`:""}</div></article>`}
+function con(){if(ST.sel)return fiche();const R=filtrer(),V=R.slice(0,(ST.page+1)*PAGE),plus=R.length>V.length;
+ return`<div class="segs" role="group" aria-label="Filtrer par segment"><button class="chip ${ST.seg?"":"on"}" data-a="seg" data-v="">Tous <small>${L.length}</small></button>${Object.keys(C.SEG).map(k=>`<button class="chip ${ST.seg===k?"on":""}" data-a="seg" data-v="${k}">${E(C.SEG[k])} <small>${P.seg[k]||0}</small></button>`).join("")}</div>
+ <div class="tools"><div class="f" style="margin:0"><label>Recherche<input id="q" value="${E(ST.q)}" placeholder="Nom, téléphone, étiquette" autocomplete="off"></label><label>Application<select data-a="fapp"><option value="">Toutes</option>${APPS_UI.map(a=>`<option value="${a[0]}" ${ST.app===a[0]?"selected":""}>${a[2]}</option>`).join("")}</select></label></div>
+ <div class="seg2" role="group" aria-label="Affichage"><button class="${ST.vue!=="liste"?"on":""}" data-a="vue" data-v="cartes">▦ Cartes</button><button class="${ST.vue==="liste"?"on":""}" data-a="vue" data-v="liste">☰ Liste</button></div></div>
+ <p class="note">${R.length} contact(s) sur ${L.length}</p>
+ ${!R.length?`<div class="pan empty"><span class="big">🔎</span>Aucun contact ne correspond. Essayez un autre nom ou numéro.</div>`:ST.vue==="liste"?`<div class="tw"><table><tr><th>Nom</th><th class="hm">Téléphone</th><th>Segment</th><th class="hm">Applications</th><th class="r">Achats</th><th class="r">CA</th><th class="r hm">Encours</th><th class="hm">Dernier achat</th></tr>${V.map(f=>`<tr class="cl" data-a="fiche" data-v="${E(f.cle)}" tabindex="0"><td><b>${E(f.nom)}</b>${f.stop?` <span class="bd er">Opposé</span>`:""}</td><td class="hm">${E(f.tel||"—")}</td><td>${f.segments.map(segBd).join("")}</td><td class="hm">${appsBd(f)}</td><td class="r">${f.achats.length}</td><td class="r">${fc(f.ca)}</td><td class="r hm ${f.encours?"er":""}">${f.encours?fc(f.encours):"—"}</td><td class="hm">${E(ilya(f.der_achat))}</td></tr>`).join("")}</table></div>`:`<div class="grid">${V.map(carte).join("")}</div>`}
+ ${plus?`<p style="text-align:center;margin-top:14px"><button class="btn g" data-a="pg" data-v="1">Afficher plus (${R.length-V.length} restants)</button></p>`:""}`}
+function fiche(){const f=L.find(x=>x.cle===ST.sel);if(!f){ST.sel=null;return con()}const S=C.etat(),H=C.historique(f),T=S.taches.filter(t=>t.cle===f.cle),O=S.opps.filter(o=>o.cle===f.cle),wa=C.waLien(f.tel);
+ return`<p><button class="btn g sm" data-a="retour">← Retour aux contacts</button></p>
+ <div class="pan"><div class="profile">${av(f.nom,68)}<div style="flex:1;min-width:200px"><h2>${E(f.nom)}</h2><div style="margin:6px 0">${f.segments.map(segBd).join("")}${appsBd(f)}${Object.keys(f.types).map(t=>`<span class="bd mu">${E(t)}</span>`).join("")}${f.stop?`<span class="bd er">Opposé à la prospection</span>`:""}${f.mauvais_payeur?`<span class="bd er">Paiement en retard</span>`:""}${f.tags.map(t=>`<span class="bd mu">#${E(t)}</span>`).join("")}</div>
+ <div class="note">${E(f.tel||"Pas de téléphone")}${f.tel2?" · "+E(f.tel2):""}${f.zone?" · "+E(f.zone):""}${f.autres_noms.length?"<br>Aussi enregistré(e) sous : "+f.autres_noms.map(E).join(", "):""}</div></div></div>
+ <div class="quick">${wa?`<a class="btn wa" href="${E(wa)}" target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>`:""}${f.tel&&f.tel_c.length>=8?`<a class="btn g" href="tel:${E(f.tel_c)}">📞 Appeler</a>`:""}<button class="btn g" data-a="focus" data-v="f_texte">📝 Noter un échange</button><button class="btn g" data-a="focus" data-v="f_titre">✅ Créer une tâche</button></div>
+ <div class="kv"><div><b>${f.achats.length}</b><span>Achats</span></div><div><b>${fc(f.ca)}</b><span>Chiffre d'affaires</span></div><div><b>${fc(f.panier)}</b><span>Panier moyen</span></div><div><b class="${f.encours?"er":""}">${fc(f.encours)}</b><span>Encours</span></div><div><b>${f.jours_der==null?"—":f.jours_der+" j"}</b><span>Depuis le dernier achat</span></div></div>
+ ${f.lies.length?`<ul class="det" style="margin-top:12px">${f.lies.map(i=>`<li><span>${E(i.app)}</span><span>${E(i.lib)}</span></li>`).join("")}</ul>`:""}</div>
+ <div class="two" style="margin-top:14px"><form class="pan" data-f="inter"><h3 style="margin-top:0">📝 Noter un échange</h3><div class="f"><label>Type<select name="type">${C.TYPES_INT.map(t=>`<option value="${t[0]}">${t[1]}</option>`).join("")}</select></label></div><label class="note">Ce qui a été dit ou décidé<textarea id="f_texte" name="texte" rows="3" style="width:100%" required minlength="3" maxlength="1000" placeholder="Ex. : veut 5 cartons vendredi"></textarea></label><button class="btn sm" type="submit">Enregistrer</button></form>
+ <form class="pan" data-f="tache"><h3 style="margin-top:0">✅ Créer une tâche de suivi</h3><div class="f"><label>Titre<input id="f_titre" name="titre" required minlength="3" maxlength="200" placeholder="Ex. : rappeler jeudi"></label><label>Échéance<input type="date" name="echeance"></label></div><button class="btn sm" type="submit">Ajouter</button>
+ ${T.length?`<ul class="det" style="margin-top:10px">${T.map(t=>`<li><span>${t.fait?"✅":"⬜"} ${E(t.titre)}</span><span class="note">${E(t.echeance||"")}</span></li>`).join("")}</ul>`:""}</form></div>
+ <h2>🕑 Historique</h2>${H.length?`<div class="pan"><ul class="tl">${H.map(h=>`<li data-i="${h.type==="achat"?"🛒":E((C.TYPES_INT.find(t=>t[0]===h.type)||[0,"📝"])[1].split(" ")[0])}"><div>${E(h.lib)}${h.par?` <span class="note">— ${E(h.par)}</span>`:""}</div><div class="d">${E(String(h.t).slice(0,10))} · ${E(ilya(h.t))}</div></li>`).join("")}</ul></div>`:`<div class="pan empty"><span class="big">🕑</span>Aucun historique pour l'instant. Notez un premier échange !</div>`}
+ <div class="two" style="margin-top:14px"><form class="pan" data-f="tags"><h3 style="margin-top:0">🏷 Étiquettes</h3><div class="f"><label>Séparées par des virgules<input name="tags" value="${E(f.tags.join(", "))}" maxlength="200" placeholder="grossiste, Yopougon"></label></div><button class="btn sm g" type="submit">Enregistrer</button></form>
+ <div class="pan"><h3 style="margin-top:0">🔐 Données personnelles</h3><p class="note">Un contact opposé à la prospection n'apparaît plus dans les relances ni dans l'export marketing (loi ivoirienne n° 2013-450).</p><button class="btn sm ${f.stop?"g":"er"}" data-a="stop" data-v="${E(f.cle)}">${f.stop?"Lever l'opposition":"Enregistrer une opposition"}</button> <button class="btn sm g" data-a="opp-de" data-v="${E(f.cle)}">🎯 Créer une opportunité</button>${O.length?`<p class="note">${O.length} opportunité(s) liée(s) : ${O.map(o=>E(o.nom)+" ("+E(o.etape)+")").join(", ")}</p>`:""}</div></div>`}
+const ETC={nouveau:"#94a3b8",contact:"#0ea5e9",devis:"#8b5cf6",negoc:"#f59e0b",gagne:"#118a4b",perdu:"#c62828"};
+function pip(){const S=C.etat(),cand=L.filter(f=>f.types.candidat&&!S.opps.some(o=>o.cle===f.cle)).length;
+ return`<form class="pan" data-f="opp"><h3 style="margin-top:0">🎯 Nouvelle opportunité</h3><div class="f"><label>Nom du prospect ou de l'affaire<input name="nom" required minlength="2" maxlength="120"></label><label>Téléphone<input name="tel" maxlength="20" inputmode="tel"></label><label>Valeur estimée (F)<input name="valeur" type="number" min="0" step="1000" value="0"></label><label>Source<select name="source"><option>Recommandation</option><option>Portail</option><option>WhatsApp</option><option>Prospection terrain</option><option>Autre</option></select></label></div><button class="btn sm" type="submit">Créer</button> ${cand?`<button class="btn sm g" type="button" data-a="imp-cand">Importer ${cand} candidat(s) vendeur(s)</button>`:""}</form>
+ <p class="note" style="margin-top:12px">💡 Glissez une carte d'une colonne à l'autre pour la faire avancer (ou utilisez les boutons).</p>
+ <div class="kan">${C.ETAPES.map(([k,l],i)=>{const O=S.opps.filter(o=>o.etape===k).sort((a,b)=>a.maj<b.maj?1:-1),tot=O.reduce((s,o)=>s+(+o.valeur||0),0);
+ return`<div class="col" data-et="${k}" style="--k:${ETC[k]||"#94a3b8"}"><h4><span>${E(l)} · ${O.length}</span><span>${tot?fc(tot):""}</span></h4>${O.slice(0,30).map(o=>`<div class="opp" ${k!=="gagne"&&k!=="perdu"?`draggable="true"`:""} data-id="${o.id}"><b>${E(o.nom)}</b><div class="note">${fc(o.valeur)}${o.source?" · "+E(o.source):""}${o.cle?` · <a href="#" data-a="fiche" data-v="${E(o.cle)}">fiche</a>`:""}</div>${o.etape==="perdu"?`<div class="note">Motif : ${E(o.motif)}</div>`:""}
+ ${k!=="gagne"&&k!=="perdu"?`<div class="f" style="margin:6px 0 0;gap:4px"><button class="btn sm" data-a="mv" data-v="${o.id}|${C.ETAPES[i+1][0]}">→ ${E(C.ETAPES[i+1][1])}</button><button class="btn sm g" data-a="mv" data-v="${o.id}|gagne">✔ Gagné</button></div><div class="f" style="margin:4px 0 0;gap:4px"><input data-motif="${o.id}" placeholder="Motif de perte" style="min-height:32px;width:130px"><button class="btn sm er" data-a="perdu" data-v="${o.id}">✖ Perdu</button></div>`:""}</div>`).join("")||`<p class="note" style="text-align:center">Déposez une carte ici</p>`}</div>`}).join("")}</div>`}
+function tac(){const S=C.etat(),auj=new Date().toISOString().slice(0,10),O=S.taches.filter(t=>!t.fait).sort((a,b)=>(a.echeance||"9")<(b.echeance||"9")?-1:1),F=S.taches.filter(t=>t.fait).slice(-10).reverse(),nm=c=>{const f=L.find(x=>x.cle===c);return f?f.nom:""},due=t=>!t.echeance?`<span class="due">sans échéance</span>`:t.echeance<auj?`<span class="due late">en retard · ${E(t.echeance)}</span>`:t.echeance===auj?`<span class="due today">aujourd'hui</span>`:`<span class="due">${E(t.echeance)}</span>`,ligne=t=>`<div class="tk ${t.fait?"fait":""}"><button class="cb" data-a="tk" data-v="${t.id}" aria-label="${t.fait?"Rouvrir":"Terminer"} : ${E(t.titre)}">${t.fait?"✓":""}</button><div class="t">${E(t.titre)}${t.cle?` <a href="#" data-a="fiche" data-v="${E(t.cle)}" class="note">— ${E(nm(t.cle))}</a>`:""}</div>${t.fait?"":due(t)}</div>`;
+ return`<form class="pan" data-f="tache"><div class="addrow"><input name="titre" required minlength="3" maxlength="200" placeholder="➕ Nouvelle tâche (ex. : rappeler le client de Cocody)" aria-label="Titre de la tâche"><input type="date" name="echeance" aria-label="Échéance" style="margin:0"><button class="btn" type="submit">Ajouter</button></div></form>
+ <h3>À faire (${O.length})</h3>${O.length?O.map(ligne).join(""):`<div class="pan empty"><span class="big">🌴</span>Rien à faire pour l'instant. Profitez-en !</div>`}
+ ${F.length?`<h3>Terminées récemment</h3>${F.map(ligne).join("")}`:""}`}
+const MOT={impaye:["Impayé","er"],risque:["À risque","wa"],dormant:["Dormant","wa"],candidat:["Candidat","mu"]};
+function rel(){const R=C.relances(L),ex=L.filter(f=>f.stop).length;
+ return`<p class="note">Contacts à relancer (impayés, clients à risque ou dormants, candidats en attente). Un contact déjà relancé depuis 14 jours ou opposé à la prospection n'apparaît pas${ex?` (${ex} opposé(s))`:""}. Le message WhatsApp est prêt : ouvrez-le, envoyez-le, puis cliquez « Relancé ».</p>
+ ${R.length?R.slice(0,100).map(r=>`<div class="rc">${av(r.f.nom,44)}<div class="m"><div><a href="#" data-a="fiche" data-v="${E(r.f.cle)}"><b>${E(r.f.nom)}</b></a> <span class="bd ${MOT[r.motif][1]}">${MOT[r.motif][0]}</span></div><div class="note">${r.f.encours?fc(r.f.encours)+" d'encours · ":""}Dernier achat : ${E(ilya(r.f.der_achat))}</div><div class="msgp">${E(r.msg)}</div><div class="f" style="margin:6px 0 0"><a class="btn wa sm" href="${E(r.lien)}" target="_blank" rel="noopener noreferrer">💬 Envoyer sur WhatsApp</a><button class="btn sm g" data-a="relance" data-v="${E(r.f.cle)}|${r.motif}">✔ Relancé</button></div></div></div>`).join(""):`<div class="pan empty"><span class="big">🎉</span>Aucune relance à faire. Tout le monde est à jour !</div>`}`}
+function qua(){const Q=C.qualite(L),bloc=(t,A,fn)=>`<div class="pan"><h3 style="margin-top:0">${t} (${A.length})</h3>${A.length?`<ul class="det">${A.slice(0,15).map(fn).join("")}</ul>${A.length>15?`<p class="note">… et ${A.length-15} autre(s)</p>`:""}`:`<p class="ok">Rien à signaler.</p>`}</div>`,lk=f=>`<li><a href="#" data-a="fiche" data-v="${E(f.cle)}">${E(f.nom)}</a><span class="note">${E(f.tel||"—")}</span></li>`;
+ return`<p class="note">Un même numéro de téléphone réunit automatiquement les fiches d'une même personne dans les trois applications. Voici ce qu'il reste à vérifier.</p><div class="two">${bloc("Contacts sans téléphone exploitable",Q.sans_tel,lk)}${bloc("Même numéro, noms différents",Q.noms_differents,f=>`<li><a href="#" data-a="fiche" data-v="${E(f.cle)}">${E(f.noms.join(" / "))}</a><span class="note">${E(f.tel)}</span></li>`)}${bloc("Même nom, numéros différents (doublons possibles)",Q.meme_nom,g=>`<li><span>${g.map(f=>`<a href="#" data-a="fiche" data-v="${E(f.cle)}">${E(f.nom)}</a> <span class="note">${E(f.tel||"—")}</span>`).join(" · ")}</span></li>`)}${bloc("Présents dans plusieurs applications",Q.multi_apps,f=>`<li><a href="#" data-a="fiche" data-v="${E(f.cle)}">${E(f.nom)}</a><span>${appsBd(f)}</span></li>`)}</div>`}
+function reg(){const c=C.cfg(),S=C.etat(),lab={nouveau_j:"« Nouveau » : jours depuis le 1er achat",fidele_n:"« Fidèle » : nombre d'achats minimum",actif_j:"« Actif » : jours maximum depuis le dernier achat",risque_j:"« Dormant » au-delà de (jours)",vip_f:"« VIP » : chiffre d'affaires minimum (F)",impaye_j:"Paiement « en retard » après (jours)"};
+ return`<form class="pan" data-f="reg"><h3 style="margin-top:0">Seuils de segmentation</h3><div class="f">${Object.keys(lab).map(k=>`<label>${lab[k]}<input type="number" name="${k}" min="1" step="1" value="${c[k]}" required></label>`).join("")}</div><button class="btn sm" type="submit">Enregistrer</button></form>
+ <div class="pan" style="margin-top:12px"><h3 style="margin-top:0">Exports</h3><p class="note">Fichiers CSV (Excel). L'export marketing exclut les contacts opposés à la prospection.</p><button class="btn sm g" data-a="csv" data-v="0">⬇ Tous les contacts</button> <button class="btn sm g" data-a="csv" data-v="1">⬇ Export marketing</button></div>
+ <h3>Journal d'audit (50 dernières actions)</h3>${S.audit.length?`<div class="tw"><table><tr><th>Date</th><th>Par</th><th>Action</th><th>Détail</th></tr>${S.audit.slice(-50).reverse().map(a=>`<tr><td>${E(a.t.slice(0,16).replace("T"," "))}</td><td>${E(a.par)}</td><td>${E(a.action)}</td><td style="white-space:normal">${E(a.detail)}</td></tr>`).join("")}</table></div>`:`<p class="note">Aucune action enregistrée.</p>`}`}
+const VUES={pil,con,pip,tac,rel,qua,reg};
+let LASTV="";
+function render(){const ok=garde();$("lock").hidden=!ok;$("gsw").hidden=!ok;$("who").textContent=ok?SESS.nom:"";
+ if(!ok){gsClose();$("app").innerHTML=gate();return}
+ charger();const fq=document.activeElement&&document.activeElement.id==="q"?document.activeElement.selectionStart:null,cle=ST.tab+":"+(ST.sel||"");
+ $("app").innerHTML=tabs()+`<section class="${cle!==LASTV?"vue":""}">`+VUES[ST.tab]()+`</section>`;LASTV=cle;
+ if(ST.msg){toast(ST.msg,ST.er);ST.msg=null}
+ if(fq!=null){const q=$("q");if(q){q.focus();q.setSelectionRange(fq,fq)}}
+ anim();if(ST.focus){const x=$(ST.focus);ST.focus=null;if(x){x.scrollIntoView({behavior:calme()?"auto":"smooth",block:"center"});x.focus()}}}
+/* ---------- Actions ---------- */
+function agir(fn,ok){try{const r=fn();if(ok)msg(typeof ok==="function"?ok(r):ok)}catch(e){msg(e.message,1)}render()}
+document.addEventListener("click",e=>{const lk=e.target.closest("a[href]");if(lk&&!lk.dataset.a)return;const b=e.target.closest("[data-a]");if(!b)return;const a=b.dataset.a,v=b.dataset.v;if(b.tagName==="A")e.preventDefault();if(a==="lock"){SESS=null;try{sessionStorage.removeItem(SK)}catch(x){}ST.msg=null;return render()}
+ if(!garde())return render();
+ if(a==="tab"){ST.tab=v;ST.sel=null;ST.page=0;ST.msg=null;if(v==="con"){ST.seg="";ST.app="";ST.q=""}}
+ else if(a==="seg"){ST.tab="con";ST.seg=v;ST.page=0;ST.sel=null}
+ else if(a==="vue"){ST.vue=v}
+ else if(a==="focus"){ST.focus=v}
+ else if(a==="fiche"){ST.tab="con";ST.sel=v;gsClose();const g=$("gs");if(g)g.value=""}
+ else if(a==="retour"){ST.sel=null}
+ else if(a==="pg"){ST.page=Math.max(0,ST.page+(+v))}
+ else if(a==="stop")return agir(()=>C.opposer(par(),v,!(L.find(f=>f.cle===v)||{}).stop),"Mis à jour.");
+ else if(a==="opp-de"){const f=L.find(x=>x.cle===v);return agir(()=>C.creerOpp(par(),{nom:f.nom,tel:f.tel,cle:f.cle,source:"Fiche CRM"}),"Opportunité créée (onglet Opportunités).")}
+ else if(a==="imp-cand")return agir(()=>{const S=C.etat();let n=0;L.filter(f=>f.types.candidat&&!S.opps.some(o=>o.cle===f.cle)).forEach(f=>{C.creerOpp(par(),{nom:f.nom,tel:f.tel,cle:f.cle,source:"Portail"});n++});return n},n=>n+" candidat(s) importé(s).");
+ else if(a==="mv"){const[id,et]=v.split("|");return agir(()=>C.deplacerOpp(par(),id,et),"Opportunité déplacée.")}
+ else if(a==="perdu"){const m=(document.querySelector(`[data-motif="${v}"]`)||{}).value;return agir(()=>C.deplacerOpp(par(),v,"perdu",m),"Opportunité marquée perdue.")}
+ else if(a==="tk")return agir(()=>C.basculerTache(par(),v));
+ else if(a==="relance"){const[c,m]=v.split("|");return agir(()=>C.marquerRelance(par(),c,m),"Relance enregistrée.")}
+ else if(a==="csv"){const csv=C.exportCsv(L,v==="1"),u=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"})),l=document.createElement("a");l.href=u;l.download="crm-contacts"+(v==="1"?"-marketing":"")+"-"+new Date().toISOString().slice(0,10)+".csv";document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);return agir(()=>C.etat(),"Export prêt.")}
+ render()});
+document.addEventListener("change",e=>{const s=e.target.closest("select[data-a]");if(!s||!garde())return;if(s.dataset.a==="fseg"){ST.seg=s.value;ST.page=0}else if(s.dataset.a==="fapp"){ST.app=s.value;ST.page=0}render()});
+document.addEventListener("input",e=>{if(e.target.id==="q"){ST.q=e.target.value;ST.page=0;render()}});
+document.addEventListener("submit",e=>{const f=e.target;e.preventDefault();
+ if(f.id==="gate"){const d=new FormData(f),c=comptes()[+d.get("u")];if(TRY.until>Date.now()){msg("Trop d'essais : patientez "+Math.ceil((TRY.until-Date.now())/1000)+" s.",1);return render()}
+  const G=c&&lire(c.key),u=G&&(G.users||[]).find(x=>x.id===c.id&&x.actif!==false&&ROLES_OK.includes(x.role));
+  (async()=>{let r={ok:false};try{if(u)r=await ANGELS_AUTH.connecter(u,String(d.get("pwd")))}catch(x){}
+   if(r.ok&&r.legacy)msg("Les codes PIN ne sont plus acceptés : connectez-vous une fois à l'application pour créer votre mot de passe.",1);
+   else if(r.ok&&u.chg)msg("Votre mot de passe est temporaire : ouvrez l'application et connectez-vous une fois pour le remplacer.",1);
+   else if(r.ok){TRY={n:0,until:0};SESS={app:c.app,appNom:c.appNom,id:c.id,nom:c.nom,exp:Date.now()+DUREE};try{sessionStorage.setItem(SK,JSON.stringify(SESS))}catch(x){}ST.msg=null}
+   else{TRY.n++;if(TRY.n>=5){TRY.n=0;TRY.until=Date.now()+60000}msg("Compte ou mot de passe incorrect.",1)}
+   render()})();return}
+ if(!garde())return render();const d=new FormData(f),k=f.dataset.f;
+ if(k==="inter")return agir(()=>C.ajouterInteraction(par(),ST.sel,d.get("type"),d.get("texte")),"Échange enregistré.");
+ if(k==="tache")return agir(()=>C.ajouterTache(par(),ST.tab==="con"?ST.sel:"",d.get("titre"),d.get("echeance")),"Tâche ajoutée.");
+ if(k==="tags")return agir(()=>C.etiqueter(par(),ST.sel,d.get("tags")),"Étiquettes enregistrées.");
+ if(k==="opp")return agir(()=>C.creerOpp(par(),{nom:d.get("nom"),tel:d.get("tel"),valeur:d.get("valeur"),source:d.get("source")}),"Opportunité créée.");
+ if(k==="reg")return agir(()=>C.reglages(par(),Object.fromEntries(d)),"Seuils enregistrés.")});
+/* ---------- Vie de l'interface : notifications, recherche rapide, glisser-déposer, animations ---------- */
+let TO=0;
+function toast(t,er){const x=$("toast");x.textContent=t;x.className="on"+(er?" er":"");clearTimeout(TO);TO=setTimeout(()=>{x.className=""},er?4200:2600)}
+const calme=()=>matchMedia("(prefers-reduced-motion:reduce)").matches;
+function anim(){if(calme())return;document.querySelectorAll("[data-n]").forEach(el=>{const to=+el.dataset.n,f=el.dataset.f,t0=performance.now(),step=t=>{if(!el.isConnected)return;const k=Math.min(1,(t-t0)/450);el.textContent=fmt(k<1?to*(1-Math.pow(1-k,3)):to,f);if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step)})}
+function confetti(){if(calme())return;const em=["🎉","✨","🎊","⭐"];for(let i=0;i<26;i++){const s=document.createElement("i");s.className="cf";s.textContent=em[i%4];s.style.left=Math.random()*100+"vw";s.style.setProperty("--dx",(Math.random()*160-80)+"px");s.style.setProperty("--rot",(Math.random()*720-360)+"deg");s.style.animationDelay=Math.random()*.3+"s";document.body.appendChild(s);setTimeout(()=>s.remove(),2200)}}
+function gsClose(){const r=$("gsr");if(r){r.hidden=true;r.innerHTML=""}}
+function gsFind(q){const n=C.norm(q),d=C.chiffres(q);return L.filter(f=>f.nom_n.includes(n)||(d.length>=3&&f.tel_c.includes(d))||f.tags.some(t=>C.norm(t).includes(n))).slice(0,6)}
+document.addEventListener("input",e=>{if(e.target.id!=="gs")return;const q=e.target.value.trim();if(q.length<2||!garde())return gsClose();if(!L.length)charger();const R=gsFind(q),r=$("gsr");r.hidden=false;
+ r.innerHTML=R.length?R.map(f=>`<button type="button" role="option" data-a="fiche" data-v="${E(f.cle)}">${av(f.nom,34)}<span><b>${E(f.nom)}</b><br><small class="note">${E(f.tel||"Pas de téléphone")} · ${E(C.SEG[f.seg]||"")}</small></span></button>`).join(""):`<button type="button" disabled>Aucun contact trouvé</button>`});
+document.addEventListener("keydown",e=>{const t=e.target,typing=t&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName);
+ if(((e.key==="k"||e.key==="K")&&(e.ctrlKey||e.metaKey))||(e.key==="/"&&!typing)){if(!SESS)return;e.preventDefault();$("gs").focus();$("gs").select();return}
+ if(e.key==="Escape"){gsClose();return}
+ if((e.key==="Enter"||e.key===" ")&&t&&t.matches&&t.matches(".cl[data-a]")){e.preventDefault();t.click()}});
+document.addEventListener("click",e=>{if(!e.target.closest(".gs"))gsClose()},true);
+document.addEventListener("dragstart",e=>{const o=e.target.closest&&e.target.closest(".opp[data-id]");if(!o)return;e.dataTransfer.setData("text/plain",o.dataset.id);e.dataTransfer.effectAllowed="move";o.classList.add("drag")});
+document.addEventListener("dragend",()=>{document.querySelectorAll(".opp.drag").forEach(o=>o.classList.remove("drag"));document.querySelectorAll(".col.over").forEach(c=>c.classList.remove("over"))});
+document.addEventListener("dragover",e=>{const c=e.target.closest&&e.target.closest(".col[data-et]");if(c){e.preventDefault();c.classList.add("over")}});
+document.addEventListener("dragleave",e=>{const c=e.target.closest&&e.target.closest(".col[data-et]");if(c&&!c.contains(e.relatedTarget))c.classList.remove("over")});
+function deplacer(id,et){if(!garde())return render();let motif="";if(et==="perdu"){motif=(prompt("Pourquoi cette opportunité est-elle perdue ? (motif obligatoire)")||"").trim();if(!motif){msg("Motif obligatoire pour une opportunité perdue.",1);return render()}}
+ agir(()=>C.deplacerOpp(par(),id,et,motif),et==="gagne"?"🎉 Bravo, affaire gagnée !":"Opportunité déplacée.");if(et==="gagne"&&!ST.er)confetti()}
+document.addEventListener("drop",e=>{const c=e.target.closest&&e.target.closest(".col[data-et]");if(!c)return;e.preventDefault();const id=e.dataTransfer.getData("text/plain");if(id)deplacer(id,c.dataset.et)});
+render();
+window.ANGELS_CRM_RAFRAICHIR=()=>{if(garde())render()};
+ANGELS_SYNC.init({app:"crm",nom:"CRM",get:()=>C.etat(),persist:()=>C.sauver(),refresh:()=>{if(SESS&&garde())render()},qui:()=>SESS?SESS.nom:"poste"});
+if("serviceWorker"in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>

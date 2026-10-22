@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#c8352b">
+<script src="signal-engine.js"></script>
+<link rel="manifest" href="manifest-livreur.webmanifest">
+<link rel="icon" type="image/png" href="icons/livreur-192.png">
+<link rel="apple-touch-icon" href="icons/livreur-apple-180.png">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Livreur LOGISTICA">
+<title>Livreur — LOGISTICA</title>
+<style>
+:root{--b:#c8352b;--b2:#7a1d17;--bg:#f1f6f8;--card:#fff;--tx:#1b2240;--mu:#6b7390;--ok:#118a4b;--wa:#b86e00;--er:#c62828;--bd:#d6e4ea}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.45 system-ui,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx)}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:560px;margin:0 auto;padding:12px 16px 40px}
+.hd{background:var(--b2);color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.hd small{opacity:.75;display:block}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin:10px 0}
+.mc.urg{border-color:var(--er)}
+label{display:block;font-weight:600;margin:10px 0 0}
+input,select,textarea{width:100%;padding:11px;border:1px solid var(--bd);border-radius:10px;background:#fff;margin-top:4px}
+.btn{display:block;width:100%;padding:13px;border:0;border-radius:11px;background:var(--b);color:#fff;font-weight:700;margin-top:8px;cursor:pointer}
+.btn.ok{background:var(--ok)}.btn.er{background:var(--er)}.btn.ghost{background:#fff;color:var(--b);border:1px solid var(--b)}.btn.wa{background:var(--wa)}
+.btn:disabled{opacity:.5}
+.mu{color:var(--mu)}.sm{font-size:13px}
+.between{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.pill{background:#eef5f8;border-radius:10px;padding:8px 10px;margin-top:8px}
+.al{border-radius:10px;padding:10px;margin:10px 0;background:#fff1d6;color:#7a4a00}.al.er{background:#fde5e5;color:var(--er)}
+.bd{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:700;background:#e3eef3;color:var(--b2)}
+.ov{position:fixed;inset:0;background:rgba(10,20,30,.55);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.ov>div{background:#fff;width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px}
+.hide{display:none!important}
+.bg{width:auto!important;margin:0!important;padding:8px 14px!important;font-size:20px;line-height:1}
+.pg{font-size:18px;margin:6px 0 2px}
+.chk{display:flex;gap:10px;align-items:flex-start;font-weight:500;margin:8px 0 0}.chk input{width:auto;margin:3px 0 0}
+.dr{position:fixed;inset:0;z-index:30;display:flex;justify-content:flex-end}.dr .bk{position:absolute;inset:0;background:rgba(10,20,30,.55)}
+.dr nav{position:relative;background:#fff;width:min(86vw,340px);height:100%;padding:16px;overflow:auto;box-shadow:-8px 0 24px rgba(0,0,0,.25)}
+.mi{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;text-align:left;padding:14px 12px;margin-top:8px;border:1px solid var(--bd);border-radius:12px;background:#fff;font-weight:700;color:var(--b2);cursor:pointer}
+.sosb{position:fixed;right:14px;bottom:18px;z-index:40;width:60px;height:60px;border-radius:50%;border:3px solid #fff;background:#c4121f;color:#fff;font-size:22px;line-height:1;box-shadow:0 4px 14px rgba(0,0,0,.4);cursor:pointer}.sosb small{display:block;font-size:10px;font-weight:700}
+.bar{height:8px;background:#d6e4ea;border-radius:4px;overflow:hidden;margin:3px 0 8px}.bar i{display:block;height:8px;background:var(--b);border-radius:4px}
+.kp{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.kp>div{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:10px 12px}.kp b{display:block;font-size:20px}.kp span{font-size:12px;color:var(--mu)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.chip{padding:8px 12px;border-radius:99px;border:1px solid var(--b);background:#fff;color:var(--b);font-weight:700;cursor:pointer}.chip.on{background:var(--b);color:#fff}
+.mi.on{background:#e3eef3;border-color:var(--b)}.mi.er{color:var(--er)}
+#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--b2);color:#fff;padding:10px 16px;border-radius:99px;z-index:40;max-width:90%}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast" class="hide"></div>
+<script src="passerelle-config.js"></script>
+<script src="marque.js"></script><script src="auth-engine.js"></script>
+<script>
+/* Application LIVREUR (mode serveur). Le livreur s'identifie avec un compte Supabase : le mot de passe est vérifié par le serveur.
+   Il ne reçoit JAMAIS le téléphone du client ni le code de confirmation : il demande l'appel au serveur (pont téléphonique) et saisit le code que le client lui communique. */
+"use strict";
+const CFG=(()=>{const d=window.ANGELS_PASSERELLE||{};try{const o=JSON.parse(localStorage.getItem("angels_supabase")||"null");if(o&&o.off)return{};if(o&&o.url&&o.key)return{url:o.url,key:o.key}}catch(e){}return d})(),FN=String(CFG.url||"").replace(/\/+$/,"")+"/functions/v1/";
+const SB_LIB="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js",SB_SRI="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o";
+const $=s=>document.querySelector(s),esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fcfa=n=>(Math.round(+n||0)).toLocaleString("fr-FR").replace(/[  ]/g," ")+" F";
+/* L'identifiant est celui affiché au bureau (« livreur.test.2 ») ; on accepte aussi le nom tel qu'on le dit : majuscules, accents, espaces → points */
+const identDe=i=>String(i||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9._-]+/g,".").replace(/\.{2,}/g,".").replace(/^\.|\.$/g,"");
+const emailDe=i=>{i=String(i||"").trim();return i.includes("@")?i.toLowerCase():identDe(i)+"@users.angels-erp.app"};
+const STATUTS={affectee:"À accepter",acceptee:"Acceptée",en_cours:"En cours",livree:"Livrée",echouee:"Échec",refusee:"Refusée"};
+const ACTIFS=["affectee","acceptee","en_cours"];
+let sb=null,user=null,moi=null,missions=[],erreur="",timer=null,watch=null,derPos=0,ouvert=null;
+/* ---------- Hors ligne d'abord : missions mémorisées sur le téléphone + file des actions à envoyer ---------- */
+const LS={c:"ang_lv_cache",f:"ang_lv_file",r:"ang_lv_rej",p:"ang_lv_posdem",g:"ang_lv_gps",z:"ang_lv_pause",l:"ang_lv_plan",m:"ang_lv_chat",v:"ang_lv_chatvu",n:"ang_lv_push",d:"ang_lv_pushinv"},DUREE_CACHE=48*36e5;
+const lsGet=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k)||"null");return v==null?d:v}catch(e){return d}},lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const cache=()=>{const c=lsGet(LS.c,null);return c&&c.t&&c.uid&&Date.now()-c.t<DUREE_CACHE?c:null};
+const file=()=>lsGet(LS.f,[]),rejets=()=>lsGet(LS.r,[]),enFile=ref=>file().filter(f=>f.ref===ref),enLigne=()=>navigator.onLine!==false;
+const heureC=t=>new Date(t).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+function surcouche(m){const q=enFile(m.livraison_ref);if(!q.length)return m;const c=JSON.parse(JSON.stringify(m));q.forEach(f=>{const t=f.type;if(t==="accepter")c.statut="acceptee";else if(t==="refuser")c.statut="refusee";else if(t==="prise_en_charge"){c.payload.collecte_at=new Date(f.t).toISOString();c.payload.nb_colis=+(f.donnees||{}).nb_colis||c.payload.nb_colis}else if(t==="demarrer")c.statut="en_cours";else if(t==="echec")c.statut="echouee";else if(t==="arrive"){c.payload.contact=Object.assign({},c.payload.contact,{arrive_at:c.payload.contact&&c.payload.contact.arrive_at||new Date(f.t).toISOString()})}else if(t==="rappel_client"){const k=Object.assign({},c.payload.contact);k.statut="attente";k.arrive_at=k.arrive_at||new Date(f.t).toISOString();c.payload.contact=k}else if(t==="confirmer")c.attente=true});return c}
+function mettreEnFile(ref,type,donnees){let f=file();if(type==="position")f=f.filter(x=>!(x.ref===ref&&x.type==="position"));else if(type!=="incident"&&f.some(x=>x.ref===ref&&x.type===type))return;
+ f.push({id:"a"+Date.now()+Math.random().toString(36).slice(2,6),ref,type,donnees:donnees||{},t:Date.now(),cmd:((missions.find(m=>m.livraison_ref===ref))||{}).commande_ref||ref});lsSet(LS.f,f)}
+function toast(m,t){const e=$("#toast");e.textContent=m;e.style.background=t==="err"?"#c62828":"#7a1d17";e.classList.remove("hide");clearTimeout(toast._t);toast._t=setTimeout(()=>e.classList.add("hide"),3500)}
+function loadSb(){return new Promise((ok,ko)=>{if(window.supabase)return ok();const sc=document.createElement("script");sc.src=SB_LIB;sc.integrity=SB_SRI;sc.crossOrigin="anonymous";sc.onload=ok;sc.onerror=()=>ko(new Error("Connexion Internet requise pour se connecter"));document.head.appendChild(sc)})}
+async function api(fn,body){let t=null;try{const{data}=await sb.auth.getSession();t=data&&data.session&&data.session.access_token}catch(e){}
+ if(!t){const e=new Error("Session expirée : reconnectez-vous");e.status=401;e.reseau=!enLigne();throw e}
+ let r;try{r=await fetch(FN+fn,{method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+t,apikey:CFG.key},body:JSON.stringify(body)})}catch(x){const e=new Error("Réseau indisponible");e.reseau=true;throw e}
+ const j=await r.json().catch(()=>({}));if(!r.ok||j.ok===false){const e=new Error(j.erreur||("Erreur "+r.status));e.status=r.status;throw e}return j}
+const ferme=()=>{try{camStop();clearInterval(PVPOLL)}catch(e){}const o=$(".ov");if(o)o.remove()};
+function modal(html){ferme();const o=document.createElement("div");o.className="ov";o.innerHTML="<div>"+html+"</div>";o.addEventListener("click",e=>{if(e.target===o)ferme()});document.body.appendChild(o);return o}
+
+/* ---------- Connexion ---------- */
+function vueLogin(msg){$("#app").innerHTML=`<div class="hd"><div><b>LOGISTICA — Livreur</b><small>Connexion sécurisée</small></div></div><div class="wrap"><div class="card"><form id="fl" autocomplete="on"><label>Identifiant<input id="li" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" required></label><label>Mot de passe<input id="lp" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="current-password" required></label>${msg?`<div class="al er">${esc(msg)}</div>`:""}<button class="btn" type="submit">Se connecter</button></form></div><div class="inst"></div><div class="sm mu">Votre mot de passe est vérifié par le serveur. Les numéros des clients ne sont jamais affichés sur cet appareil.</div><div class="sm mu sanix" style="margin-top:14px;text-align:center">Logiciel développé par <b>Sanix Africa Division Technologies</b> · WhatsApp : +225 0779181075 / 0140017751</div></div>`;
+ $("#fl").onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector("button:not(.aa-e)");b.disabled=true;try{await loadSb();sb=sb||window.supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true}});const em=emailDe($("#li").value),pw=$("#lp").value;let{error}=await sb.auth.signInWithPassword({email:em,password:pw});
+   /* le clavier du téléphone ajoute souvent une espace après le dernier mot : on réessaie sans les espaces de début et de fin */
+   if(error&&/invalid login/i.test(error.message)&&pw.trim()&&pw!==pw.trim())({error}=await sb.auth.signInWithPassword({email:em,password:pw.trim()}));
+   if(error)throw new Error(/invalid login/i.test(error.message)?"Identifiant ou mot de passe incorrect (identifiant envoyé : "+em.split("@")[0]+")":error.message);await demarrer()}catch(x){vueLogin(x.message);}}}
+const mdpValide=m=>m.length>=10&&[/[a-z]/,/[A-Z]/,/\d/,/[^A-Za-z0-9]/].filter(r=>r.test(m)).length>=3;
+function vueChangement(){$("#app").innerHTML=`<div class="hd"><div><b>Nouveau mot de passe</b><small>Obligatoire à la première connexion</small></div></div><div class="wrap"><div class="card"><form id="fc"><div class="sm mu">10 caractères minimum, avec au moins 3 types parmi : majuscule, minuscule, chiffre, symbole. Ne reprenez pas votre nom.</div><label>Nouveau mot de passe<input id="n1" type="password" autocomplete="new-password" required></label><label>Confirmer<input id="n2" type="password" autocomplete="new-password" required></label><div id="cm" class="al er hide"></div><button class="btn" type="submit">Enregistrer</button></form></div></div>`;
+ $("#fc").onsubmit=async e=>{e.preventDefault();const a=$("#n1").value,b=$("#n2").value,m=$("#cm");const bad=a!==b?"Les deux mots de passe diffèrent":!mdpValide(a)?"Mot de passe trop faible : 10 caractères minimum, 3 types de caractères":(moi&&a.toLowerCase().includes(String(moi.nom||"").toLowerCase().split(/\s+/).filter(x=>x.length>2)[0]||"\u0000"))?"Le mot de passe ne doit pas contenir votre nom":"";
+  if(bad){m.textContent=bad;m.classList.remove("hide");return}
+  try{const{error}=await sb.auth.updateUser({password:a,data:{chg:false}});if(error)throw error;toast("Mot de passe modifié","ok");await demarrer()}catch(x){m.textContent=x.message;m.classList.remove("hide")}}}
+
+/* ---------- Missions ---------- */
+/* Signal sonore à l'arrivée d'une nouvelle mission : le bouton haut-parleur de l'en-tête fait défiler coupé / moyen / fort */
+const SIGM={vus:null};
+function sigMissions(){const nouv=missions.filter(m=>m.statut==="affectee").map(m=>m.livraison_ref);
+ if(SIGM.vus===null){SIGM.vus=new Set(nouv);return}
+ const n=nouv.filter(r=>!SIGM.vus.has(r));nouv.forEach(r=>SIGM.vus.add(r));
+ if(n.length){(window.__signaux=window.__signaux||[]).push({id:"mission",n:n.length,ok:ANGELS_SIGNAL.jouer("alerte",{rep:3,dire:n.length>1?n.length+" nouvelles missions":"Nouvelle mission"})});toast(n.length+" nouvelle(s) mission(s)")}}
+try{if(localStorage.getItem("angels_signal_dev")==null)ANGELS_SIGNAL.setDev({voice:false})}catch(e){}   /* lecture vocale des missions : coupée par défaut, activée par le livreur (bouton « voix ») */
+const voixIcone=()=>ANGELS_SIGNAL.dev().voice?"🗣":"🤐";
+const sonIcone=()=>{const d=ANGELS_SIGNAL.dev();return d.mute?"🔕":d.vol<=.5?"🔉":"🔊"};
+async function charger(){try{const{data,error}=await sb.from("pg_missions").select("livraison_ref,livreur_ref,commande_ref,statut,payload,position,maj_le").order("maj_le",{ascending:false});if(error)throw error;const tout=data||[];missions=recevoir(tout);erreur="";try{sigMissions()}catch(e){}try{sigChat()}catch(e){}lsSet(LS.c,{t:Date.now(),uid:user&&user.id,moi,missions:tout})}catch(x){erreur=enLigne()?x.message:""}
+ if(!ouvert&&!(PAGE==="chat"&&document.activeElement&&document.activeElement.id==="chin"))vueMissions()}
+const adrTxt=a=>[a.zone,a.quartier].filter(Boolean).map(esc).join(" · ");
+const minAtt=t=>t?Math.max(0,Math.floor((Date.now()-Date.parse(t))/60000)):0;
+const ctTxt=d=>d?esc((d.libelle||"")+(d.delai?" (dans "+d.delai+" min)":"")+(d.note?" — "+d.note:"")):"";
+function ctManque(p){const k=p.contact||{},g=p.inj||{},man=[];if(!g.exiger||k.autorise_echec)return man;
+ if(!k.arrive_at)man.push("signalez d'abord votre arrivée (« Je suis arrivé »)");else if(minAtt(k.arrive_at)<(g.attente_min||0))man.push("attendez encore "+((g.attente_min||0)-minAtt(k.arrive_at))+" min sur place");
+ if((k.n||0)<(g.tentatives_min||0))man.push("le centre doit d'abord tenter de joindre le client ("+(k.n||0)+"/"+g.tentatives_min+" appel(s))");return man}
+function ctBloc(m){const p=m.payload||{},k=p.contact||{},r=esc(m.livraison_ref);
+ if(!k.arrive_at)return`<button class="btn" data-a="arrive" data-r="${r}">📍 Je suis arrivé</button>`;
+ let h=`<div class="al">📍 Arrivé depuis <b>${minAtt(k.arrive_at)} min</b>${k.n?" · "+k.n+" appel(s) du centre":""}</div>`;
+ if(k.statut==="attente")h+=`<div class="al">⏳ <b>Le centre rappelle le client.</b> Patientez sur place.${k.dernier?"<br>Dernier appel : "+ctTxt(k.dernier):""}</div>`;
+ else if(k.statut==="joint")h+=`<div class="al" style="background:#e8f7ee">✅ <b>Client joint par le centre :</b> ${ctTxt(k.dernier)}</div>`;
+ else if(k.statut==="echec")h+=`<div class="al er">⛔ Le centre vous autorise à déclarer l'échec (client injoignable)${k.autorise_note?" : "+esc(k.autorise_note):""}.</div>`;
+ if(k.statut!=="attente"&&k.statut!=="echec")h+=`<button class="btn wa" data-a="norep" data-r="${r}">☎ Le client ne répond pas — prévenir le centre</button>`;
+ const man=ctManque(p);if(man.length&&k.statut!=="echec")h+=`<div class="sm mu">Avant un échec « client injoignable » : ${man.map(esc).join(" ; ")}.</div>`;return h}
+/* Position du client : jamais bloquante. Connue → itinéraire direct (départ = position actuelle du livreur, mode moto, trafic pris en compte par l'application de cartes) ; inconnue → itinéraire vers la zone et possibilité de la demander au bureau */
+const posDem=r=>lsGet(LS.p,{})[r]||0;
+const itineraire=(a,g)=>g&&isFinite(+g.lat)&&isFinite(+g.lng)?`https://www.google.com/maps/dir/?api=1&destination=${+g.lat},${+g.lng}&travelmode=two-wheeler&dir_action=navigate`:`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent([a.quartier,a.zone,"Abidjan"].filter(Boolean).join(", "))}&travelmode=two-wheeler`;
+/* Waze (une seule destination) et temps estimé : distance à vol d'oiseau × 1,4 (détour) à la vitesse moyenne d'une moto en ville */
+const waze=(a,g)=>g&&isFinite(+g.lat)&&isFinite(+g.lng)?`https://waze.com/ul?ll=${+g.lat},${+g.lng}&navigate=yes`:`https://waze.com/ul?q=${encodeURIComponent([a.quartier,a.zone,"Abidjan"].filter(Boolean).join(", "))}&navigate=yes`;
+const VMOY=()=>Math.max(10,+REG().vitesse_moy||25);
+const etaMin=km=>Math.max(1,Math.round(km*1.4/VMOY()*60));
+let DERPOS=null;const posFraiche=()=>DERPOS&&Date.now()-DERPOS.t<10*60000?DERPOS:null;
+const etaTxt=g=>{const p=posFraiche();if(!p||!g||!isFinite(+g.lat)||!isFinite(+g.lng))return"";const km=hav(p,{lat:+g.lat,lng:+g.lng}),mn=etaMin(km);return`<div class="sm" style="margin:4px 0 0">⏱ Arrivée estimée : <b>≈ ${mn} min</b> (${km.toFixed(1)} km à vol d'oiseau, arrivée vers ${new Date(Date.now()+mn*60000).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})})</div>`};
+function posBloc(m,a,g){const r=esc(m.livraison_ref);
+ if(g&&isFinite(+g.lat)&&isFinite(+g.lng))return`<a class="btn" style="text-decoration:none;text-align:center" target="_blank" rel="noopener" href="${itineraire(a,g)}">🗺 Itinéraire vers la position du client</a><a class="btn ghost" style="text-decoration:none;text-align:center" target="_blank" rel="noopener" href="${waze(a,g)}">🚗 Ouvrir dans Waze</a>${etaTxt(g)}<div class="sm" style="color:#118a4b;margin:4px 0 0">📍 Position exacte du client enregistrée : Google Maps choisit le meilleur trajet depuis votre position.</div>`;
+ const t=posDem(m.livraison_ref),vieux=t&&Date.now()-t>15*60000;
+ return`<a class="btn ghost" style="text-decoration:none;text-align:center" target="_blank" rel="noopener" href="${itineraire(a,null)}">🗺 Itinéraire vers la zone</a><a class="btn ghost" style="text-decoration:none;text-align:center" target="_blank" rel="noopener" href="${waze(a,null)}">🚗 Ouvrir dans Waze</a>`+
+  (t?`<div class="sm" style="color:#b86e00;margin:4px 0 0">📍 Position demandée au bureau à ${new Date(t).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}. Vous pouvez partir sans attendre : l'itinéraire exact s'affichera ici dès réception.${vieux?` <a href="#" data-a="posclient" data-r="${r}">Redemander</a>`:""}</div>`
+  :`<button class="btn ghost" data-a="posclient" data-r="${r}">📍 Demander la position du client</button><div class="sm mu" style="margin:4px 0 0">Facultatif : le bureau envoie un lien au client pour qu'il partage sa position. Vous n'avez pas à attendre pour partir.</div>`)}
+/* Code de réception : le client le donne au livreur ; client sans smartphone ou SMS non reçu → le centre l'appelle puis libère le code (jamais visible avant) */
+function codeBloc(m){const p=m.payload||{},r=esc(m.livraison_ref);
+ if(p.code_libere)return`<div class="sm" style="color:#118a4b;margin:6px 0 0">🔑 Le centre a libéré le code après vérification auprès du client : il est prérempli à la confirmation.</div>`;
+ const t=lsGet(LS.p,{})["c:"+m.livraison_ref];
+ return t?`<div class="sm" style="color:#b86e00;margin:6px 0 0">📞 Demande envoyée au centre à ${new Date(t).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})} : il appelle le client puis vous libère le code. Patientez sur place.</div>`
+  :`<button class="btn ghost" data-a="codenr" data-r="${r}">📵 Le client n'a pas reçu le code (ou n'a pas de smartphone)</button>`}
+function carte(m){const p=m.payload||{},a=p.adr||{},g=a.gps,dest=g?`${g.lat},${g.lng}`:encodeURIComponent([a.quartier,a.zone,"Abidjan"].filter(Boolean).join(", "));let b="";
+ if(m.statut==="affectee")b=`<button class="btn ok" data-a="accepter" data-r="${esc(m.livraison_ref)}">✔ Accepter</button><button class="btn er" data-a="refuser" data-r="${esc(m.livraison_ref)}">✖ Impossible</button>`;
+ else if(m.statut==="acceptee")b=!p.collecte_at?`<button class="btn" data-a="prise" data-r="${esc(m.livraison_ref)}">📦 Colis pris en charge</button><button class="btn er" data-a="refuser" data-r="${esc(m.livraison_ref)}">✖ Impossible</button>`:`<button class="btn ok" data-a="demarrer" data-r="${esc(m.livraison_ref)}">🏍 Démarrer la course</button>`;
+ else if(m.statut==="en_cours"){const vp=p.verif_paiement;
+  b=ctBloc(m)+(vp&&vp.statut==="a_verifier"?`<div class="al">⏳ <b>Le centre vérifie le paiement chez le vendeur.</b> Ne remettez pas le colis avant sa réponse.</div>`:vp&&vp.statut==="confirme"?`<div class="al" style="background:#e8f7ee">✅ Paiement vérifié par le centre (${fcfa(vp.montant)} payés au vendeur). Encaissez <b>${fcfa(p.montant_attendu)}</b>.</div>`:vp&&vp.statut==="dement"?`<div class="al er">❌ Le vendeur ne confirme pas le paiement : encaissez le montant complet (${fcfa(p.montant_attendu)}).</div>`:p.partenaire?`<div class="sm mu" style="margin-top:6px">Le client dit avoir déjà payé le vendeur ? <b>Appelez le centre</b> sans remettre le colis : il vérifie auprès du vendeur.</div>`:"")+
+  (vp&&vp.statut==="a_verifier"?"":`<button class="btn ok" data-a="confirmer" data-r="${esc(m.livraison_ref)}">✔ Confirmer la livraison</button>`)+(vp&&vp.statut==="a_verifier"?"":codeBloc(m))+`<button class="btn wa" data-a="echec" data-r="${esc(m.livraison_ref)}">Livraison impossible</button>`}
+ const act=ACTIFS.includes(m.statut),nq=enFile(m.livraison_ref).length;
+ if(m.attente)b=`<div class="al">⏳ <b>Confirmation en attente d'envoi</b> : le serveur vérifiera le code dès le retour du réseau. Ne la refaites pas.</div>`;else if(nq)b=(b||"")+`<div class="sm" style="color:#b86e00;margin-top:6px">⏳ ${nq} action(s) en attente d'envoi</div>`;
+ return`<div class="card mc ${p.priorite==="urgente"?"urg":""}"><div class="between"><b>${esc(m.commande_ref)}</b><span>${p.priorite==="urgente"?'<span class="bd" style="background:#fde5e5;color:#c62828">URGENT</span> ':""}<span class="bd">${esc(STATUTS[m.statut]||m.statut)}</span></span></div>
+ <div style="margin-top:6px"><b>${esc(p.client_nom)}</b><br>📍 ${adrTxt(a)}${a.repere?`<br><span class="mu">${esc(a.repere)}</span>`:""}${a.instructions?`<br><i>${esc(a.instructions)}</i>`:""}${p.obs?`<br><span class="sm mu">${esc(p.obs)}</span>`:""}</div>
+ ${act?`<div class="pill sm">${(p.lignes||[]).map(l=>esc(l.qte+" × "+l.desig)).join("<br>")}</div>`:""}
+ <div class="pill between"><span>${(p.lignes||[]).reduce((s,x)=>s+(+x.qte||0),0)} article(s)${p.nb_colis?" · "+p.nb_colis+" colis":""}</span><b>${p.montant_attendu>0?fcfa(p.montant_attendu):"Déjà payé"}</b></div>
+ ${(()=>{const b=act?boostZone(a.zone):0;return b?`<div class="sm" style="color:#b86e00;margin-top:4px">🔥 Zone chaude : +${fcfa(b)} sur cette course</div>`:""})()}
+ ${p.paye_vendeur>0?`<div class="sm mu">💳 ${fcfa(p.paye_vendeur)} déjà payés chez le fournisseur — vous n'encaissez que le reste.</div>`:""}
+ ${act?`${posBloc(m,a,g)}${p.appel_possible?`<button class="btn ghost" data-a="appeler" data-r="${esc(m.livraison_ref)}">📞 Appeler le client (numéro masqué)</button>`:`<div class="sm mu" style="margin-top:8px">Pour joindre le client, appelez le bureau.</div>`}`:""}
+ ${act&&p.msg_possible!==false&&["acceptee","en_cours"].includes(m.statut)?`<button class="btn ghost" data-a="msgc" data-r="${esc(m.livraison_ref)}">💬 Message au client</button>${msgsCarte(m)}`:""}
+ ${m.statut==="livree"&&p.recu!=null?`<div class="sm mu">Encaissé : ${fcfa(p.recu)}</div>`:""}${m.statut==="echouee"&&p.motif_echec?`<div class="sm mu">${esc(p.motif_echec)}</div>`:""}${b}</div>`}
+let STATS=null,SP="s7";
+const recevoir=a=>{a=a||[];STATS=a.find(m=>m.statut==="stats")||null;return a.filter(m=>m.statut!=="stats")};
+/* ---------- Menu (☰) : commandes en cours + meilleur itinéraire, traitées récemment, GPS et compte ---------- */
+let PAGE="cours",MENU=false,GPSST="",ITIN={sel:null,res:null,busy:false};
+const gpsOn=()=>lsGet(LS.g,{on:true}).on!==false;
+try{if(navigator.permissions&&navigator.permissions.query)navigator.permissions.query({name:"geolocation"}).then(p=>{GPSST=p.state;p.onchange=()=>{GPSST=p.state;if(user&&PAGE==="reglages"&&!ouvert)vueMissions()}}).catch(()=>{})}catch(e){}
+const rad=x=>x*Math.PI/180,hav=(a,b)=>{const R=6371,dl=rad(b.lat-a.lat),dg=rad(b.lng-a.lng),s=Math.sin(dl/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(s))};
+const coord=g=>g&&isFinite(+g.lat)&&isFinite(+g.lng)?{lat:+g.lat,lng:+g.lng}:null;
+/* Ordre de passage le plus court : plus proche voisin depuis la position du livreur, puis améliorations 2-opt (10 arrêts au plus) ; les adresses sans position exacte passent en dernier, dans l'ordre d'origine */
+function ordreItineraire(depart,stops){
+ const avec=stops.filter(s=>s.lat!=null),sans=stops.filter(s=>s.lat==null);let ordre=[],cur=depart,rest=avec.slice();
+ if(!cur&&rest.length){const s=rest.shift();ordre.push(s);cur=s}
+ while(rest.length){let k=0,m=Infinity;rest.forEach((s,i)=>{const d=hav(cur,s);if(d<m){m=d;k=i}});const s=rest.splice(k,1)[0];ordre.push(s);cur=s}
+ const P=()=>(depart?[depart]:[]).concat(ordre),long=p=>p.reduce((t,x,i)=>i?t+hav(p[i-1],x):0,0);
+ let mieux=true,tour=0;while(mieux&&tour++<30){mieux=false;const off=depart?1:0;for(let i=off?0:1;i<ordre.length-1;i++)for(let j=i+1;j<ordre.length;j++){const n=ordre.slice(0,i).concat(ordre.slice(i,j+1).reverse(),ordre.slice(j+1));if(long((depart?[depart]:[]).concat(n))<long(P())-1e-9){ordre=n;mieux=true}}}
+ return ordre.concat(sans)}
+const itinURL=ordre=>{const pts=ordre.map(s=>s.lat!=null?s.lat+","+s.lng:encodeURIComponent(s.txt)),d=pts[pts.length-1],w=pts.slice(0,-1);return"https://www.google.com/maps/dir/?api=1&travelmode=two-wheeler&dir_action=navigate&destination="+d+(w.length?"&waypoints="+w.join("%7C"):"")};
+const posActuelle=()=>new Promise(res=>{if(!navigator.geolocation)return res(null);try{navigator.geolocation.getCurrentPosition(p=>{DERPOS={lat:p.coords.latitude,lng:p.coords.longitude,t:Date.now()};res({lat:p.coords.latitude,lng:p.coords.longitude})},()=>res(null),{enableHighAccuracy:true,timeout:8000,maximumAge:60000})}catch(e){res(null)}});
+const eligibles=()=>missions.map(surcouche).filter(m=>m.statut==="acceptee"||m.statut==="en_cours");
+function itinCard(){const E=eligibles();if(!E.length)return"";
+ const refs=E.map(m=>m.livraison_ref);if(ITIN.sel===null){const ec=E.filter(m=>m.statut==="en_cours");ITIN.sel=new Set((ec.length?ec:E).map(m=>m.livraison_ref).slice(0,10))}
+ ITIN.sel=new Set([...ITIN.sel].filter(r=>refs.includes(r)));const R=ITIN.res;
+ return`<div class="card"><b>🗺 Meilleur itinéraire</b><div class="sm mu">Cochez 1 ou plusieurs commandes (10 au plus) : l'ordre de passage le plus court est calculé depuis votre position.</div>
+ ${E.map(m=>{const p=m.payload||{},a=p.adr||{};return`<label class="chk"><input type="checkbox" data-it="${esc(m.livraison_ref)}" ${ITIN.sel.has(m.livraison_ref)?"checked":""}><span><b>${esc(m.commande_ref)}</b> — ${adrTxt(a)||"adresse"}${coord(a.gps)?" 📍":' <span class="mu sm">(zone approximative)</span>'}</span></label>`}).join("")}
+ <button class="btn" data-a="itincalc" ${ITIN.busy?"disabled":""}>${ITIN.busy?"Calcul en cours…":"Calculer le meilleur itinéraire"}</button>
+ ${R?`<div class="pill" style="margin-top:10px"><b>Ordre conseillé</b><ol style="margin:6px 0 0 18px;padding:0">${R.ordre.map((s,i)=>`<li>${esc(s.num)} — ${esc(s.lbl)}${s.km!=null?` <span class="mu sm">(≈ ${s.km.toFixed(1)} km${i?" depuis l'arrêt précédent":R.depart?" depuis vous":""})</span>`:s.lat==null?' <span class="mu sm">(position approximative)</span>':""}</li>`).join("")}</ol></div>
+ <a class="btn ok" style="text-decoration:none;text-align:center" target="_blank" rel="noopener" href="${R.url}">▶ Ouvrir l'itinéraire dans Google Maps</a>
+ ${(()=>{const km=R.ordre.reduce((t,x)=>t+(x.km||0),0),f=R.ordre[0],w=f.lat!=null?`https://waze.com/ul?ll=${f.lat},${f.lng}&navigate=yes`:`https://waze.com/ul?q=${encodeURIComponent(f.txt)}&navigate=yes`;return`<a class="btn ghost" style="text-decoration:none;text-align:center" target="_blank" rel="noopener" href="${w}">🚗 Waze : premier arrêt (${esc(f.num)})</a>${km>0?`<div class="sm" style="margin-top:4px">⏱ Tournée estimée : <b>≈ ${etaMin(km)} min</b> de route pour ${km.toFixed(1)} km (hors temps passé chez les clients)</div>`:""}`})()}
+ <div class="sm mu" style="margin-top:6px">Distances à vol d'oiseau : Google Maps choisit ensuite le meilleur trajet routier, trafic compris.${R.depart?"":" Position du téléphone indisponible : l'ordre part de la première commande."}</div>`:""}</div>`}
+/* ---------- Sécurité du livreur : SOS, vérification d'inactivité, vitesse et périmètre (règles publiées par le bureau avec les statistiques) ---------- */
+const PL=()=>(STATS&&STATS.payload)||{},REG=()=>PL().regles||{},refSos=()=>"stats:"+((moi&&moi.livreur_ref)||"");
+const telNum=t=>String(t||"").replace(/[^\d+]/g,"");
+const SOS_T=[["accident","🏍️ Accident"],["agression","🛑 Agression ou vol"],["panne","🔧 Moto en panne"],["malaise","🩺 Malaise ou blessure"],["autre","❗ Autre urgence"]];
+function sosOuvrir(){if(!user)return;ouvert=1;let type=null;
+ const o=modal(`<h3 style="margin-top:0">🆘 Alerte SOS</h3><div class="al">À utiliser en cas de <b>danger réel</b>. Le bureau reçoit immédiatement votre position.</div><div id="sost">${SOS_T.map(([k,t])=>`<button type="button" class="btn ghost" style="text-align:left" data-st="${k}">${t}</button>`).join("")}</div><label>Précision (facultatif)<input id="sosn" maxlength="150" placeholder="Où êtes-vous, que s'est-il passé ?"></label>
+  <button type="button" class="btn er" id="sosg" disabled style="position:relative;overflow:hidden"><span id="sosb" style="position:absolute;left:0;top:0;bottom:0;width:0;background:rgba(255,255,255,.35)"></span><span style="position:relative">Maintenez 1,5 s pour envoyer</span></button><button class="btn ghost" type="button" data-x>Fermer</button>`);
+ o.querySelector("[data-x]").onclick=()=>{ferme();ouvert=null};
+ const go=o.querySelector("#sosg"),bar=o.querySelector("#sosb");let tm=null,t0=0,raf=0;
+ o.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>{type=b.dataset.st;o.querySelectorAll("[data-st]").forEach(x=>{x.classList.toggle("ghost",x!==b);x.classList.toggle("er",x===b)});go.disabled=false});
+ const stop=()=>{clearTimeout(tm);cancelAnimationFrame(raf);bar.style.width="0"},start=ev=>{if(!type||go.disabled)return;ev.preventDefault();t0=Date.now();const loop=()=>{bar.style.width=Math.min(100,(Date.now()-t0)/15)+"%";raf=requestAnimationFrame(loop)};loop();tm=setTimeout(()=>{stop();sosEnvoyer(type,(o.querySelector("#sosn")||{}).value||"",false)},1500)};
+ go.addEventListener("pointerdown",start);["pointerup","pointerleave","pointercancel"].forEach(e=>go.addEventListener(e,stop));
+ go.addEventListener("click",e=>{if(e.detail===0&&type&&confirm("Envoyer l'alerte SOS maintenant ?"))sosEnvoyer(type,(o.querySelector("#sosn")||{}).value||"",false)})}
+async function sosEnvoyer(type,note,auto){const p=await posActuelle(),desc=["SOS",type,auto?"auto":"manuel",p?p.lat.toFixed(5)+","+p.lng.toFixed(5):"",String(note||"").replace(/\|/g,"/").slice(0,150)].join("|");
+ const x=await envoyer(refSos(),"incident",{nature:"SOS",description:desc},"🆘 Alerte envoyée : le bureau est prévenu");sosApres(x);return x}
+function sosApres(x){ouvert=1;const r=REG(),tel=telNum(r.sos_tel),U=(r.urgences||[]);
+ modal(`<h3 style="margin-top:0">🆘 ${x?"Alerte envoyée":x===null?"Alerte gardée sur le téléphone":"Alerte non envoyée"}</h3><div class="al ${x?"":"er"}">${x?"Le bureau est prévenu et voit votre position. Restez en sécurité.":x===null?"Hors ligne : l'alerte partira dès le retour du réseau. Appelez directement.":"Échec de l'envoi : appelez directement le bureau ou les secours."}</div>
+  ${tel?`<a class="btn ok" style="text-decoration:none;text-align:center" href="tel:${tel}">📞 Appeler le superviseur</a>`:""}${U.map(u=>`<a class="btn ghost" style="text-decoration:none;text-align:center" href="tel:${esc(u.n)}">📞 ${esc(u.l)} (${esc(u.n)})</a>`).join("")}<button class="btn ghost" type="button" data-x>Fermer</button>`).querySelector("[data-x]").onclick=()=>{ferme();ouvert=null}}
+const VIG={act:Date.now(),open:false,tm:null,pos:null};
+["pointerdown","keydown","touchstart"].forEach(e=>addEventListener(e,()=>{VIG.act=Date.now()},{passive:true}));
+const vigMin=h=>{const a=String(h||"0:0").split(":");return(+a[0]||0)*60+(+a[1]||0)};
+function vigHeures(v){const d=new Date(),m=d.getHours()*60+d.getMinutes();return m>=vigMin(v.debut)&&m<vigMin(v.fin)}
+function vigFerme(){VIG.open=false;clearInterval(VIG.tm);const e=document.getElementById("vig");if(e)e.remove()}
+function vigPrompt(v){VIG.open=true;let reste=v.reponse_s;const el=document.createElement("div");el.id="vig";el.style.cssText="position:fixed;inset:0;z-index:9600;background:rgba(122,16,16,.96);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center";
+ el.innerHTML=`<div style="font-size:48px">🛡️</div><b style="font-size:22px">Êtes-vous en sécurité ?</b><div>Aucune activité depuis ${v.inactif_min} min. Sans réponse, une alerte SOS part avec votre position dans <b id="vig_t">${reste}</b> s.</div><button type="button" class="btn ok" id="vig_ok" style="max-width:320px">✔ Je vais bien</button><button type="button" class="btn ghost" id="vig_p" style="max-width:320px">⏸ Pause 30 min</button><button type="button" class="btn er" id="vig_s" style="max-width:320px;background:#fff;color:#b3121e">🆘 J'ai un problème : alerter</button>`;
+ document.body.appendChild(el);try{ANGELS_SIGNAL.jouer("alerte",{rep:6})}catch(e){}try{navigator.vibrate&&navigator.vibrate([500,200,500])}catch(e){}
+ $("#vig_ok").onclick=()=>{VIG.act=Date.now();vigFerme()};$("#vig_p").onclick=async()=>{vigFerme();if(!(await pauseApp(30))){VIG.act=Date.now()+30*60000-v.inactif_min*60000;toast("Pause de 30 min","ok")}};
+ $("#vig_s").onclick=()=>{vigFerme();sosEnvoyer("autre","Le livreur demande de l'aide depuis la vérification de sécurité",false)};
+ VIG.tm=setInterval(()=>{reste--;const t=document.getElementById("vig_t");if(t)t.textContent=Math.max(0,reste);if(reste<=0){vigFerme();VIG.act=Date.now();sosEnvoyer("autre","⚠ ALERTE AUTOMATIQUE : aucune réponse après "+v.inactif_min+" min d'inactivité pendant les heures de travail. Vol, accident ou malaise possible : appelez-le.",true)}},1000)}
+function vigTick(){if(!user||VIG.open||ouvert)return;const r=REG(),v=r.vigilance;if(!v||!v.actif||pauseActive())return;{const P=PLN();if(P.actif){const j=(P.jours||[]).find(x=>x.date===ymdL(Date.now())),dans=j&&j.creneaux.some(c=>c.reserve&&c.statut!=="absent"&&tsC(j.date,c.debut)<=Date.now()&&Date.now()<tsFin(j.date,c));if(!dans&&!missions.some(m=>ACTIFS.includes(m.statut)))return}else if(!vigHeures(v))return}if(!(missions.some(m=>ACTIFS.includes(m.statut))||r.dispo))return;if(Date.now()-VIG.act>=v.inactif_min*60000)vigPrompt(v)}
+setInterval(()=>{try{vigTick()}catch(e){}},15000);
+/* Position : avertit au-delà de la vitesse autorisée et hors du périmètre ; un déplacement compte comme une activité */
+function secuPos(p){const r=REG(),c={lat:p.coords.latitude,lng:p.coords.longitude};DERPOS={lat:c.lat,lng:c.lng,t:Date.now()};const v=p.coords.speed!=null&&p.coords.speed>=0?p.coords.speed*3.6:0;
+ if(r.vitesse_max&&v>r.vitesse_max&&v<=140&&Date.now()-(VIG.vt||0)>60000){VIG.vt=Date.now();toast("⚠ Vitesse "+Math.round(v)+" km/h : limite "+r.vitesse_max+" km/h. Ralentissez.","err");try{navigator.vibrate&&navigator.vibrate([300,150,300])}catch(e){}}
+ const z=r.perimetre;if(z&&z.actif&&hav({lat:z.lat,lng:z.lng},c)>z.rayon_km&&Date.now()-(VIG.zt||0)>600000){VIG.zt=Date.now();toast("📍 Vous êtes hors de la zone de service : le bureau est prévenu.","err")}
+ if(!VIG.pos||hav(VIG.pos,c)>.05){if(VIG.pos)VIG.act=Math.max(VIG.act,Date.now());VIG.pos=c}}
+/* ---------- Mes gains et ma prime ---------- */
+const barre=v=>`<div class="bar"><i style="width:${Math.max(0,Math.min(100,Math.round(v*100)))}%"></i></div>`;
+/* Zones chaudes : actives selon le jour et l'heure du téléphone */
+function boostOk(b,d){d=d||new Date();const m=d.getHours()*60+d.getMinutes(),a=vigMin(b.debut),f=vigMin(b.fin),J=b.jours||[],j=d.getDay();return a<=f?J.includes(j)&&m>=a&&m<f:(J.includes(j)&&m>=a)||(J.includes((j+6)%7)&&m<f)}
+const boostsActifs=()=>((PL().bonus||{}).boosts||[]).filter(b=>boostOk(b));
+const boostZone=z=>boostsActifs().filter(b=>b.zone==="*"||b.zone===z).reduce((m,b)=>Math.max(m,+b.montant),0);
+const JC=["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"];
+function boostBandeau(){const A=boostsActifs();return A.length?`<div class="al" style="background:#fff3e0;color:#7a4300">🔥 <b>Zones chaudes en ce moment</b> : ${A.map(b=>esc(b.zone==="*"?"Toutes zones":b.zone)+" +"+fcfa(b.montant)+"/course jusqu'à "+esc(b.fin)).join(" · ")}</div>`:""}
+function bonusHtml(){const B=PL().bonus;if(!B)return"";const prog=(B.quetes||[]);
+ return`<div class="card"><b>🔥 Zones chaudes</b>${(B.boosts||[]).length?(B.boosts).map(b=>`<div class="between sm" style="margin-top:4px"><span>${boostOk(b)?"🔥 ":""}${esc(b.zone==="*"?"Toutes zones":b.zone)} · ${b.jours.map(j=>JC[j]).join(" ")} ${esc(b.debut)}–${esc(b.fin)}</span><b>+${fcfa(b.montant)}</b></div>`).join(""):'<div class="sm mu">Aucune zone chaude programmée.</div>'}</div>
+ <div class="card"><b>🎯 Mes quêtes</b>${prog.length?prog.map(q=>`<div style="margin-top:6px"><div class="between sm"><span>${q.fait?"✅ ":""}${esc(q.nom)}${q.zone&&q.zone!=="*"?" ("+esc(q.zone)+")":""}</span><b>${fcfa(q.montant)}</b></div>${barre(q.progres/q.cible)}<div class="sm mu" style="margin-top:-4px">${q.progres} / ${q.cible} livraison(s)</div></div>`).join(""):'<div class="sm mu">Aucune quête en cours.</div>'}
+  <div class="sm" style="margin-top:8px">Bonus gagnés : zones <b>${fcfa(B.zone)}</b> + quêtes <b>${fcfa(B.quetes_acquises)}</b>${B.paye?" · déjà payé "+fcfa(B.paye):""} · reste à recevoir <b>${fcfa(B.reste)}</b></div></div>`}
+/* ---------- Planning (créneaux réservés) et pauses ---------- */
+const ymdL=d=>{const x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")};
+const hmin=h=>vigMin(h),tsC=(d,h)=>{const x=new Date(d+"T00:00:00");x.setHours(Math.floor(hmin(h)/60),hmin(h)%60,0,0);return x.getTime()};
+const tsFin=(d,c)=>{const f=tsC(d,c.fin);return f<=tsC(d,c.debut)?f+864e5:f};
+const PLN=()=>PL().planning||{};
+const pauseLocale=()=>{const z=lsGet(LS.z,null);return z&&new Date(z.fin).getTime()>Date.now()?z:null};
+const pauseActive=()=>{const z=pauseLocale();if(z)return z;const p=PLN().pause;return p&&new Date(p.fin).getTime()>Date.now()?p:null};
+const enAttente=()=>lsGet(LS.l,[]).filter(x=>Date.now()-x.t<10*60000&&(!STATS||!STATS.maj_le||x.t>Date.parse(STATS.maj_le)));
+async function planEnvoyer(desc,ok){const x=await envoyer(refSos(),"incident",{nature:"PLANNING",description:desc},ok);return x}
+async function plReserverApp(op,cid,date){if(enAttente().some(x=>x.cid===cid&&x.date===date))return;
+ const x=await planEnvoyer((op==="RES"?"RES":"ANN")+"|"+cid+"|"+date,op==="RES"?"Demande de réservation envoyée au bureau":"Annulation envoyée au bureau");
+ if(x!==undefined){const L=enAttente();L.push({op,cid,date,t:Date.now()});lsSet(LS.l,L)}vueMissions()}
+async function pauseApp(min){const P=PLN(),restant=(P.pause_max_min||0)-(P.pause_jour||0)-(lsGet(LS.z,{}).min&&lsGet(LS.z,{}).t>Date.parse((STATS||{}).maj_le||0)?lsGet(LS.z,{}).min:0);
+ if(missions.some(m=>m.statut==="en_cours"))return toast("Terminez d'abord la course en cours","err"),false;
+ if(min>restant)return toast("Pause limitée : il vous reste "+Math.max(0,restant)+" min aujourd'hui","err"),false;
+ lsSet(LS.z,{fin:new Date(Date.now()+min*60000).toISOString(),min,t:Date.now()});VIG.act=Date.now();
+ await planEnvoyer("PAUSE|"+min,"Pause de "+min+" min : le bureau est prévenu");vueMissions();return true}
+async function reprendreApp(){try{localStorage.removeItem(LS.z)}catch(e){}VIG.act=Date.now();await planEnvoyer("REPRISE","Bonne reprise !");vueMissions()}
+const pauseBandeau=()=>{const z=pauseActive();return z?`<div class="al" style="background:#fff3e0;color:#7a4300">⏸ <b>En pause</b> jusqu'à ${heureC(Date.parse(z.fin))} : aucune mission ne vous est confiée. <a href="#" data-a="reprise">▶ Reprendre</a></div>`:""};
+function planHtml(){const P=PLN(),z=pauseActive(),restant=Math.max(0,(P.pause_max_min||0)-(P.pause_jour||0)),att=enAttente();
+ if(!PL().p)return`<h2 class="pg">Planning et pauses</h2><div class="card mu">Pas encore disponible : le bureau publie vos données dès que votre compte est relié.</div>`;
+ const pause=`<div class="card"><b>⏸ Pause</b>${z?`<div class="al" style="margin-top:6px">En pause jusqu'à <b>${heureC(Date.parse(z.fin))}</b>.</div><button class="btn ok" data-a="reprise">▶ Reprendre le travail</button>`
+  :`<div class="sm mu" style="margin:4px 0 8px">Pendant une pause, vous ne recevez pas de mission. Il vous reste <b>${restant} min</b> aujourd'hui (maximum ${P.pause_max_min||0} min).</div><div class="chips">${[15,30,45,60].map(m=>`<button type="button" class="chip" data-a="pause" data-r="${m}" ${m>restant?"disabled":""}>${m} min</button>`).join("")}</div>`}</div>`;
+ if(!P.actif)return`<h2 class="pg">Planning et pauses</h2>${pause}<div class="card mu">La réservation de créneaux n'est pas activée par le bureau.</div>`;
+ const jours=(P.jours||[]).map(j=>`<h3 style="margin:14px 0 4px">${j.date===ymdL(Date.now())?"Aujourd'hui":esc(new Date(j.date+"T12:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"}))}</h3>${j.creneaux.map(c=>{
+  const pas=tsFin(j.date,c)<=Date.now(),en=att.find(x=>x.cid===c.cid&&x.date===j.date),tard=tsC(j.date,c.debut)-Date.now()<(P.annulation_h||0)*36e5,res=en?en.op==="RES":c.reserve;
+  return`<div class="card" style="margin:6px 0"><div class="between"><span><b>${esc(c.nom)}</b> <span class="mu sm">${esc(c.debut)}–${esc(c.fin)}</span></span><span class="sm">${res?'<b style="color:#118a4b">✔ Réservé</b>':c.places>0?c.places+" place(s)":'<span class="mu">Complet</span>'}</span></div>
+   ${c.statut==="absent"?'<div class="sm" style="color:var(--er)">Marqué absent</div>':""}
+   ${en?'<div class="sm" style="color:#b86e00;margin-top:4px">⏳ En attente de confirmation du bureau</div>':pas?"":res?(tard?`<div class="sm mu" style="margin-top:4px">Annulation impossible à moins de ${P.annulation_h} h : prévenez le bureau.</div>`:`<button class="btn ghost" data-a="plan" data-r="ANN|${esc(c.cid)}|${j.date}">✖ Annuler ma réservation</button>`):c.places>0?`<button class="btn" data-a="plan" data-r="RES|${esc(c.cid)}|${j.date}">📅 Réserver ce créneau</button>`:""}</div>`}).join("")}`).join("");
+ return`<h2 class="pg">Planning et pauses</h2>${pause}<h2 class="pg" style="margin-top:14px">Créneaux de travail</h2>${jours||'<div class="card mu">Aucun créneau proposé pour le moment.</div>'}<div class="sm mu" style="margin:6px 0">Annulation libre jusqu'à ${P.annulation_h||0} h avant le début. Le bureau confirme chaque demande.</div>`}
+/* ---------- Messages prêts au client (transmis par le centre) et chat avec le centre ---------- */
+const MSGL={route:"🏍 Je suis en route",arrive:"📍 Je suis arrivé",bas:"🚪 Je suis devant chez vous",adresse:"❓ Je ne trouve pas l'adresse",retard:"⏳ Je suis en retard",paiement:"💰 Préparer le paiement et le code"};
+const msgEtat=x=>["a_envoyer","envoi_en_cours"].includes(x.statut)?"⏳ en attente d'envoi par le centre":x.statut==="echec"?"❌ échec d'envoi":"✅ envoyé";
+const msgsCarte=m=>{const L=((m.payload||{}).msgs||[]).slice(-2);return L.length?`<div class="sm" style="margin-top:6px">${L.map(x=>`✉ ${esc(MSGL[x.tpl]||x.tpl)} — ${msgEtat(x)}`).join("<br>")}</div>`:""};
+function msgClient(r){const m=mission(r);if(!m)return;ouvert=1;const o=modal(`<h3 style="margin-top:0">💬 Message au client</h3><div class="sm mu" style="margin-bottom:8px">Le centre transmet votre message au client : son numéro et le vôtre restent privés.</div>${Object.keys(MSGL).map(k=>`<button type="button" class="btn ghost" style="text-align:left" data-mt="${k}">${MSGL[k]}</button>`).join("")}<button class="btn ghost" type="button" data-x>Fermer</button>`);
+ o.querySelector("[data-x]").onclick=()=>{ferme();ouvert=null};
+ o.querySelectorAll("[data-mt]").forEach(b=>b.onclick=()=>{const k=b.dataset.mt;if(k!=="retard")return msgEnvoyer(r,k,"");
+  o.querySelector("div").innerHTML=`<h3 style="margin-top:0">⏳ Retard de combien ?</h3>${[10,15,20,30,45].map(n=>`<button type="button" class="btn ghost" data-rt="${n}">${n} minutes</button>`).join("")}<button class="btn ghost" type="button" data-x>Fermer</button>`;
+  o.querySelector("[data-x]").onclick=()=>{ferme();ouvert=null};o.querySelectorAll("[data-rt]").forEach(x=>x.onclick=()=>msgEnvoyer(r,"retard",x.dataset.rt))})}
+async function msgEnvoyer(r,k,param){const m=mission(r),rec=((m&&m.payload||{}).msgs||[]).some(x=>x.tpl===k&&Date.now()-Date.parse(x.ts)<3*60000);if(rec){ferme();ouvert=null;return toast("Ce message a déjà été envoyé il y a moins de 3 min","err")}
+ await envoyer(r,"incident",{nature:"MSG",description:"MSG|"+k+"|"+param},"Message envoyé au centre : il le transmet au client");vueMissions()}
+const CHAT=()=>PL().chat||[],chatVu=()=>lsGet(LS.v,0);
+const chatNonLus=()=>CHAT().filter(m=>m.de==="centre"&&Date.parse(m.ts)>chatVu()).length;
+const chatPend=()=>lsGet(LS.m,[]).filter(x=>Date.now()-x.t<10*60000&&(!STATS||!STATS.maj_le||x.t>Date.parse(STATS.maj_le)));
+const QCH=["OK, bien reçu","J'arrive","J'ai un problème, appelez-moi","Client injoignable","Ma moto est en panne"];
+async function chatEnvoyer(texte){texte=String(texte||"").replace(/\|/g,"/").replace(/\s+/g," ").trim().slice(0,250);if(!texte)return;
+ const x=await envoyer(refSos(),"incident",{nature:"CHAT",description:"CHAT|"+texte},"Message envoyé au centre");if(x!==undefined){const L=chatPend();L.push({texte,t:Date.now()});lsSet(LS.m,L)}vueMissions()}
+const chatBandeau=()=>{const n=chatNonLus();return n&&PAGE!=="chat"?`<div class="al" style="background:#e3f2fd;color:#7a1d17">💬 <b>${n}</b> nouveau(x) message(s) du centre. <a href="#" data-a="page" data-r="chat">Lire</a></div>`:""};
+const CH={vus:null};
+function sigChat(){const n=CHAT().filter(m=>m.de==="centre").length;if(CH.vus===null){CH.vus=n;return}if(n>CH.vus&&PAGE!=="chat"){(window.__signaux=window.__signaux||[]).push({id:"chat",ok:ANGELS_SIGNAL.jouer("bip",{rep:2,dire:"Nouveau message du centre"})});toast("💬 Nouveau message du centre")}CH.vus=n}
+function chatHtml(){if(!PL().p)return`<h2 class="pg">Messages du centre</h2><div class="card mu">Pas encore disponible : le bureau relie votre compte.</div>`;
+ const L=CHAT().map(m=>({de:m.de,texte:m.texte,t:Date.parse(m.ts)})).concat(chatPend().map(p=>({de:"livreur",texte:p.texte,t:p.t,att:true}))).sort((a,b)=>a.t-b.t).slice(-30);
+ return`<h2 class="pg">Messages du centre</h2><div class="card" style="max-height:48vh;overflow:auto;display:flex;flex-direction:column;gap:6px" id="chlog">${L.length?L.map(m=>`<div style="align-self:${m.de==="livreur"?"flex-end":"flex-start"};max-width:85%;background:${m.de==="livreur"?"#d8f0f7":"#f1f1f1"};border-radius:10px;padding:6px 10px"><div>${esc(m.texte)}</div><div class="sm mu">${heureC(m.t)}${m.att?" · ⏳ en cours d'envoi":""}</div></div>`).join(""):'<div class="mu sm">Aucun message. Écrivez au centre ci-dessous.</div>'}</div>
+ <div class="chips">${QCH.map((t,i)=>`<button type="button" class="chip" data-a="chatq" data-r="${i}">${esc(t)}</button>`).join("")}</div>
+ <label>Votre message<input id="chin" maxlength="250" autocomplete="off" placeholder="Écrire au centre…"></label><button class="btn" data-a="chatsend">Envoyer</button>
+ <div class="sm mu" style="margin-top:6px">Pour un danger, utilisez le bouton rouge 🆘, pas le chat.</div>`}
+function gainsHtml(){const P=PL(),X=P.p,A=P.argent,Q=P.prime,M=P.moto,R=P.regles||{};
+ if(!X)return`<h2 class="pg">Mes gains et ma prime</h2><div class="card mu">Pas encore disponible : le bureau publie vos chiffres dès que votre compte est relié.</div>`;
+ const g=k=>fcfa((X[k]||{}).gains||0),mois=X.mois||{};
+ return`<h2 class="pg">Mes gains et ma prime</h2>
+ <div class="kp"><div><b>${g("j")}</b><span>gagné aujourd'hui</span></div><div><b>${g("s7")}</b><span>7 jours</span></div><div><b>${g("m30")}</b><span>30 jours</span></div><div><b>${g("mois")}</b><span>ce mois</span></div></div>
+ ${boostBandeau()}${bonusHtml()}
+ ${A?`<div class="card"><b>💰 Argent à reverser au bureau</b><div style="font-size:26px;font-weight:800;margin:4px 0;color:${A.solde>0?"var(--er)":"var(--ok)"}">${fcfa(A.solde)}</div>
+  <div class="sm">📦 Montant collecté (produits) : <b>${fcfa(A.produits)}</b><br>🛵 Frais de livraison collectés : <b>${fcfa(A.frais)}</b>${A.gardes?`<br>➖ Frais gardés par vous : <b>${fcfa(A.gardes)}</b>`:""}${A.rev?`<br>➖ Déjà reversé : <b>${fcfa(A.rev)}</b>`:""}${A.attente?`<br>⏳ ${fcfa(A.attente)} déclaré, en validation par la caisse`:""}</div>
+  ${A.solde>0?`<div class="sm mu" style="margin-top:6px">Remettez les espèces au caissier, ou envoyez par Mobile Money${(A.comptes||[]).length?" à : "+A.comptes.map(esc).join(" · "):""} puis prévenez le bureau avec la référence de la transaction.</div>`:""}</div>`:""}
+ ${Q&&Q.actif?`<div class="card"><b>🏆 Ma prime — ${esc(Q.periode)}</b>
+  <div class="between" style="margin-top:6px"><span style="font-size:26px;font-weight:800">${Q.score}<small style="font-size:14px"> / 100</small></span><span>${Q.palier?`<span class="bd" style="background:#e8f7ee;color:#118a4b">${esc(Q.palier)} · ${fcfa(Q.montant)}</span>`:'<span class="bd">Pas encore de palier</span>'}</span></div>${barre(Q.score/100)}
+  ${Q.suivant?`<div class="sm">Prochain palier <b>${esc(Q.suivant.nom)}</b> (${fcfa(Q.suivant.montant)}) : encore <b>${Q.suivant.manque}</b> point(s).</div>`:'<div class="sm" style="color:#118a4b">Palier maximum atteint 🎉</div>'}
+  ${(Q.raisons||[]).length?`<div class="al" style="margin-top:6px">Pas de prime tant que : ${Q.raisons.map(esc).join(" ; ")}.</div>`:""}
+  <div style="margin-top:8px">${Q.comps.map(c=>`<div class="between sm"><span>${esc(c.label)}</span><b>${Math.round(c.val*100)} %</b></div>${barre(c.val)}`).join("")}</div>
+  ${(Q.hist||[]).length?`<div class="sm" style="margin-top:6px"><b>Primes précédentes</b>${Q.hist.map(h=>`<div class="between"><span>${esc(h.du)} → ${esc(h.au)} · ${esc(h.palier)}</span><b>${fcfa(h.montant)} ${h.statut==="payee"?"✅":"⏳"}</b></div>`).join("")}</div>`:""}</div>`:""}
+ <div class="card"><b>🛣 Conduite (ce mois)</b><div class="kp"><div><b>${mois.km?(mois.km>=100?Math.round(mois.km):mois.km.toFixed(1))+" km":"—"}</b><span>parcourus</span></div><div><b>${mois.vit&&mois.vit.max?mois.vit.max+" km/h":"—"}</b><span>vitesse max (limite ${R.vitesse_max||"—"})</span></div><div><b style="color:${mois.vit&&mois.vit.n?"var(--er)":"inherit"}">${mois.vit?mois.vit.n:0}</b><span>dépassement(s)</span></div></div></div>
+ ${M?`<div class="card"><b>🏍 Ma moto : ${esc(M.immat)}</b> <span class="mu sm">${esc(M.modele)}</span><div class="sm" style="margin:4px 0">${M.km} km · ${M.km>=M.prochain_km?'<b style="color:var(--er)">entretien dû</b>':"prochain entretien dans "+Math.max(0,M.prochain_km-M.km)+" km"} · état : ${esc(M.statut)}</div>${(M.entretiens||[]).map(e=>`<div class="sm">${new Date(e.ts).toLocaleDateString("fr-FR",{day:"numeric",month:"short"})} · ${esc(e.type)} · ${e.km} km</div>`).join("")||'<div class="sm mu">Aucun entretien enregistré.</div>'}</div>`:""}
+ <div class="sm mu" style="margin:6px 0">Chiffres calculés par le bureau${STATS&&STATS.maj_le?" (mis à jour à "+new Date(STATS.maj_le).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})+")":""}. Gains = vos commissions sur les courses livrées.</div>`}
+const minTxt=v=>v?Math.round(v)+" min":"—";
+function statsHtml(){const P=((STATS||{}).payload||{}).p,j7=((STATS||{}).payload||{}).jours7||[],X=P&&P[SP],lab={j:"Aujourd'hui",s7:"7 jours",m30:"30 jours",mois:"Ce mois"};
+ const chips=`<div class="chips">${Object.keys(lab).map(k=>`<button type="button" class="chip ${SP===k?"on":""}" data-a="sp" data-r="${k}">${lab[k]}</button>`).join("")}</div>`;
+ if(!X)return`<h2 class="pg">Mes statistiques</h2><div class="card mu">Vos statistiques ne sont pas encore disponibles : le bureau les publie dès que votre compte est relié (quelques minutes après la première course ou la prochaine synchronisation).</div>`;
+ const mx=Math.max(1,...j7.map(d=>d.n));
+ return`<h2 class="pg">Mes statistiques</h2>${chips}
+ <div class="kp"><div><b>${X.livrees}</b><span>livraisons</span></div><div><b style="color:${X.echecs?"var(--er)":"inherit"}">${X.echecs}</b><span>échecs</span></div><div><b>${X.livrees+X.echecs?X.taux.toFixed(0)+" %":"—"}</b><span>réussite</span></div><div><b>${minTxt(X.duree)}</b><span>durée moyenne</span></div><div><b>${X.livrees?X.delais.toFixed(0)+" %":"—"}</b><span>dans les délais</span></div><div><b>${X.nnotes?X.note.toFixed(1)+" ★":"—"}</b><span>note des clients</span></div><div><b>${fcfa(X.encaisse)}</b><span>encaissé</span></div><div><b>${fcfa(X.gains)}</b><span>mes gains (commissions)</span></div></div>
+ <div class="card"><b>Activité</b><div class="sm mu">${X.jours} jour(s) travaillé(s)${X.moy?" · "+X.moy.toFixed(1)+" livraison(s) par jour":""}${X.best?" · meilleur jour : "+new Date(X.best[0]+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"short"})+" ("+X.best[1]+")":""}</div></div>
+ ${X.motifs.length?`<div class="card"><b>Échecs : motifs fréquents</b>${X.motifs.map(m=>`<div class="between sm" style="margin-top:4px"><span>${esc(m[0])}</span><b>${m[1]}</b></div>`).join("")}</div>`:""}
+ ${X.zones.length?`<div class="card"><b>Zones les plus livrées</b>${X.zones.map(m=>`<div class="between sm" style="margin-top:4px"><span>${esc(m[0])}</span><b>${m[1]}</b></div>`).join("")}</div>`:""}
+ ${j7.length?`<div class="card"><b>7 derniers jours</b><div style="display:flex;gap:6px;align-items:flex-end;height:90px;margin-top:8px">${j7.map(d=>`<div style="flex:1;text-align:center;font-size:11px"><div style="height:${Math.round(d.n/mx*60)}px;background:var(--b);border-radius:4px 4px 0 0;min-height:2px"></div>${d.n}<br><span class="mu">${esc(d.l)}</span></div>`).join("")}</div></div>`:""}
+ <div class="sm mu" style="margin:6px 0">Statistiques calculées par le bureau à partir de vos courses terminées${STATS&&STATS.maj_le?" (mises à jour à "+new Date(STATS.maj_le).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})+")":""}.</div>`}
+/* ---------- Notifications push : missions, messages du centre et alertes même application fermée (navigateur installé ou application Android) ---------- */
+const VAPID=()=>String((window.ANGELS_PASSERELLE||{}).vapid||"").trim();
+const pushOk=()=>"serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window;
+const cleVapid=b=>{const p="=".repeat((4-b.length%4)%4),r=atob((b+p).replace(/-/g,"+").replace(/_/g,"/")),o=new Uint8Array(r.length);for(let i=0;i<r.length;i++)o[i]=r.charCodeAt(i);return o};
+let PUSHST="";   /* "", "actif", "inactif", "refuse", "indispo", "bureau" */
+async function pushEtat(){if(!pushOk())return PUSHST="indispo";if(!VAPID())return PUSHST="bureau";if(Notification.permission==="denied")return PUSHST="refuse";
+ try{const reg=await navigator.serviceWorker.ready,s=await reg.pushManager.getSubscription();PUSHST=s&&Notification.permission==="granted"?"actif":"inactif"}catch(e){PUSHST="inactif"}return PUSHST}
+async function pushActiver(){if(!pushOk()||!VAPID())return toast("Notifications push non disponibles","err"),false;
+ try{const perm=await Notification.requestPermission();if(perm!=="granted"){PUSHST=perm==="denied"?"refuse":"inactif";toast("Notifications refusées : autorisez-les dans les réglages du navigateur","err");return false}
+  const reg=await navigator.serviceWorker.ready;let s=await reg.pushManager.getSubscription();if(!s)s=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:cleVapid(VAPID())});
+  await api("push-abonner",{action:"abonner",subscription:s.toJSON()});lsSet(LS.n,{on:true,t:Date.now()});PUSHST="actif";toast("Notifications activées : vous serez prévenu même application fermée","ok");return true}
+ catch(x){toast("Activation impossible : "+(x&&x.message||x),"err");return false}}
+async function pushCouper(){try{const reg=await navigator.serviceWorker.ready,s=await reg.pushManager.getSubscription();if(s){try{await api("push-abonner",{action:"desabonner",endpoint:s.endpoint})}catch(e){}await s.unsubscribe()}}catch(e){}lsSet(LS.n,{on:false,t:Date.now()});PUSHST="inactif";toast("Notifications coupées","ok")}
+/* À chaque connexion : si déjà autorisé, on rafraîchit l'abonnement (il peut changer) une fois par jour */
+async function pushEntretien(){try{if(!pushOk()||!VAPID()||Notification.permission!=="granted"||!sb)return;const n=lsGet(LS.n,{});if(n.on===false||(n.t&&Date.now()-n.t<864e5))return;const reg=await navigator.serviceWorker.ready;let s=await reg.pushManager.getSubscription();if(!s)s=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:cleVapid(VAPID())});await api("push-abonner",{action:"abonner",subscription:s.toJSON()});lsSet(LS.n,{on:true,t:Date.now()})}catch(e){}}
+function pushBandeau(){if(PUSHST!=="inactif"||!VAPID()||lsGet(LS.d,0)||Notification.permission==="denied")return"";return`<div class="al" style="background:#e3f2fd;color:#7a1d17">🔔 <b>Activez les notifications</b> pour recevoir vos missions et les messages du centre même application fermée. <a href="#" data-a="pushon">Activer</a> · <a href="#" data-a="pushnon">Plus tard</a></div>`}
+function pushCarte(){const E={actif:`<span style="color:var(--ok)">✔ actives</span>`,inactif:"désactivées",refuse:`<span style="color:var(--er)">✖ refusées</span> : autorisez-les dans les réglages du navigateur`,indispo:"non disponibles sur cet appareil",bureau:"non configurées par le bureau",""
+:"vérification…"}[PUSHST]||"";
+ return`<div class="card"><b>🔔 Notifications sur le téléphone</b><div class="sm mu" style="margin:4px 0 8px">Missions, messages du centre et alertes, même quand l'application est fermée.</div><div>État : ${E}</div>
+  ${PUSHST==="actif"?'<button class="btn ghost" data-a="pushoff">🔕 Couper les notifications</button><button class="btn ghost" data-a="pushtest">🔔 Tester</button>':PUSHST==="inactif"?'<button class="btn" data-a="pushon">🔔 Activer les notifications</button>':""}</div>`}
+function reglagesHtml(){const st=GPSST==="granted"?'<span style="color:var(--ok)">✔ autorisé</span>':GPSST==="denied"?'<span style="color:var(--er)">✖ refusé</span> : autorisez la localisation dans les réglages du navigateur (icône à gauche de l\'adresse)':GPSST==="prompt"?"à demander":"inconnu";
+ const sd=ANGELS_SIGNAL.dev();
+ return`<h2 class="pg">GPS et compte</h2>
+ <div class="card"><b>📍 GPS</b><div class="sm mu" style="margin:4px 0 8px">Votre position n'est partagée avec le bureau que pendant une course en cours, et sert au calcul du meilleur itinéraire.</div>
+  <div>Autorisation du téléphone : ${st}</div><button class="btn" data-a="gpsact">📍 Activer le GPS</button>
+  <label class="chk" style="margin-top:12px"><input type="checkbox" data-gp="1" ${gpsOn()?"checked":""}><span>Partager ma position avec le bureau pendant les courses</span></label></div>
+ ${pushCarte()}
+ <div class="card"><b>🔑 Compte</b><button class="btn ghost" data-a="mdp">Changer mon mot de passe</button></div>
+ <div class="card"><b>🔔 Alertes des nouvelles missions</b><button class="btn ghost" data-a="sons">${sonIcone()} Son : ${sd.mute?"coupé":sd.vol<=.5?"moyen":"fort"} (toucher pour changer)</button><button class="btn ghost" data-a="voix">${voixIcone()} Lecture vocale : ${sd.voice?"activée":"coupée"}</button></div>
+ <div class="inst"></div>`}
+const drawerHtml=(n,f)=>`<div class="dr"><div class="bk" data-a="menu"></div><nav aria-label="Menu"><div class="between"><b>${esc((moi&&moi.nom)||"Livreur")}</b><button class="btn ghost bg" data-a="menu" aria-label="Fermer le menu">✕</button></div>
+ <button class="mi ${PAGE==="cours"?"on":""}" data-a="page" data-r="cours">📋 Commandes en cours et meilleur itinéraire<span class="bd">${n}</span></button>
+ <button class="mi ${PAGE==="recent"?"on":""}" data-a="page" data-r="recent">✅ Traitées récemment<span class="bd">${f}</span></button>
+ <button class="mi ${PAGE==="chat"?"on":""}" data-a="page" data-r="chat">💬 Messages du centre${chatNonLus()?`<span class="bd">${chatNonLus()}</span>`:""}</button>
+ <button class="mi ${PAGE==="plan"?"on":""}" data-a="page" data-r="plan">📅 Planning et pauses</button>
+ <button class="mi ${PAGE==="gains"?"on":""}" data-a="page" data-r="gains">💰 Mes gains et ma prime</button>
+ <button class="mi ${PAGE==="stats"?"on":""}" data-a="page" data-r="stats">📊 Mes statistiques</button>
+ <button class="mi ${PAGE==="reglages"?"on":""}" data-a="page" data-r="reglages">⚙ GPS, mot de passe et alertes</button>
+ <button class="mi" data-a="incident">⚠ Signaler un incident</button>
+ <button class="mi er" data-a="quitter">⏻ Déconnexion</button><div class="sm mu sanix" style="padding:10px 14px">Logiciel développé par <b>Sanix Africa Division Technologies</b> · WhatsApp : +225 0779181075 / 0140017751</div></nav></div>`;
+function vueMissions(){if(!user)return;const L=missions.map(surcouche),act=L.filter(m=>ACTIFS.includes(m.statut)).sort((a,b)=>(a.statut==="affectee"?0:1)-(b.statut==="affectee"?0:1)),fin=L.filter(m=>!ACTIFS.includes(m.statut)).slice(0,15);
+ const aEnc=act.reduce((s,m)=>s+(+(m.payload||{}).montant_attendu||0),0);
+ const alertes=`${pushBandeau()}${chatBandeau()}${pauseBandeau()}${boostBandeau()}${!enLigne()?`<div class="al">📡 <b>Hors ligne</b> — vous voyez les missions du ${esc((cache()||{t:Date.now()}).t?heureC((cache()||{t:Date.now()}).t):"")} ; vos actions sont gardées sur le téléphone et partiront au retour du réseau.</div>`:""}${file().length?`<div class="al">⏳ <b>${file().length}</b> action(s) en attente d'envoi.</div>`:""}${rejets().map(r=>`<div class="al er">❌ Action refusée par le serveur : ${esc(r.msg)} <button class="btn ghost" style="margin-top:6px" data-a="rejOk" data-r="${esc(r.id)}">J'ai compris</button></div>`).join("")}${erreur?`<div class="al">${esc(erreur)}</div>`:""}`;
+ const corps=PAGE==="recent"?`<h2 class="pg">Traitées récemment</h2>${fin.length?fin.map(carte).join(""):'<div class="card mu">Aucune commande traitée récemment.</div>'}`
+  :PAGE==="reglages"?reglagesHtml()
+  :PAGE==="stats"?statsHtml()
+  :PAGE==="gains"?gainsHtml()
+  :PAGE==="plan"?planHtml()
+  :PAGE==="chat"?chatHtml()
+  :`<h2 class="pg">Commandes en cours</h2>${aEnc?`<div class="al">Montants à encaisser : <b>${fcfa(aEnc)}</b></div>`:""}${itinCard()}${act.length?act.map(carte).join(""):'<div class="card mu">Aucune mission pour le moment. Les nouvelles missions apparaissent ici automatiquement.</div>'}`;
+ $("#app").innerHTML=`<div class="hd"><div><b>${esc((moi&&moi.nom)||"Livreur")}</b><small>${act.length} mission(s) à faire</small></div><button class="btn ghost bg" data-a="menu" aria-label="Ouvrir le menu" aria-expanded="${MENU}">☰</button></div>${MENU?drawerHtml(act.length,fin.length):""}<div class="wrap">${PAGE==="reglages"?"":'<div class="inst"></div>'}${alertes}${corps}</div><button type="button" class="sosb" data-a="sos" aria-label="Alerte SOS">🆘<small>SOS</small></button>`}
+document.addEventListener("change",e=>{const t=e.target;if(t.dataset&&t.dataset.it!=null){ITIN.sel=ITIN.sel||new Set();if(t.checked){if(ITIN.sel.size>=10){t.checked=false;return toast("10 commandes au plus par itinéraire","err")}ITIN.sel.add(t.dataset.it)}else ITIN.sel.delete(t.dataset.it);ITIN.res=null}
+ else if(t.dataset&&t.dataset.gp!=null){lsSet(LS.g,{on:t.checked});if(!t.checked&&watch!=null&&navigator.geolocation){navigator.geolocation.clearWatch(watch);watch=null}else suivi();toast(t.checked?"Partage de la position activé pendant les courses":"Partage de la position coupé","ok")}});
+addEventListener("keydown",e=>{if(e.key==="Escape"&&MENU){MENU=false;if(user)vueMissions()}});
+function mission(r){return missions.find(m=>m.livraison_ref===r)}
+async function envoyer(r,type,donnees,ok){
+ try{if(!sb||!enLigne()){const e=new Error("hors ligne");e.reseau=true;throw e}
+  const j=await api("mission-action",{livraison_ref:r,type,donnees:donnees||{}});ferme();ouvert=null;toast(ok||"Enregistré","ok");await charger();return j}
+ catch(x){if(x.reseau){mettreEnFile(r,type,donnees);ferme();ouvert=null;toast("📡 Hors ligne : action gardée sur le téléphone, elle partira au retour du réseau","ok");vueMissions();return null}toast(x.message,"err")}}
+let vidage=false;
+async function vider(){if(vidage||!sb||!enLigne()||!file().length)return;vidage=true;let n=0;
+ try{for(;;){const f=file()[0];if(!f)break;
+  try{await api("mission-action",{livraison_ref:f.ref,type:f.type,donnees:f.donnees});lsSet(LS.f,file().slice(1));n++}
+  catch(x){if(x.reseau||x.status===401)break;lsSet(LS.f,file().slice(1));if(f.type!=="position"){const R=rejets();R.push({id:f.id,msg:f.type+" — "+f.cmd+" : "+x.message});lsSet(LS.r,R.slice(-20))}}}}
+ finally{vidage=false}
+ if(n)toast(n+" action(s) envoyée(s)","ok");await charger()}
+const motifsOpt=m=>(((m||{}).payload||{}).motifs||["Client injoignable","Adresse introuvable","Client absent"]).map(x=>`<option>${esc(x)}</option>`).join("");
+const formModal=(titre,champs,bouton,onok)=>{ouvert=1;const o=modal(`<h3 style="margin-top:0">${esc(titre)}</h3><form>${champs}<button class="btn" type="submit">${esc(bouton)}</button><button class="btn ghost" type="button" data-x>Annuler</button></form>`);o.querySelector("[data-x]").onclick=()=>{ferme();ouvert=null};o.querySelector("form").onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector("button[type=submit]");b.disabled=true;await onok(Object.fromEntries(new FormData(e.target)));b.disabled=false};return o};
+/* ---------- Preuves de livraison : scan des colis, signature (livreur ou client sur son téléphone), photo, position ---------- */
+const PV={};let PVPOLL=0;
+const pvDe=r=>PV[r]||(PV[r]={collecte:[],remise:[],photo:"",cli:null});
+const charge=src=>new Promise((ok,ko)=>{if(document.querySelector('script[data-l="'+src+'"]'))return ok();const s=document.createElement("script");s.src=src;s.dataset.l=src;s.onload=ok;s.onerror=()=>ko(new Error("Chargement impossible : "+src));document.head.appendChild(s)});
+const CAM={stream:null,raf:0};
+function camStop(){if(CAM.stream){CAM.stream.getTracks().forEach(t=>t.stop());CAM.stream=null}if(CAM.raf){cancelAnimationFrame(CAM.raf);CAM.raf=0}}
+async function camStart(el,onCode){camStop();
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){el.innerHTML='<div class="al sm">Caméra indisponible : saisissez le code de 5 caractères imprimé sous le QR.</div>';return}
+ el.innerHTML='<video playsinline muted style="width:100%;border-radius:10px;background:#000;max-height:240px"></video><canvas hidden></canvas>';
+ const v=el.querySelector("video"),cv=el.querySelector("canvas"),cx=cv.getContext("2d",{willReadFrequently:true}),bd="BarcodeDetector" in window?new BarcodeDetector({formats:["qr_code"]}):null;
+ if(!bd){try{await charge("jsqr.js")}catch(e){}}
+ try{CAM.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false})}catch(e){el.innerHTML='<div class="al sm">Caméra refusée ou absente : saisissez le code de 5 caractères imprimé sous le QR.</div>';return}
+ v.srcObject=CAM.stream;v.play().catch(()=>{});let last="",lt=0,busy=false;
+ const tick=async()=>{if(!CAM.stream)return;
+  if(v.readyState>=2&&!busy){busy=true;let txt=null;
+   try{if(bd){const r=await bd.detect(v);if(r[0])txt=r[0].rawValue}
+    if(!txt&&window.jsQR){const k=Math.min(1,640/v.videoWidth);cv.width=Math.round(v.videoWidth*k);cv.height=Math.round(v.videoHeight*k);cx.drawImage(v,0,0,cv.width,cv.height);const im=cx.getImageData(0,0,cv.width,cv.height),r=jsQR(im.data,im.width,im.height,{inversionAttempts:"dontInvert"});if(r)txt=r.data}}catch(e){}
+   busy=false;if(txt&&(txt!==last||Date.now()-lt>2500)){last=txt;lt=Date.now();onCode(txt)}}
+  CAM.raf=requestAnimationFrame(tick)};tick()}
+const colisHtml=(ph,tot)=>`<div class="sec" style="margin-top:10px"><b>📦 ${ph==="collecte"?"Scannez chaque colis à la prise en charge":"Scannez les colis remis au client"}</b></div><div id="cp_l"></div><div id="cp_box"></div>
+ <button type="button" class="btn ghost" id="cp_cam">📷 Scanner avec la caméra</button><div style="display:flex;gap:6px;margin-top:6px"><input id="cp_man" placeholder="Code sous le QR (5 caractères)" maxlength="5" autocapitalize="characters" autocomplete="off" style="text-transform:uppercase"><button type="button" class="btn ghost" id="cp_ok" style="width:auto">Valider</button></div>`;
+function colisBind(o,r,ph,tot,num){const L=pvDe(r)[ph],lst=o.querySelector("#cp_l");L.length=0;
+ const dessine=()=>{lst.innerHTML=Array.from({length:tot},(_,i)=>{const k=L.find(x=>x.n===i+1);return`<div class="pill sm" style="${k?"background:#e8f7ee":""}">${k?"✅":"☐"} Colis ${i+1}/${tot}${k?` <span class="mu">(${k.mode==="scan"?"scanné":"saisi"})</span>`:""}</div>`}).join("")};
+ const take=txt=>{txt=String(txt||"").trim().toUpperCase();const m=/^AGE1\|([^|]+)\|(\d+)\/(\d+)\|([A-Z0-9]{5})$/.exec(txt);let n,mode;
+  if(m){if(m[1]!==String(num).toUpperCase())return toast("Ce colis appartient à la commande "+m[1]+", pas à "+num,"err");n=+m[2];mode="scan";if(n<1||n>tot)return toast("Étiquette de colis inconnue pour cette commande","err")}
+  else if(/^[A-Z0-9]{5}$/.test(txt)){n=0;for(let i=1;i<=tot&&!n;i++)if(!L.some(x=>x.n===i))n=i;mode="saisi";if(!n)return toast("Tous les colis sont déjà validés")}
+  else return toast("Code illisible : QR de colis ou 5 caractères","err");
+  if(L.some(x=>x.n===n))return toast("Colis "+n+" déjà validé");
+  L.push({n,txt,mode});try{navigator.vibrate&&navigator.vibrate(60)}catch(e){}dessine();
+  if(L.length===tot){camStop();o.querySelector("#cp_box").innerHTML='<div class="al" style="background:#e8f7ee">Tous les colis sont validés ✔</div>'}};
+ dessine();o.querySelector("#cp_cam").onclick=()=>camStart(o.querySelector("#cp_box"),take);
+ const man=()=>{const i=o.querySelector("#cp_man");if(i.value.trim()){take(i.value);i.value=""}};o.querySelector("#cp_ok").onclick=man;o.querySelector("#cp_man").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();man()}}}
+const scansDe=(r,ph)=>pvDe(r)[ph].map(x=>({txt:x.txt,mode:x.mode}));
+/* photo du colis remis : réduite et compressée sur le téléphone (JPEG ≤ 80 Ko) */
+function photoReduire(f){return new Promise((ok,ko)=>{if(!f||!/^image\//.test(f.type))return ko(new Error("Ce fichier n'est pas une image"));const u=URL.createObjectURL(f),im=new Image();
+ im.onload=()=>{try{const k=Math.min(1,640/Math.max(im.naturalWidth,im.naturalHeight)),w=Math.max(1,Math.round(im.naturalWidth*k)),h=Math.max(1,Math.round(im.naturalHeight*k)),c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(im,0,0,w,h);
+  let q=.7,d=c.toDataURL("image/jpeg",q);while(d.length>78000&&q>.25){q-=.08;d=c.toDataURL("image/jpeg",q)}URL.revokeObjectURL(u);d.length>80000?ko(new Error("Photo trop lourde")):ok(d)}catch(e){ko(e)}};im.onerror=()=>{URL.revokeObjectURL(u);ko(new Error("Image illisible"))};im.src=u})}
+const preuveChamps=(p,r)=>{const tot=p.exige_colis&&p.colis_total>0?p.colis_total:0;
+ return(tot?colisHtml("remise",tot):"")+`<div class="sec" style="margin-top:10px"><b>✍ Signature du destinataire</b>${p.exige_signature?" <span class='mu'>(obligatoire)</span>":""}</div><div id="sg_cli"></div>
+ <canvas id="sg" width="440" height="150" style="width:100%;height:150px;border:2px dashed #9db0b8;border-radius:10px;background:#fff;touch-action:none"></canvas>
+ <div style="display:flex;gap:6px;margin-top:6px"><button type="button" class="btn ghost" id="sg_clr" style="width:auto">Effacer</button><button type="button" class="btn ghost" id="sg_qr">📲 Faire signer sur le téléphone du client</button></div><div id="sg_box"></div>
+ <label style="margin-top:10px">📷 Photo du colis remis (recommandé)<input type="file" accept="image/*" capture="environment" id="ph_in"></label><div id="ph_pv"></div>`};
+function preuveBind(o,r,p,num){const pv=pvDe(r),tot=p.exige_colis&&p.colis_total>0?p.colis_total:0;pv.cli=null;pv.photo="";if(tot)colisBind(o,r,"remise",tot,num);
+ const cv=o.querySelector("#sg"),x=cv.getContext("2d");x.lineWidth=3;x.lineCap="round";x.lineJoin="round";x.strokeStyle="#10242c";let dr=false;cv._any=false;
+ const pt=e=>{const b=cv.getBoundingClientRect();return[(e.clientX-b.left)*cv.width/b.width,(e.clientY-b.top)*cv.height/b.height]};
+ cv.onpointerdown=e=>{dr=true;cv.setPointerCapture(e.pointerId);const[a,b]=pt(e);x.beginPath();x.moveTo(a,b);x.lineTo(a+.1,b+.1);x.stroke();cv._any=true};
+ cv.onpointermove=e=>{if(!dr)return;const[a,b]=pt(e);x.lineTo(a,b);x.stroke()};cv.onpointerup=cv.onpointercancel=()=>{dr=false};
+ o.querySelector("#sg_clr").onclick=()=>{x.clearRect(0,0,cv.width,cv.height);cv._any=false};
+ o.querySelector("#ph_in").onchange=async e=>{const f=e.target.files[0],b=o.querySelector("#ph_pv");if(!f)return;try{pv.photo=await photoReduire(f);b.innerHTML=`<img alt="Photo du colis" src="${pv.photo}" style="max-width:120px;border-radius:8px;margin-top:6px">`}catch(x){pv.photo="";b.textContent=x.message}};
+ o.querySelector("#sg_qr").onclick=async()=>{const box=o.querySelector("#sg_box");if(!sb||!enLigne())return toast("Réseau indispensable pour la signature sur le téléphone du client : utilisez la signature à l'écran","err");
+  try{const j=await api("mission-action",{livraison_ref:r,type:"demande_signature",donnees:{}});await charge("qrcode.js");const q=qrcode(0,"M");q.addData(location.origin+"/signer?t="+j.jeton);q.make();
+   box.innerHTML=`<div style="display:flex;gap:12px;align-items:center;margin-top:8px"><div style="width:170px;background:#fff;padding:6px;border-radius:8px">${q.createSvgTag({scalable:true,margin:0})}</div><div class="sm">Le client scanne ce QR avec <b>son</b> téléphone, signe, puis vous donne son code.<div id="sg_st" style="margin-top:6px;color:#b86e00">⏳ En attente de la signature du client…</div></div></div>`;
+   clearInterval(PVPOLL);const fin=Date.parse(j.expire)||Date.now()+9e5;
+   PVPOLL=setInterval(async()=>{const st=o.querySelector("#sg_st");if(!st||!document.body.contains(o)){clearInterval(PVPOLL);return}
+    if(Date.now()>fin){clearInterval(PVPOLL);st.textContent="Lien expiré : touchez de nouveau le bouton pour un nouveau QR.";return}
+    try{const e=await api("mission-action",{livraison_ref:r,type:"signature_etat",donnees:{}});if(e.signee){clearInterval(PVPOLL);pv.cli={nom:e.nom||""};st.style.color="#118a4b";st.textContent="✅ Signé par "+e.nom+" sur son téléphone";
+      o.querySelector("#sg_cli").innerHTML=`<div class="al" style="background:#e8f7ee">✅ Le client <b>${esc(e.nom)}</b> a signé sur son téléphone.</div>`;cv.style.display="none";o.querySelector("#sg_clr").style.display="none";
+      const rp=o.querySelector("[name=recu_par]");if(rp&&!rp.value)rp.value=e.nom;try{navigator.vibrate&&navigator.vibrate([80,40,80])}catch(e){}}}catch(e){}},3000)}
+  catch(e){toast(e.message,"err")}}}
+async function preuveCollecter(r,p,o){const pv=pvDe(r),cv=o.querySelector("#sg"),tot=p.exige_colis&&p.colis_total>0?p.colis_total:0;
+ if(tot&&pv.remise.length<tot)return{err:"Scannez les "+tot+" colis remis ("+pv.remise.length+" validés)"};
+ const sig=!pv.cli&&cv&&cv._any?cv.toDataURL("image/png"):"";if(p.exige_signature&&!pv.cli&&!sig)return{err:"Signature du destinataire obligatoire : signez à l'écran ou faites signer sur le téléphone du client"};
+ const g=await posActuelle();return{d:{scans:tot?scansDe(r,"remise"):undefined,signature:sig||undefined,photo:pv.photo||undefined,gps:g?{lat:g.lat,lng:g.lng}:undefined}}}
+const ACT={
+ sos:()=>sosOuvrir(),
+ pushon:async()=>{await pushActiver();vueMissions()},pushoff:async()=>{await pushCouper();vueMissions()},pushnon:()=>{lsSet(LS.d,1);vueMissions()},
+ pushtest:async()=>{try{const reg=await navigator.serviceWorker.ready;await reg.showNotification("🔔 Test",{body:"Les notifications fonctionnent sur ce téléphone.",tag:"test",icon:"icons/livreur-192.png",data:{u:"livreur.html"}})}catch(e){toast("Test impossible : "+e.message,"err")}},
+ msgc:r=>msgClient(r),chatsend:()=>{const i=document.getElementById("chin");if(i)chatEnvoyer(i.value)},chatq:r=>chatEnvoyer(QCH[+r]),
+ plan:r=>{const a=String(r).split("|");if(a.length===3)plReserverApp(a[0],a[1],a[2])},pause:r=>pauseApp(+r),reprise:()=>reprendreApp(),
+ voix:()=>{const d=ANGELS_SIGNAL.dev();ANGELS_SIGNAL.setDev({voice:!d.voice});if(!d.voice)ANGELS_SIGNAL.parler("Lecture vocale activée",{force:true});vueMissions()},
+ sons:()=>{const d=ANGELS_SIGNAL.dev();if(d.mute)ANGELS_SIGNAL.setDev({mute:false,vol:.5});else if(d.vol<=.5)ANGELS_SIGNAL.setDev({vol:1});else ANGELS_SIGNAL.setDev({mute:true});ANGELS_SIGNAL.jouer("bip",{rep:1,vib:false});vueMissions()},
+ posclient:async r=>{const t=Date.now();const x=await envoyer(r,"incident",{nature:"Position du client",description:"Demande de la position GPS du client (envoyer le lien de partage)"},"Demande envoyée au bureau : vous pouvez partir, la position s'affichera ici.");if(x!==undefined){const P=lsGet(LS.p,{});P[r]=t;lsSet(LS.p,P)}vueMissions()},
+ menu:()=>{MENU=!MENU;vueMissions()},
+ sp:r=>{SP=["j","s7","m30","mois"].includes(r)?r:"s7";vueMissions()},
+ page:r=>{PAGE=["cours","recent","reglages","stats","gains","plan","chat"].includes(r)?r:"cours";if(PAGE==="reglages")pushEtat().then(()=>{if(PAGE==="reglages"&&!ouvert&&user)vueMissions()});if(PAGE==="chat")lsSet(LS.v,Math.max(Date.now(),...CHAT().map(m=>Date.parse(m.ts)||0)));MENU=false;vueMissions();try{window.scrollTo(0,0)}catch(e){}},
+ gpsact:()=>{if(!navigator.geolocation)return toast("GPS indisponible sur cet appareil","err");
+  navigator.geolocation.getCurrentPosition(()=>{lsSet(LS.g,{on:true});GPSST="granted";toast("GPS activé : votre position est disponible","ok");suivi();vueMissions()},e=>{if(e&&e.code===1)GPSST="denied";toast(e&&e.code===1?"GPS refusé : autorisez la localisation dans les réglages du navigateur":"Position introuvable : sortez à l'air libre ou activez la localisation du téléphone","err");vueMissions()},{enableHighAccuracy:true,timeout:15000})},
+ itincalc:async()=>{const E=eligibles().filter(m=>ITIN.sel&&ITIN.sel.has(m.livraison_ref));if(!E.length)return toast("Cochez au moins une commande","err");if(ITIN.busy)return;ITIN.busy=true;vueMissions();
+  const dep=await posActuelle(),stops=E.map(m=>{const a=(m.payload||{}).adr||{},c=coord(a.gps);return{ref:m.livraison_ref,num:m.commande_ref,lbl:[a.quartier,a.zone].filter(Boolean).join(", ")||"adresse",lat:c?c.lat:null,lng:c?c.lng:null,txt:[a.quartier,a.zone,"Abidjan"].filter(Boolean).join(", ")}});
+  const ordre=ordreItineraire(dep,stops);let prev=dep;ordre.forEach(s=>{s.km=s.lat!=null&&prev?hav(prev,s):null;if(s.lat!=null)prev=s});
+  ITIN.res={ordre,url:itinURL(ordre),depart:!!dep};ITIN.busy=false;vueMissions()},
+ accepter:r=>envoyer(r,"accepter",{},"Mission acceptée"),
+ demarrer:r=>envoyer(r,"demarrer",{},"Course démarrée"),
+ refuser:r=>formModal("Mission impossible",`<label>Motif<select name="motif">${motifsOpt(mission(r))}</select></label><label>Précision (facultatif)<input name="p"></label>`,"Refuser",d=>envoyer(r,"refuser",{motif:d.motif+(d.p?" — "+d.p:"")},"Mission refusée")),
+ prise:r=>{const m=mission(r),p=m.payload||{},tot=p.exige_colis&&p.colis_total>0?p.colis_total:0;
+  const o=formModal("Colis pris en charge",(tot?colisHtml("collecte",tot)+`<input type="hidden" name="nb" value="${tot}">`:`<label>Nombre de colis<input type="number" name="nb" min="1" max="99" value="${p.nb_colis||1}" required></label>`)+`<label>État des colis<select name="etat"><option>Conforme</option><option>Endommagé</option><option>Incomplet</option></select></label>`,"Valider",d=>{
+   if(tot&&pvDe(r).collecte.length<tot)return toast("Scannez les "+tot+" colis ("+pvDe(r).collecte.length+" validés)","err");
+   return envoyer(r,"prise_en_charge",{nb_colis:+d.nb,etat:d.etat,scans:tot?scansDe(r,"collecte"):undefined},"Colis pris en charge")});if(tot)colisBind(o,r,"collecte",tot,m.commande_ref)},
+ echec:r=>formModal("Livraison impossible",`<label>Motif<select name="motif">${motifsOpt(mission(r))}</select></label><label>Observation<textarea name="obs" rows="2"></textarea></label>`,"Déclarer l'échec",d=>{if(/injoignable|absent|ne répond/i.test(d.motif||"")){const man=ctManque((mission(r)||{}).payload||{});if(man.length){toast("Échec refusé : "+man.join(" ; "),"err");return}}return envoyer(r,"echec",{motif:d.motif,obs:d.obs},"Échec enregistré")}),
+ arrive:r=>envoyer(r,"arrive",{},"Arrivée enregistrée"),
+ norep:r=>envoyer(r,"rappel_client",{motif:"Je suis arrivé : le client ne répond pas"},"Le centre est prévenu : il rappelle le client. Patientez sur place."),
+ codenr:async r=>{const x=await envoyer(r,"incident",{nature:"Code client",description:"Code de réception non reçu ou client sans smartphone"},"Le centre est prévenu : il contacte le client et vous libère le code.");if(x!==undefined){const P=lsGet(LS.p,{});P["c:"+r]=Date.now();lsSet(LS.p,P)}vueMissions()},
+ confirmer:r=>{const m=mission(r),p=m.payload||{};const o=formModal("Confirmer la livraison",`<div class="pill">À encaisser : <b>${fcfa(p.montant_attendu)}</b></div>${p.code_libere?`<div class="al" style="background:#e8f7ee">🔑 Code libéré par le centre après vérification auprès du client.</div>`:""}<label>Code donné par le client<input name="code" inputmode="numeric" autocomplete="off" required value="${esc(p.code_libere||"")}"></label>${p.montant_attendu>0?`<label>Montant encaissé (F)<input type="number" name="montant" min="0" value="${+p.montant_attendu||0}" required></label><label>Mode de paiement<select name="mode">${(p.modes||["Espèces"]).map(x=>`<option>${esc(x)}</option>`).join("")}</select></label><label>Référence de la transaction Mobile Money (si applicable)<input name="ref" autocomplete="off"></label><label>Explication si le montant diffère<input name="ecart_note"></label>`:`<input type="hidden" name="montant" value="0">`}<label>Nom de la personne ayant reçu<input name="recu_par" required></label><label>Observation<input name="obs"></label>${preuveChamps(p,r)}`,"Confirmer",async d=>{const c=await preuveCollecter(r,p,o);if(c.err)return toast(c.err,"err");
+   const x=await envoyer(r,"confirmer",Object.assign({code:d.code,montant:d.montant,mode:d.mode||"",ref:d.ref||"",recu_par:d.recu_par,obs:d.obs||"",ecart_note:d.ecart_note||""},c.d),"Livraison confirmée");if(x!==undefined)delete PV[r]});preuveBind(o,r,p,m.commande_ref)},
+ incident:()=>formModal("Signaler un incident",`<label>Nature<select name="nature"><option>Accident</option><option>Panne</option><option>Litige client</option><option>Sécurité</option><option>Autre</option></select></label><label>Mission concernée<select name="r"><option value="">—</option>${missions.filter(m=>ACTIFS.includes(m.statut)).map(m=>`<option value="${esc(m.livraison_ref)}">${esc(m.commande_ref)}</option>`).join("")}</select></label><label>Description<textarea name="description" rows="3" required></textarea></label>`,"Envoyer",d=>{const r=d.r||(missions.find(m=>ACTIFS.includes(m.statut))||{}).livraison_ref;if(!r){toast("Aucune mission active à rattacher","err");return}return envoyer(r,"incident",{nature:d.nature,description:d.description},"Incident transmis au bureau")}),
+ appeler:async r=>{const m=mission(r),p=(m||{}).payload||{};try{const t=(await sb.auth.getSession()).data.session.access_token;const x=await fetch(FN+"appel-pont",{method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+t,apikey:CFG.key},body:JSON.stringify({commande:m.commande_ref,livreur_id:m.livreur_ref,cle:p.cle_appel})});const j=await x.json().catch(()=>({}));if(x.ok&&j.ok)toast(j.message||"Votre téléphone va sonner","ok");else toast(j.erreur||"Appel impossible : contactez le bureau","err")}catch(e){toast("Appel impossible : "+e.message,"err")}},
+ mdp:()=>vueChangement(),
+ rejOk:id=>{lsSet(LS.r,rejets().filter(x=>x.id!==id));vueMissions()},
+ quitter:async()=>{if(file().length&&!confirm(file().length+" action(s) n'ont pas encore été envoyées au serveur. Se déconnecter les PERDRA. Continuer ?"))return;arreter();PAGE="cours";MENU=false;ITIN={sel:null,res:null,busy:false};try{if(sb)await sb.auth.signOut()}catch(e){}[LS.c,LS.f,LS.r].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});user=null;vueLogin()}
+};
+document.addEventListener("click",e=>{const b=e.target.closest("[data-a]");if(!b)return;const f=ACT[b.dataset.a];if(f){if(b.tagName==="A")e.preventDefault();f(b.dataset.r)}});
+
+/* ---------- Position (uniquement pendant une course en cours) ---------- */
+function suivi(){const enCours=missions.find(m=>m.statut==="en_cours");if(!enCours||!navigator.geolocation||!gpsOn()){if(watch!=null){navigator.geolocation.clearWatch(watch);watch=null}return}
+ if(watch!=null)return;watch=navigator.geolocation.watchPosition(p=>{if((p.coords.accuracy||0)>1000)return;/* position inexploitable (pas de GPS) */try{secuPos(p)}catch(e){}if(Date.now()-derPos<30000)return;const m=missions.find(x=>x.statut==="en_cours");if(!m)return;derPos=Date.now();(enLigne()&&sb?api("mission-action",{livraison_ref:m.livraison_ref,type:"position",donnees:{lat:p.coords.latitude,lng:p.coords.longitude,precision:p.coords.accuracy}}):Promise.reject({reseau:true})).catch(x=>{if(x&&x.reseau)mettreEnFile(m.livraison_ref,"position",{lat:p.coords.latitude,lng:p.coords.longitude,precision:p.coords.accuracy})})},()=>{},{enableHighAccuracy:true,maximumAge:15000})}
+function arreter(){clearInterval(timer);timer=null;if(watch!=null&&navigator.geolocation)navigator.geolocation.clearWatch(watch);watch=null}
+
+async function demarrer(){const{data}=await sb.auth.getSession();user=data&&data.session&&data.session.user;if(!user)return vueLogin();
+ if(user.user_metadata&&user.user_metadata.chg){const r=await sb.from("pg_livreurs").select("livreur_ref,nom").maybeSingle();moi=r.data;return vueChangement()}
+ const r=await sb.from("pg_livreurs").select("livreur_ref,nom").maybeSingle();moi=r.data;if(!moi){await sb.auth.signOut();user=null;return vueLogin("Compte livreur inactif ou introuvable. Contactez le bureau.")}
+ {const c0=lsGet(LS.c,null);if(c0&&c0.uid&&c0.uid!==user.id){[LS.c,LS.f,LS.r].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}})}}
+ await vider();await charger();suivi();pushEtat().then(()=>{pushEntretien();if(user&&!ouvert)vueMissions()});clearInterval(timer);timer=setInterval(async()=>{await vider();await charger();suivi()},20000)}
+function hors(c){user={id:c.uid};moi=c.moi;missions=recevoir(c.missions||[]);erreur="";vueMissions();clearInterval(timer);timer=setInterval(()=>{if(enLigne())reprendre();else vueMissions()},20000)}
+async function reprendre(){try{if(!sb){await loadSb();sb=window.supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true}})}await demarrer()}catch(e){}}
+addEventListener("online",()=>{reprendre()});addEventListener("offline",()=>{if(user)vueMissions()});
+(async()=>{if(!CFG.url||!CFG.key){$("#app").innerHTML='<div class="wrap"><div class="al er">Configuration manquante (passerelle-config.js).</div></div>';return}
+ const c=cache();if(!enLigne()&&c)return hors(c);
+ try{await loadSb();sb=window.supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true}});await demarrer()}catch(e){if(c&&(!enLigne()||/Connexion Internet/.test(e.message)))return hors(c);vueLogin(enLigne()?e.message:"Connexion Internet requise pour se connecter")}})();
+/* Installation sur l'écran d'accueil (Android/Chrome : invite native ; iPhone : consigne Partager > Sur l'écran d'accueil) */
+let IPROMPT=null;
+const standalone=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+const estIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.MSStream;
+function majInstall(){let h="";
+ if(!standalone()&&/^https?:$/.test(location.protocol)){
+  if(IPROMPT)h='<button type="button" class="btn ghost" data-a="installer">📲 Installer l\'application Livreur</button>';
+  else if(estIOS())h='<div class="al">📲 Pour installer : touchez <b>Partager</b> puis <b>Sur l\'écran d\'accueil</b>.</div>'}
+ document.querySelectorAll(".inst").forEach(e=>{e.innerHTML=h;e.style.display=h?"block":"none"})}
+addEventListener("beforeinstallprompt",e=>{e.preventDefault();IPROMPT=e;majInstall()});
+addEventListener("appinstalled",()=>{IPROMPT=null;majInstall()});
+document.addEventListener("click",async e=>{const b=e.target.closest('[data-a="installer"]');if(!b||!IPROMPT)return;IPROMPT.prompt();try{await IPROMPT.userChoice}catch(x){}IPROMPT=null;majInstall()});
+new MutationObserver(()=>{if(document.querySelector(".inst:empty"))majInstall()}).observe(document.getElementById("app"),{childList:true});
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>

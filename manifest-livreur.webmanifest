@@ -1,0 +1,37 @@
+{
+  "id": "./livreur.html",
+  "name": "LOGISTICA — Livreur",
+  "short_name": "Livreur",
+  "description": "Application livreur : missions, actions de livraison, appel client via le pont, fonctionne hors ligne.",
+  "lang": "fr",
+  "start_url": "./livreur.html",
+  "scope": "./livreur.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#7a1d17",
+  "theme_color": "#c8352b",
+  "categories": [
+    "business",
+    "logistics"
+  ],
+  "icons": [
+    {
+      "src": "icons/livreur-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/livreur-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/livreur-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#c8352b">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" type="image/png" href="icons/livreur-192.png">
+<title>Signer la réception de ma livraison — LOGISTICA</title>
+<style>
+:root{--c:#c8352b;--bg:#f2f6f8;--tx:#10242c;--mu:#5c6f78;--ok:#118a4b;--er:#b42318}
+*{box-sizing:border-box}body{margin:0;font:16px/1.45 system-ui,sans-serif;background:var(--bg);color:var(--tx)}
+main{max-width:520px;margin:0 auto;padding:16px 16px 40px}
+.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+h1{font-size:20px;margin:0 0 4px}h2{font-size:16px;margin:14px 0 6px}.mu{color:var(--mu);font-size:14px}
+label{display:block;font-size:14px;margin:10px 0 4px;font-weight:600}input[type=text]{width:100%;padding:12px;font-size:16px;border:1px solid #c5d2d8;border-radius:10px}
+canvas{width:100%;height:180px;border:2px dashed #9db0b8;border-radius:12px;background:#fff;touch-action:none;display:block}
+button{font:inherit;font-weight:700;border:0;border-radius:12px;padding:14px;width:100%;margin-top:10px;background:var(--c);color:#fff}button.g{background:#e6eef1;color:var(--tx)}button:disabled{opacity:.5}
+.er{color:var(--er);margin-top:8px}.ok{background:#e8f7ee;border-radius:12px;padding:14px;color:#0b5c32}ul{padding-left:20px;margin:6px 0}
+</style>
+</head>
+<body>
+<main id="m"><div class="card">Chargement…</div></main>
+<script src="passerelle-config.js"></script>
+<script>
+"use strict";
+const $=id=>document.getElementById(id),esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const T=new URLSearchParams(location.search).get("t")||"",C=window.ANGELS_PASSERELLE,U=C&&/^https:\/\//.test(C.url||"")?C.url.replace(/\/+$/,"")+"/functions/v1/livraison-signer":"";
+const post=async b=>{const r=await fetch(U,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(Object.assign({t:T},b))}),j=await r.json().catch(()=>({}));if(!r.ok||j.ok===false)throw new Error(j.erreur||"Service momentanément indisponible");return j};
+const F=n=>new Intl.NumberFormat("fr-FR").format(Math.round(n))+" F";
+let GPS=null;
+function msg(h){$("m").innerHTML=h}
+function vue(d){
+ msg(`<div class="card"><div class="mu">${esc(d.org)}</div><h1>Signer la réception</h1><p class="mu" style="margin:0">🔒 Lien officiel : aucun paiement, mot de passe ou code n'est demandé ici.</p>
+ <h2>Livraison ${esc(d.numero)}</h2><ul>${d.lignes.map(l=>`<li>${esc(l.qte)} × ${esc(l.desig)}</li>`).join("")}</ul>${d.montant>0?`<p>Montant à régler au livreur : <b>${F(d.montant)}</b></p>`:""}
+ <label for="nom">Votre nom</label><input type="text" id="nom" maxlength="80" autocomplete="name">
+ <label>Signez avec le doigt</label><canvas id="sg" width="900" height="360" aria-label="Zone de signature"></canvas><button type="button" class="g" id="eff">Effacer</button>
+ <button type="button" class="g" id="pos">📍 Confirmer ma position (recommandé)</button><div class="mu" id="ps"></div>
+ <div class="er" id="er" role="alert"></div><button type="button" id="ok">✔ Je confirme avoir reçu ma commande</button>
+ <p class="mu">Ensuite, donnez au livreur le code de confirmation que vous avez reçu.</p></div>`);
+ const cv=$("sg"),x=cv.getContext("2d");x.lineWidth=5;x.lineCap="round";x.lineJoin="round";x.strokeStyle="#10242c";let dr=false,any=false;
+ const pt=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]};
+ cv.onpointerdown=e=>{dr=true;cv.setPointerCapture(e.pointerId);const[a,b]=pt(e);x.beginPath();x.moveTo(a,b);x.lineTo(a+.1,b+.1);x.stroke();any=true};
+ cv.onpointermove=e=>{if(!dr)return;const[a,b]=pt(e);x.lineTo(a,b);x.stroke()};cv.onpointerup=cv.onpointercancel=()=>{dr=false};
+ $("eff").onclick=()=>{x.clearRect(0,0,cv.width,cv.height);any=false};
+ $("pos").onclick=()=>{if(!navigator.geolocation){$("ps").textContent="Position indisponible sur cet appareil.";return}
+  navigator.geolocation.getCurrentPosition(p=>{GPS={lat:p.coords.latitude,lng:p.coords.longitude,precision:p.coords.accuracy};$("ps").textContent="Position enregistrée ✔"},()=>{$("ps").textContent="Position refusée : vous pouvez signer sans."},{enableHighAccuracy:true,timeout:12000})};
+ $("ok").onclick=async()=>{const er=$("er"),b=$("ok");er.textContent="";const nom=$("nom").value.trim();
+  if(nom.length<2)return er.textContent="Indiquez votre nom.";if(!any)return er.textContent="Signez dans le cadre avec le doigt.";
+  b.disabled=true;try{await post({action:"signer",nom,signature:cv.toDataURL("image/png"),gps:GPS});
+   msg(`<div class="card"><div class="ok"><h1>Merci ${esc(nom)} ✔</h1><p>Votre signature est enregistrée. <b>Donnez maintenant le code de confirmation au livreur</b> pour terminer la livraison.</p></div></div>`)}
+  catch(e){er.textContent=e.message;b.disabled=false}}}
+(async()=>{if(!U||!T)return msg('<div class="card"><h1>Lien incomplet</h1><p class="mu">Demandez au livreur d\'afficher à nouveau son QR code.</p></div>');
+ try{vue(await post({action:"voir"}))}catch(e){msg(`<div class="card"><h1>Lien indisponible</h1><p class="mu">${esc(e.message)}</p></div>`)}})();
+</script>
+</body>
+</html>

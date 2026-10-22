@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#7a1d17">
+<link rel="manifest" href="manifest-hub.webmanifest">
+<link rel="icon" type="image/png" href="icons/hub-192.png">
+<link rel="apple-touch-icon" href="icons/hub-apple-180.png">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Logistica"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Hub LOGISTICA</title>
+<style>
+:root{--b:#c8352b;--b2:#7a1d17;--bg:#f1f6f8;--card:#fff;--tx:#1b2240;--mu:#6b7390;--ok:#118a4b;--wa:#b86e00;--bd:#d6e4ea;--g1:#c8352b;--g2:#c2410c;--g3:#15803d}
+@media(prefers-color-scheme:dark){:root{--bg:#0a1a21;--card:#112832;--tx:#e6f0f3;--mu:#93a9b2;--bd:#1f3a46}}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.45 system-ui,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+header{background:linear-gradient(135deg,var(--b2),var(--b));color:#fff;padding:calc(18px + env(safe-area-inset-top)) 16px 28px}
+.w{max-width:1100px;margin:0 auto}
+header h1{margin:0;font-size:22px;letter-spacing:.3px}
+header p{margin:4px 0 0;opacity:.8;font-size:13px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+main{padding:0 16px 40px;margin-top:-16px}
+.cards{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;border-top:5px solid var(--c);text-decoration:none;color:inherit}
+.card h2{margin:0;font-size:17px}
+.card .ic{font-size:30px}
+.card p{margin:0;color:var(--mu);font-size:13px}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.kp div{background:var(--bg);border-radius:10px;padding:8px;text-align:center}
+.kp b{display:block;font-size:19px}
+.kp span{font-size:11px;color:var(--mu)}
+.badge{align-self:flex-start;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:700;background:#e3f5ea;color:var(--ok)}
+.badge.soon{background:#fff1d6;color:var(--wa)}
+.btn{display:block;text-align:center;padding:12px;border-radius:10px;background:var(--c);color:#fff;font-weight:700;text-decoration:none;min-height:44px}
+.btn[aria-disabled=true]{opacity:.45;pointer-events:none}
+h3{margin:26px 0 10px;font-size:15px}
+.mod{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.mod div{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;font-size:13px}
+.cons{margin:0 0 6px;padding-top:26px}td.act{white-space:normal;font-size:12px;min-width:150px;line-height:1.35}.cons h2{margin:22px 0 10px;font-size:16px}
+.big{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin-bottom:12px}
+.big div{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px}.big b{display:block;font-size:20px}.big span{font-size:12px;color:var(--mu)}
+.tw{overflow:auto;border:1px solid var(--bd);border-radius:12px;background:var(--card)}table{width:100%;border-collapse:collapse}th,td{padding:8px 10px;border-bottom:1px solid var(--bd);text-align:right;white-space:nowrap}th:first-child,td:first-child{text-align:left}th{font-size:12px;color:var(--mu)}tr.t td{font-weight:800}
+.nd{color:var(--mu);font-weight:400}.er{color:#c62828;font-weight:700}.ok{color:var(--ok);font-weight:700}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.tab{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:99px;padding:8px 14px;font:inherit;font-weight:700;min-height:40px;cursor:pointer}.tab.on{background:var(--c);color:#fff;border-color:var(--c)}.pill{font-style:normal;background:#c62828;color:#fff;border-radius:99px;padding:0 7px;font-size:11px;margin-left:4px}
+.two{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}.pan{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px}.pan h4{margin:0 0 10px;font-size:13px;color:var(--mu)}
+.bars{display:flex;align-items:flex-end;gap:8px;height:150px}.bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;font-size:11px;color:var(--mu)}.bar i{display:block;width:100%;min-height:2px;border-radius:5px 5px 0 0}.bar em{font-style:normal;margin-top:4px}.bar small{font-size:10px}
+.det{list-style:none;margin:0;padding:0}.det li{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd);font-size:13px}.det li:last-child{border:0}
+.note{font-size:12px;color:var(--mu);margin:8px 0 0}
+footer{text-align:center;color:var(--mu);font-size:12px;padding:12px}
+</style>
+</head>
+<body>
+<header><div class="w top"><div><h1>🚚 LOGISTICA — Hub</h1><p>Pilotage unique des filiales · <span id="date"></span></p></div></div></header>
+<main><div class="w">
+<div id="demo-alerte" hidden role="alert" style="background:#fff1d6;border:1px solid #e0b34a;color:#6b4a00;border-radius:12px;padding:12px 14px;margin:14px 0 0;font-size:14px"></div>
+<section class="cons" id="cons"><div class="flex" style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h2 style="margin:12px 0 10px">Vue consolidée du groupe</h2><button class="btn" id="maj" style="padding:6px 12px;min-height:0;background:var(--b)">Actualiser</button></div><div class="big" id="big"></div><div class="tw"><table id="tcons"></table></div><p class="note" id="ncons"></p></section>
+<h2 style="margin:22px 0 10px;font-size:16px">Tableau de bord par module</h2>
+<div class="tabs" id="tabs"></div><section id="tdb"></section>
+<h3 style="margin-top:22px">Filiales</h3>
+<div class="cards">
+ <a class="card" data-mod="distribution" style="--c:var(--g1)" href="distribution.html" id="c-dist">
+  <div class="ic">🏍️</div><h2>Logistica Distribution</h2><p>Livraison à moto : commandes, livreurs, caisse, comptabilité SYSCOHADA.</p>
+  <span class="badge">Actif</span>
+  <div class="kp"><div><b id="k-cmd">—</b><span>Commandes en cours</span></div><div><b id="k-liv">—</b><span>Livrées</span></div><div><b id="k-lvr">—</b><span>Livreurs</span></div></div>
+  <span class="btn">Ouvrir l'ERP</span>
+ </a>
+ <a class="card" data-mod="transport" style="--c:var(--g2)" href="transport.html">
+  <div class="ic">🚚</div><h2>Logistica &amp; Co Transport</h2><p>Taxi communal : lignes, taxis, chauffeurs, versements journaliers, arriérés, rentabilité.</p>
+  <span class="badge">Actif</span>
+  <div class="kp"><div><b id="t-ot">—</b><span>Encaissé du jour</span></div><div><b id="t-v">—</b><span>Taxis</span></div><div><b id="t-c">—</b><span>Chauffeurs</span></div></div>
+  <span class="btn">Ouvrir l'ERP</span>
+ </a>
+ <a class="card" data-mod="agro" style="--c:var(--g3)" href="agro.html" id="c-agro">
+  <div class="ic">🐔</div><h2>Logistica Agro</h2><p>Élevage avicole : lots, ponte, conditionnement, nutrition, prophylaxie, stock, ventes, achats, comptabilité SYSCOHADA et rapports.</p>
+  <span class="badge">Actif</span>
+  <div class="kp"><div><b id="a-v">—</b><span>Sujets vivants</span></div><div><b id="a-l">—</b><span>Lots en cours</span></div><div><b id="a-s">—</b><span>Stocks bas</span></div></div>
+  <span class="btn">Ouvrir l'ERP</span>
+ </a>
+</div>
+<div class="cards" id="mods-extra">
+ <a class="card" data-mod="assurance" style="--c:#1e6ea0" href="assurance.html" id="c-assurance">
+  <div class="ic">🛡️</div><h2>Courtage d'assurance</h2><p>Devis comparatifs, polices, primes, commissions, renouvellements et sinistres.</p>
+  <span class="badge">Actif</span>
+  <div class="kp"><div><b id="s-p">—</b><span>Polices en cours</span></div><div><b id="s-r">—</b><span>À renouveler</span></div><div><b id="s-s">—</b><span>Sinistres ouverts</span></div></div>
+  <span class="btn">Ouvrir le module</span>
+ </a>
+ <a class="card" data-mod="placement" style="--c:#b45309" href="placement.html" id="c-placement">
+  <div class="ic">👷</div><h2>Placement de personnel</h2><p>Travailleurs temporaires et journaliers : besoins des entreprises, affectations, pointage, facturation, paie.</p>
+  <span class="badge">Actif</span>
+  <div class="kp"><div><b id="p-b">—</b><span>Besoins ouverts</span></div><div><b id="p-e">—</b><span>En poste</span></div><div><b id="p-f">—</b><span>À facturer</span></div></div>
+  <span class="btn">Ouvrir le module</span>
+ </a>
+</div>
+<h3>Administration du groupe</h3>
+<div class="cards">
+ <a class="card" data-mod="portail" style="--c:#c8352b" href="portail.html" id="c-portail">
+  <div class="ic">🌐</div><h2>Portail unique</h2><p>Site public et boutique en ligne du groupe, avec candidatures de vendeurs partenaires — réglés dans les Paramètres. N'ouvre aucune application de gestion.</p>
+  <span class="btn">Ouvrir le portail</span>
+ </a>
+ <a class="card" data-mod="compta" style="--c:#7a1d17" href="compta-groupe.html" id="c-compta">
+  <div class="ic">📒</div><h2>Comptabilité du groupe</h2><p>Contrôle d'intégrité des trois applications : opérations comptabilisées, écritures équilibrées, résultat par activité, ventes en ligne.</p>
+  <span class="btn">Ouvrir la comptabilité du groupe</span>
+ </a>
+ <a class="card" data-mod="crm" style="--c:#7c3aed" href="crm.html" id="c-crm">
+  <div class="ic">🤝</div><h2>CRM du groupe</h2><p>Une fiche unique par personne dans les trois applications : historique d'achats, segments (VIP, à risque, dormants), impayés, relances WhatsApp, opportunités et tâches de suivi.</p>
+  <span class="btn">Ouvrir le CRM</span>
+ </a>
+ <a class="card" data-mod="parametres" style="--c:#475569" href="parametres.html" id="c-param">
+  <div class="ic">⚙️</div><h2>Paramètres</h2><p>Utilisateurs et rôles de chaque application (Distributions, Transport, Agro) : création des comptes, attribution des rôles, mots de passe, activation.</p>
+  <span class="btn">Ouvrir les paramètres</span>
+ </a>
+</div>
+<h3>Socle commun du groupe (à mutualiser)</h3>
+<div class="mod">
+ <div>👤 Utilisateurs, rôles, permissions</div><div>📒 Comptabilité SYSCOHADA consolidée</div>
+ <div>💰 Trésorerie et caisses</div><div>🧾 Facturation et documents</div>
+ <div>🔔 Notifications</div><div>🛡️ Journal d'audit</div>
+ <div>📊 Tableau de bord consolidé</div><div>📎 Pièces jointes, exports PDF/Excel</div>
+</div>
+</div></main>
+<footer>© LOGISTICA · Hub · <a href="#" id="inst" hidden>📲 Installer</a><br><small>Logiciel développé par <b>Sanix Africa Division Technologies</b> · Contact (WhatsApp) : +225 0779181075 / 0140017751</small></footer>
+<script src="marque.js"></script><script src="auth-engine.js"></script>
+<script>
+const KEY="angels_erp_v1",$=s=>document.getElementById(s);
+/* Modules et outils de l'instance (marque.js) : seuls ceux choisis apparaissent. */
+const MQ=window.ERP_MARQUE||{nom:"LOGISTICA",modules:["distribution","transport","agro"],outils:["portail","compta","crm","parametres"]};
+const ACTIF=id=>(MQ.modules||[]).includes(id)||(MQ.outils||[]).includes(id);
+document.querySelectorAll("[data-mod]").forEach(el=>{if(!ACTIF(el.dataset.mod))el.remove()});
+$("date").textContent=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+try{
+ const S=JSON.parse(localStorage.getItem(KEY)||"null");
+ if(S){
+  const fin=["livree","retour_recu","echouee","annulee","brouillon"];
+  $("k-cmd").textContent=(S.commandes||[]).filter(c=>!fin.includes(c.statut)).length;
+  $("k-liv").textContent=(S.commandes||[]).filter(c=>c.statut==="livree").length;
+  $("k-lvr").textContent=(S.livreurs||[]).length;
+ }
+}catch(e){}
+try{
+ const T=JSON.parse(localStorage.getItem("angels_transport_v3")||"null");
+ if(T){const j=new Date().toISOString().slice(0,10);$("t-ot").textContent=((T.payments||[]).filter(x=>x.statut==="confirme"&&x.date_valeur===j).reduce((s,x)=>s+(+x.montant||0),0)).toLocaleString("fr-FR")+" F";$("t-v").textContent=(T.vehicles||[]).length;$("t-c").textContent=(T.drivers||[]).length}
+}catch(e){}
+try{
+ const As=JSON.parse(localStorage.getItem("angels_assurance_v1")||"null");
+ if(As&&$("s-p")){const j=new Date().toISOString().slice(0,10),pl=As.polices||[];$("s-p").textContent=pl.filter(p=>p.statut==="en_cours"&&p.effet<=j&&p.echeance>=j).length;const al=(As.cfg&&+As.cfg.alerte_renouvellement)||30;$("s-r").textContent=pl.filter(p=>p.statut!=="resiliee"&&!p.renouvelee_par&&Math.round((new Date(p.echeance+"T00:00:00Z")-new Date(j+"T00:00:00Z"))/864e5)<=al).length;$("s-s").textContent=(As.sinistres||[]).filter(s=>["declare","transmis","expertise","accepte"].includes(s.statut)).length}
+}catch(e){}
+try{
+ const Pl=JSON.parse(localStorage.getItem("angels_placement_v1")||"null");
+ if(Pl&&$("p-b")){const t=Date.now(),j=new Date().toISOString().slice(0,10);$("p-b").textContent=(Pl.besoins||[]).filter(b=>b.statut==="ouvert").length;$("p-e").textContent=(Pl.affectations||[]).filter(a=>a.statut!=="annulee"&&a.statut!=="terminee"&&a.debut<=j&&a.fin>=j).length;$("p-f").textContent=(Pl.pointages||[]).filter(p=>!p.facture_id&&p.fraction>0).length+" j"}
+}catch(e){}
+try{
+ const G=JSON.parse(localStorage.getItem("angels_agro_v1")||"null");
+ if(G){const en=(G.lots||[]).filter(l=>l.statut==="en_cours"),sor=l=>(G.sorties||[]).filter(s=>s.lot_id===l.id&&!s.annule).reduce((s,x)=>s+(+x.tetes||0),0),mor=l=>(G.suivis||[]).filter(x=>x.lot_id===l.id).reduce((s,x)=>s+(+x.morts||0),0);
+  $("a-v").textContent=en.reduce((s,l)=>s+Math.max(0,l.initial-mor(l)-sor(l)),0).toLocaleString("fr-FR");$("a-l").textContent=en.length;
+  const q=p=>(G.mvts||[]).filter(m=>m.produit_id===p.id).reduce((s,m)=>s+(m.sens==="entree"?m.qte:-m.qte),0);$("a-s").textContent=(G.produits||[]).filter(p=>p.categorie!=="fini"&&p.seuil>0&&q(p)<=p.seuil).length}
+}catch(e){}
+let DEF=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();DEF=e;$("inst").hidden=false});
+window.addEventListener("appinstalled",()=>{DEF=null;$("inst").hidden=true});
+$("inst").onclick=async e=>{e.preventDefault();if(DEF){DEF.prompt();try{await DEF.userChoice}catch(x){}DEF=null;$("inst").hidden=true}};
+if(/iphone|ipad|ipod/i.test(navigator.userAgent)&&navigator.standalone!==true){$("inst").hidden=false;$("inst").onclick=e=>{e.preventDefault();alert("Sur iPhone / iPad : toucher « Partager », puis « Sur l'écran d'accueil ».")}}
+
+/* ---------- Vue consolidée : lecture des données locales des trois applications ---------- */
+const lire=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}};
+const som=(a,f)=>(a||[]).reduce((s,x)=>s+(+f(x)||0),0);
+const AUJ=new Date().toISOString().slice(0,10),MOIS=AUJ.slice(0,7),jmoins=n=>new Date(Date.now()-n*864e5).toISOString().slice(0,10);
+const M6=(()=>{const a=[],d=new Date();d.setDate(1);for(let i=5;i>=0;i--){const x=new Date(d.getFullYear(),d.getMonth()-i,1);a.push(x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0"))}return a})();
+const mens=(items,dt,mt)=>M6.map(m=>som(items.filter(x=>String(dt(x)).startsWith(m)),mt));
+const F=n=>Math.round(n||0).toLocaleString("fr-FR").replace(/[  ]/g," ")+" F";
+const lignes=(G,cmp)=>(G.entries||[]).flatMap(e=>(e.lignes||e.lines||[]).filter(l=>cmp(l)).map(l=>({e,l})));
+function resCompta(G){const dm=e=>String(e.date).startsWith(MOIS)&&e.journal!=="CLO"&&!(e.source&&e.source.type==="cloture");let p=0,c=0;(G.entries||[]).filter(dm).forEach(e=>(e.lignes||e.lines||[]).forEach(l=>{if(l.compte[0]==="7")p+=(l.credit||0)-(l.debit||0);if(l.compte[0]==="6")c+=(l.debit||0)-(l.credit||0)}));return p-c}
+function treso(G){const cc=(G.settings&&G.settings.comptes)||{},set=new Set(["571","521"]);["treso_caisse","treso_banque","treso_mobile"].forEach(k=>{if(cc[k])set.add(cc[k])});(G.caisses||[]).forEach(c=>{if(c.compte)set.add(c.compte)});return som(lignes(G,l=>set.has(l.compte)),x=>(x.l.debit||0)-(x.l.credit||0))}
+function distribution(G){
+ if(!G||!G.commandes)return null;
+ const paye=c=>som((G.fonds||[]).filter(f=>f.commande_id===c.id&&(f.type==="acompte"||f.type==="encaissement")),f=>f.montant),livrees=G.commandes.filter(c=>c.statut==="livree");
+ const tres=som(G.caisses||[],c=>{const ss=(G.caisse_sessions||[]).filter(s=>s.caisse_id===c.id).sort((a,b)=>String(b.ouverte_le).localeCompare(String(a.ouverte_le))),o=ss.find(s=>s.statut==="ouverte");
+  if(o)return o.fond_ouverture+som((G.caisse_mvts||[]).filter(m=>m.session_id===o.id&&m.statut==="valide"),m=>m.type==="entree"?m.montant:-m.montant);const l=ss.find(s=>s.statut==="cloturee");return l?l.fond_cloture_reel||0:0});
+ const vv=(G.versements||[]).filter(v=>v.statut==="declare").length,ii=(G.incidents||[]).filter(i=>i.statut==="ouvert").length,ee=(G.caisse_sessions||[]).filter(s=>s.statut==="cloturee"&&s.ecart&&!s.ecart_regularise).length;
+ const ouv=G.commandes.filter(c=>!["livree","annulee","echouee","brouillon","retour_recu"].includes(c.statut)).length;
+ return{tres,ca:som(livrees.filter(c=>String(c.date).startsWith(MOIS)),c=>c.total),enc:som((G.fonds||[]).filter(f=>(f.type==="acompte"||f.type==="encaissement")&&String(f.ts).startsWith(MOIS)),f=>f.montant),
+  cre:som(livrees,c=>Math.max(0,c.total-paye(c))),res:null,
+  alt:vv+ii+ee,mens:mens(livrees,c=>c.date,c=>c.total),
+  det:[["Commandes en cours",ouv],["Livrées (total)",livrees.length],["Livreurs",(G.livreurs||[]).length],["Caisses",(G.caisses||[]).length],["Versements à valider",vv,1],["Incidents ouverts",ii,1],["Écarts de caisse à régulariser",ee,1]],
+  act:ouv+" commande(s) en cours · "+livrees.length+" livrée(s)"};
+}
+function transport(G){
+ if(!G||!G.obligations)return null;
+ const am={};(G.allocs||[]).forEach(a=>{if(a.actif)am[a.obligation_id]=(am[a.obligation_id]||0)+a.montant});const solde=o=>o.exo?0:o.montant-(am[o.id]||0);
+ const ret={};(G.obligations||[]).forEach(o=>{if(solde(o)>0&&o.date_ech<jmoins((G.settings||{}).retard_alerte_jours??3))ret[o.driver_id]=1});
+ const dl=n=>Math.round((new Date(n+"T00:00:00Z")-new Date(AUJ+"T00:00:00Z"))/864e5);let docs=0;
+ (G.vehicles||[]).filter(v=>v.statut!=="sorti").forEach(v=>["assurance_fin","visite_fin","carte_fin"].forEach(k=>{if(v[k]&&dl(v[k])<=((G.settings||{}).delai_alerte??30))docs++}));(G.drivers||[]).forEach(d=>{if(d.permis_fin&&dl(d.permis_fin)<=((G.settings||{}).delai_alerte??30))docs++});
+ return{tres:treso(G),ca:som(lignes(G,l=>l.compte===((G.settings&&G.settings.comptes&&G.settings.comptes.produit)||"706")).filter(x=>String(x.e.date).startsWith(MOIS)),x=>(x.l.credit||0)-(x.l.debit||0)),
+  enc:som((G.payments||[]).filter(p=>p.statut==="confirme"&&p.type!=="depot"&&String(p.date_valeur).startsWith(MOIS)),p=>p.montant),cre:som(G.obligations,solde),res:resCompta(G),
+  alt:docs+Object.keys(ret).length,
+  mens:mens(lignes(G,l=>l.compte===((G.settings&&G.settings.comptes&&G.settings.comptes.produit)||"706")),x=>x.e.date,x=>(x.l.credit||0)-(x.l.debit||0)),
+  det:[["Taxis en service",(G.vehicles||[]).filter(v=>v.statut==="actif").length+" / "+(G.vehicles||[]).filter(v=>v.statut!=="sorti").length],["Chauffeurs",(G.drivers||[]).length],["Encaissé du jour",F(som((G.payments||[]).filter(p=>p.statut==="confirme"&&p.type!=="depot"&&p.date_valeur===AUJ),p=>p.montant))],["Chauffeurs en retard",Object.keys(ret).length,1],["Documents à renouveler",docs,1]],
+  act:(G.vehicles||[]).filter(v=>v.statut==="actif").length+"/"+(G.vehicles||[]).filter(v=>v.statut!=="sorti").length+" taxis en service · "+Object.keys(ret).length+" chauffeur(s) en retard"};
+}
+function agro(G){
+ if(!G||!G.lots)return null;
+ const sold=v=>v.total-som((G.encaiss||[]).filter(e=>e.vente_id===v.id&&e.statut==="valide"),e=>e.montant),V=(G.ventes||[]).filter(v=>v.statut==="valide");
+ const q=p=>som((G.mvts||[]).filter(m=>m.produit_id===p.id),m=>m.sens==="entree"?m.qte:-m.qte);
+ const lotOk={};(G.lots||[]).forEach(l=>lotOk[l.id]=l.statut==="en_cours");
+ const stockBas=(G.produits||[]).filter(p=>p.categorie!=="fini"&&p.seuil>0&&q(p)<=p.seuil).length;
+ const soins=(G.soins||[]).filter(s=>!s.realise_le&&!s.annule&&lotOk[s.lot_id]&&s.prevue<AUJ).length;
+ const crean=V.filter(v=>sold(v)>0&&v.date<jmoins((G.settings||{}).delai_creance||30)).length;
+ const en=(G.lots||[]).filter(l=>l.statut==="en_cours"),viv=l=>Math.max(0,l.initial-som((G.suivis||[]).filter(x=>x.lot_id===l.id),x=>x.morts)-som((G.sorties||[]).filter(s=>s.lot_id===l.id&&!s.annule),s=>s.tetes));
+ return{tres:treso(G),ca:som(V.filter(v=>String(v.date).startsWith(MOIS)),v=>v.total),enc:som((G.encaiss||[]).filter(e=>e.statut==="valide"&&String(e.date).startsWith(MOIS)),e=>e.montant),cre:som(V,sold),res:resCompta(G),
+  alt:stockBas+soins+crean,mens:mens(V,v=>v.date,v=>v.total),
+  det:[["Sujets vivants",som(en,viv).toLocaleString("fr-FR")],["Lots en cours",en.length],["Stocks bas",stockBas,1],["Soins en retard",soins,1],["Créances en retard",crean,1]],
+  act:som(en,viv).toLocaleString("fr-FR")+" sujets vivants · "+en.length+" lot(s) en cours"};
+}
+function placement(G){
+ if(!G||!G.besoins)return null;
+ const aff=id=>(G.affectations||[]).find(a=>a.id===id)||{},paye=f=>som((G.encaissements||[]).filter(e=>e.facture_id===f.id),e=>e.montant),F=G.factures||[];
+ const aF=(G.pointages||[]).filter(p=>!p.facture_id&&p.fraction>0),aP=(G.pointages||[]).filter(p=>!p.paie_id&&p.fraction>0);
+ const afac=som(aF,p=>Math.round(p.fraction*(aff(p.affectation_id).taux_client||0))),apay=som(aP,p=>Math.round(p.fraction*(aff(p.affectation_id).taux_travailleur||0)));
+ const enc=som((G.encaissements||[]).filter(e=>String(e.date).startsWith(MOIS)),e=>e.montant),ca=som(F.filter(f=>String(f.date).startsWith(MOIS)),f=>f.ht),cout=som((G.paies||[]).filter(p=>String(p.date).startsWith(MOIS)),p=>p.brut);
+ const ouv=(G.besoins||[]).filter(b=>b.statut==="ouvert").length,poste=(G.affectations||[]).filter(a=>a.statut!=="annulee"&&a.statut!=="terminee"&&a.debut<=AUJ&&a.fin>=AUJ).length,ret=F.filter(f=>f.statut!=="payee"&&f.echeance<AUJ).length;
+ return{tres:null,ca,enc,cre:som(F,f=>f.ttc-paye(f)),res:ca-cout,alt:ouv+ret,mens:mens(F,f=>f.date,f=>f.ht),
+  det:[["Besoins ouverts",ouv,1],["Personnes en poste aujourd'hui",poste],["Travailleurs",(G.travailleurs||[]).length],["Entreprises clientes",(G.clients||[]).length],["À facturer (journées pointées)",F_(afac)],["À payer aux travailleurs",F_(apay)],["Factures en retard",ret,1]],
+  act:poste+" en poste · "+ouv+" besoin(s) ouvert(s)",afac};
+}
+const F_=n=>F(n);
+function assurance(G){
+ if(!G||!G.polices)return null;
+ const ttc=p=>p.ttc+som((G.avenants||[]).filter(a=>a.police_id===p.id),a=>a.delta),com=p=>p.commission+som((G.avenants||[]).filter(a=>a.police_id===p.id),a=>a.delta_commission),encP=p=>som((G.encaissements||[]).filter(e=>e.police_id===p.id),e=>e.montant),recC=p=>som((G.commissions_recues||[]).filter(e=>e.police_id===p.id),e=>e.montant);
+ const PL=G.polices,P=PL.filter(p=>p.statut==="en_cours"&&p.effet<=AUJ&&p.echeance>=AUJ),jr=d=>Math.round((new Date(d+"T00:00:00Z")-new Date(AUJ+"T00:00:00Z"))/864e5),al=(G.cfg&&+G.cfg.alerte_renouvellement)||30;
+ const ren=PL.filter(p=>p.statut!=="resiliee"&&!p.renouvelee_par&&jr(p.echeance)<=al).length,sin=(G.sinistres||[]).filter(s=>["declare","transmis","expertise","accepte"].includes(s.statut)).length;
+ const aEnc=som(PL.filter(p=>p.encaisse_par==="courtier"),p=>Math.max(0,ttc(p)-encP(p))),aCom=som(PL.filter(p=>p.encaisse_par==="assureur"),p=>Math.max(0,com(p)+(p.tva_commission||0)-recC(p)));
+ const commM=som(PL.filter(p=>String(p.cree_le).startsWith(MOIS)),com);
+ return{tres:null,ca:commM,enc:som((G.encaissements||[]).filter(e=>String(e.date).startsWith(MOIS)),e=>e.montant),cre:aEnc+aCom,res:null,alt:ren+sin,mens:mens(PL,p=>p.cree_le,com),
+  det:[["Polices en cours",P.length],["Compagnies partenaires",(G.compagnies||[]).length],["Assurés",(G.assures||[]).length],["Polices à renouveler",ren,1],["Sinistres ouverts",sin,1],["Primes à encaisser",F(aEnc)],["Commissions à recevoir",F(aCom)]],
+  act:P.length+" police(s) · "+ren+" à renouveler · "+sin+" sinistre(s)"};
+}
+function consolide(){
+ const X=REG.map(r=>[r.nom,r.fn(lire(r.cle))]);
+ const tot=k=>som(X.filter(x=>x[1]&&x[1][k]!=null),x=>x[1][k]),cell=(x,k,f)=>!x?'<span class="nd">non ouvert</span>':x[k]==null?'<span class="nd">—</span>':(f?f(x[k]):F(x[k]));
+ $("big").innerHTML=[["Trésorerie du groupe",tot("tres")],["Chiffre d'affaires du mois",tot("ca")],["Encaissé du mois",tot("enc")],["Créances à recouvrer",tot("cre")]].map(([l,v])=>`<div><b>${F(v)}</b><span>${l}</span></div>`).join("");
+ const row=(l,k,f)=>`<tr><td>${l}</td>${X.map(x=>`<td>${cell(x[1],k,f)}</td>`).join("")}<td><b>${F(tot(k))}</b></td></tr>`;
+ $("tcons").innerHTML=`<thead><tr><th></th>${X.map(x=>`<th>${x[0]}</th>`).join("")}<th>Groupe</th></tr></thead><tbody>${row("Trésorerie (caisse + banque)","tres")}${row("Chiffre d'affaires du mois","ca")}${row("Encaissé du mois","enc")}${row("Créances à recouvrer","cre")}
+  <tr><td>Résultat comptable du mois</td>${X.map(x=>`<td>${!x[1]?'<span class="nd">non ouvert</span>':x[1].res==null?'<span class="nd">dans son module</span>':'<span class="'+(x[1].res>=0?"ok":"er")+'">'+F(x[1].res)+'</span>'}</td>`).join("")}<td><b>${F(som(X.filter(x=>x[1]&&x[1].res!=null),x=>x[1].res))}</b></td></tr>
+  <tr><td>Activité</td>${X.map(x=>`<td class="nd act">${x[1]?x[1].act:"—"}</td>`).join("")}<td></td></tr>
+  <tr><td>Alertes à traiter</td>${X.map(x=>`<td>${x[1]?'<span class="'+(x[1].alt?"er":"ok")+'">'+x[1].alt+'</span>':'<span class="nd">—</span>'}</td>`).join("")}<td><b>${tot("alt")}</b></td></tr></tbody>`;
+ tdb(X);
+ $("ncons").textContent="Chiffres lus sur cet appareil (données locales de chaque application). « Non ouvert » : l'application n'a pas encore été utilisée ici. Résultat de Distributions : voir son module Comptabilité.";
+}
+/* ---------- Tableau de bord par module ---------- */
+const TOUS=[{id:"dist",mod:"distribution",nom:"Distributions",ic:"🏍️",href:"distribution.html",c:"var(--g1)",cle:"angels_erp_v1",fn:distribution},{id:"trans",mod:"transport",nom:"Transport",ic:"🚚",href:"transport.html",c:"var(--g2)",cle:"angels_transport_v3",fn:transport},{id:"agro",mod:"agro",nom:"Agro",ic:"🐔",href:"agro.html",c:"var(--g3)",cle:"angels_agro_v1",fn:agro},{id:"plac",mod:"placement",nom:"Placement",ic:"👷",href:"placement.html",c:"#b45309",cle:"angels_placement_v1",fn:placement},{id:"assu",mod:"assurance",nom:"Assurance",ic:"🛡️",href:"assurance.html",c:"#1e6ea0",cle:"angels_assurance_v1",fn:assurance}];
+const REG=TOUS.filter(r=>ACTIF(r.mod)),MODS=REG;
+let MOD=(()=>{try{return sessionStorage.getItem("hub_mod")||REG[0].id}catch(e){return REG[0].id}})();
+function tdb(X){
+ const i=Math.max(0,MODS.findIndex(m=>m.id===MOD)),m=MODS[i],d=X[i][1];
+ $("tabs").innerHTML=MODS.map((x,k)=>`<button class="tab${k===i?" on":""}" data-m="${x.id}" style="--c:${x.c}">${x.ic} ${x.nom}${X[k][1]&&X[k][1].alt?` <i class="pill">${X[k][1].alt}</i>`:""}</button>`).join("");
+ $("tabs").querySelectorAll(".tab").forEach(b=>b.onclick=()=>{MOD=b.dataset.m;try{sessionStorage.setItem("hub_mod",MOD)}catch(e){}tdb(X)});
+ if(!d){$("tdb").innerHTML=`<p class="note">${m.nom} : application pas encore utilisée sur cet appareil. <a href="${m.href}">Ouvrir l'ERP</a></p>`;return}
+ const mx=Math.max(1,...d.mens.map(Math.abs)),tile=(l,v,w)=>`<div><b${w?' class="er"':""}>${v}</b><span>${l}</span></div>`;
+ const bars=d.mens.map((v,k)=>`<div class="bar"><i style="height:${Math.round(Math.abs(v)/mx*100)}%;background:${m.c}" title="${F(v)}"></i><em>${M6[k].slice(5)}/${M6[k].slice(2,4)}</em><small>${v?Math.round(v/1000).toLocaleString("fr-FR")+" k":"—"}</small></div>`).join("");
+ $("tdb").innerHTML=`<div class="big" style="--c:${m.c}">${tile("Trésorerie",d.tres==null?"—":F(d.tres))}${tile("Chiffre d'affaires du mois",F(d.ca))}${tile("Encaissé du mois",F(d.enc))}${tile("Créances à recouvrer",F(d.cre))}${tile("Résultat du mois",d.res==null?"voir module":F(d.res),d.res!=null&&d.res<0)}${tile("Alertes à traiter",d.alt,d.alt>0)}</div>
+ <div class="two"><div class="pan"><h4>Chiffre d'affaires — 6 derniers mois</h4><div class="bars">${bars}</div></div>
+ <div class="pan"><h4>Indicateurs</h4><ul class="det">${d.det.map(([l,v,w])=>`<li><span>${l}</span><b class="${w&&+v>0?"er":""}">${v}</b></li>`).join("")}</ul><a class="btn" style="--c:${m.c};margin-top:10px" href="${m.href}">Ouvrir ${m.nom}</a></div></div>`;
+}
+$("maj").onclick=consolide;window.addEventListener("storage",consolide);document.addEventListener("visibilitychange",()=>{if(!document.hidden)consolide()});consolide();
+
+if("serviceWorker"in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register("sw.js").catch(()=>{});
+
+/* Mise en production : des données de démonstration encore présentes sur cet appareil faussent la vue consolidée. */
+(function(){
+ const APPS=[["Distributions","angels_erp_v1",["angels_compta_distribution","angels_portail_v1"],"distribution"],["Transport","angels_transport_v3",["angels_compta_transport","angels_transport_files"],"transport"],["Agro","angels_agro_v1",["angels_compta_agro"],"agro"]].filter(a=>ACTIF(a[3]));
+ try{
+  if(ANGELS_AUTH.demoOn())return;
+  const trouves=APPS.filter(([n,k])=>{try{const S=JSON.parse(localStorage.getItem(k)||"null");return S&&ANGELS_AUTH.demoUsers(S.users)}catch(e){return false}});
+  if(!trouves.length)return;
+  const box=$("demo-alerte");box.hidden=false;
+  box.innerHTML='<b>⚠ Données de démonstration détectées sur cet appareil</b> ('+trouves.map(x=>x[0]).join(", ")+'). Elles apparaissent dans la vue consolidée ci-dessous.<div style="margin-top:8px"><button type="button" id="demo-purge" style="font:700 14px Arial;padding:10px 14px;border-radius:9px;border:0;background:#c62828;color:#fff;cursor:pointer;min-height:42px">Effacer les données de démonstration de cet appareil</button></div>';
+  $("demo-purge").onclick=function(){
+   if(!confirm("Effacer les données de démonstration de : "+trouves.map(x=>x[0]).join(", ")+" ?\n\nLes applications repartiront d'une base vide avec l'administrateur "+((MQ.admin&&MQ.admin.nom)||"KESSIE")+". Cette action est définitive pour cet appareil."))return;
+   trouves.forEach(([n,k,der])=>{[k].concat(der).forEach(x=>{try{localStorage.removeItem(x)}catch(e){}});try{localStorage.removeItem("angels_demo_garde_"+n);localStorage.removeItem("angels_sync_base_"+n.toLowerCase().replace(/s$/,""))}catch(e){}});
+   try{sessionStorage.clear()}catch(e){}
+   location.reload();
+  };
+ }catch(e){}
+})();
+</script>
+</body>
+</html>
