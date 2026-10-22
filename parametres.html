@@ -564,7 +564,7 @@ function csMsg(t,er){$("cs-res").innerHTML=`<div class="umsg${er?" er":""}">${es
 async function csTester(){const e=clEff(),cle=$("cs-key").value.trim();if(!e.url)return csMsg("Renseignez d'abord le projet Supabase (à gauche).",1);if(!cle)return csMsg("Saisissez la clé de synchronisation.",1);csMsg("Test en cours…");
  try{const r=await fetch(e.url.replace(/\/+$/,"")+"/functions/v1/sync",{method:"POST",headers:{"content-type":"application/json","x-sync-key":cle},body:JSON.stringify({action:"etat"})});const j=await r.json().catch(()=>({}));
   if(r.status===404)return csMsg("Fonction « sync » non déployée sur ce projet.",1);if(r.status===401)return csMsg("Clé refusée : elle ne correspond pas au secret SYNC_KEY.",1);if(!r.ok||!j.ok)return csMsg(j.erreur||("Erreur "+r.status),1);
-  const n=j.enregistrements||{};csMsg("Clé acceptée. Serveur : Distributions "+(n.distribution||0)+" · Transport "+(n.transport||0)+" · Agro "+(n.agro||0)+" enregistrement(s).")}catch(x){csMsg("Projet injoignable : "+(navigator.onLine?"vérifiez l'URL":"pas de connexion Internet"),1)}}
+  const n=j.enregistrements||{};csMsg("Clé acceptée. Serveur : "+SS_APPS.map(a=>a[1]+" "+(n[a[0]]||0)).join(" · ")+" enregistrement(s).")}catch(x){csMsg("Projet injoignable : "+(navigator.onLine?"vérifiez l'URL":"pas de connexion Internet"),1)}}
 function clMsg(t,er){$("cl-res").innerHTML=`<div class="umsg${er?" er":""}">${esc(t)}</div>`}
 async function clTester(){const r=$("cl-res");r.innerHTML="Test en cours…";let c;try{c=clValide($("cl-url").value,$("cl-key").value)}catch(e){return clMsg(e.message,1)}
  const H={apikey:c.key},L=[];let ok=false;
