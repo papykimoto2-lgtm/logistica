@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#7a1d17">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="icons/hub-192.png">
+<title>Démonstration — LOGISTICA</title>
+<link rel="stylesheet" href="modules.css">
+<style>.d{max-width:720px;margin:0 auto;padding:18px 16px 40px}.d h2{margin:0 0 6px}.d ul{padding-left:18px}.big{font-size:17px;min-height:54px;width:100%;margin-top:14px}.cred{background:var(--soft);border-radius:12px;padding:12px 14px;margin:12px 0}.cred code{font-size:16px;font-weight:700}</style>
+</head>
+<body>
+<header><div class="w top"><div><h1 id="t">Démonstration</h1><p>Essayez l'ERP avec des données d'exemple · aucune donnée réelle</p></div></div></header>
+<main><div class="d">
+<div class="pan">
+<h2>Bienvenue 👋</h2>
+<p>Cette démonstration charge des <b>données fictives</b> sur <b>cet appareil seulement</b> : personnes, entreprises et numéros inventés. Rien n'est envoyé à un serveur, rien n'est partagé, et vous pouvez tout effacer en un clic.</p>
+<ul id="mods"></ul>
+<div class="cred">Connexion à la première ouverture :<br>Profil <b>Administrateur</b> · mot de passe <code>Demo@Angels2026</code></div>
+<button class="btn big" id="go" type="button">▶ Lancer la démonstration</button>
+<p class="note" id="msg" role="status"></p>
+</div>
+<div class="pan" style="margin-top:14px"><h3 style="margin-top:0">Quitter la démonstration</h3><p class="note">Efface les données d'exemple de cet appareil et revient à une application vide. À faire avant tout usage réel de cet appareil.</p><button class="btn er" id="out" type="button">🗑 Effacer la démonstration</button></div>
+</div></main>
+<script src="marque.js"></script>
+<script src="auth-engine.js"></script>
+<script src="placement-engine.js"></script>
+<script src="assurance-engine.js"></script>
+<script src="crm-engine.js"></script>
+<script src="demo-engine.js"></script>
+<script>
+const $=s=>document.getElementById(s),MQ=window.ERP_MARQUE||{nom:"LOGISTICA",modules:["distribution","transport","agro"]},M=MQ.modules||[];
+document.title="Démonstration — "+MQ.nom;$("t").textContent="Démonstration "+MQ.nom;
+const LB={distribution:"Distribution : commandes, livreurs, caisse, suivi des colis",transport:"Transport : taxis, chauffeurs, versements",agro:"Agro : élevage, ventes, stock",placement:"Placement de personnel : travailleurs, besoins, pointage, facturation, paie",assurance:"Courtage d'assurance : devis comparatifs, polices, primes, sinistres"};
+$("mods").innerHTML=M.map(m=>`<li>${LB[m]||m}</li>`).join("")+((MQ.outils||[]).includes("crm")?"<li>CRM : fiche unique par personne, opportunités, tâches</li>":"")+((MQ.outils||[]).includes("portail")?"<li>Portail public : site de l'entreprise</li>":"");
+$("go").onclick=()=>{
+ const b=$("go");b.disabled=true;$("msg").textContent="Préparation des données…";
+ try{
+  ANGELS_DEMO.effacer();
+  localStorage.setItem("angels_demo","1");localStorage.setItem("angels_demo_local","1");
+  const r={};
+  if(M.includes("placement")&&window.ANGELS_PLACEMENT)r.p=ANGELS_DEMO.placement(ANGELS_PLACEMENT);
+  if(M.includes("assurance")&&window.ANGELS_ASSURANCE)r.a=ANGELS_DEMO.assurance(ANGELS_ASSURANCE);
+  if((MQ.outils||[]).includes("crm")&&window.ANGELS_CRM&&(r.p||r.a))r.c=ANGELS_DEMO.crm(ANGELS_CRM);
+  $("msg").textContent="Données prêtes. Ouverture de l'application…";
+  setTimeout(()=>{location.href=M.includes("distribution")?"distribution.html?demo=1":"index.html"},500);
+ }catch(e){b.disabled=false;$("msg").textContent="Échec de la préparation : "+e.message}
+};
+$("out").onclick=()=>{if(!confirm("Effacer toutes les données de démonstration de cet appareil ?"))return;ANGELS_DEMO.effacer();$("msg").textContent="Démonstration effacée. L'application repart vide."};
+</script>
+</body>
+</html>

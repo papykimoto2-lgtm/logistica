@@ -1,10 +1,10 @@
-:root{--b:#c8352b;--b2:#7a1d17;--a:#14b8a6;--bg:#edf3f6;--card:#fff;--tx:#14213d;--mu:#64748b;--ok:#118a4b;--wa:#b86e00;--er:#c62828;--bd:#dce8ee;--c:#c8352b;--soft:#f4f9fb;--sh:0 1px 2px rgba(15,40,60,.06),0 10px 28px rgba(15,40,60,.08);--r:16px}
+:root{--b:#c8352b;--b2:#7a1d17;--a:#f5a524;--bg:#edf3f6;--card:#fff;--tx:#14213d;--mu:#64748b;--ok:#118a4b;--wa:#b86e00;--er:#c62828;--bd:#dce8ee;--c:#c8352b;--soft:#f4f9fb;--sh:0 1px 2px rgba(15,40,60,.06),0 10px 28px rgba(15,40,60,.08);--r:16px}
 @media(prefers-color-scheme:dark){:root{--bg:#0a1a21;--card:#112832;--tx:#e6f0f3;--mu:#93a9b2;--bd:#1f3a46;--soft:#0e2129;--sh:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.35)}}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;font:15px/1.5 system-ui,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-tap-highlight-color:transparent}
 .w{max-width:1120px;margin:0 auto}
-header{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--b2),var(--b) 60%,#14b8a6);color:#fff;padding:calc(16px + env(safe-area-inset-top)) 16px 54px}
+header{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--b2),var(--b) 60%,#f5a524);color:#fff;padding:calc(16px + env(safe-area-inset-top)) 16px 54px}
 header:before,header:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.08);pointer-events:none}
 header:before{width:260px;height:260px;right:-60px;top:-100px}header:after{width:160px;height:160px;left:30%;bottom:-90px}
 header h1{margin:0;font-size:22px;letter-spacing:-.2px}header p{margin:2px 0 0;opacity:.85;font-size:13px}
@@ -25,7 +25,7 @@ h2{margin:18px 0 10px;font-size:17px}h3{margin:16px 0 8px;font-size:14px}
 .tabs::-webkit-scrollbar{display:none}
 .tab{flex:0 0 auto;border:0;background:none;color:var(--mu);border-radius:99px;padding:9px 14px;font:inherit;font-weight:700;min-height:42px;cursor:pointer;transition:background .18s,color .18s,transform .12s;white-space:nowrap;position:relative}
 .tab:hover{background:var(--soft);color:var(--tx)}.tab:active{transform:scale(.96)}
-.tab.on{background:linear-gradient(135deg,var(--b),#14b8a6);color:#fff;box-shadow:0 4px 12px rgba(14,116,144,.35)}
+.tab.on{background:linear-gradient(135deg,var(--b),#f5a524);color:#fff;box-shadow:0 4px 12px rgba(14,116,144,.35)}
 .tab .ti{display:inline-block;margin-right:5px}
 .pill{font-style:normal;background:var(--er);color:#fff;border-radius:99px;padding:0 7px;font-size:11px;margin-left:5px;display:inline-block;min-width:18px;text-align:center}
 .vue{animation:rise .3s ease both}
@@ -49,7 +49,7 @@ h2{margin:18px 0 10px;font-size:17px}h3{margin:16px 0 8px;font-size:14px}
 .leg{list-style:none;margin:0;padding:0;flex:1;min-width:160px}.leg li{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px}.leg i{width:11px;height:11px;border-radius:50%;flex:0 0 auto}.leg a{margin-left:auto;font-weight:700;color:var(--tx);text-decoration:none}
 .ins{list-style:none;margin:0;padding:0;display:grid;gap:8px}.ins li{display:flex;gap:10px;align-items:center;background:var(--soft);border-radius:12px;padding:10px 12px;font-size:14px}.ins button{margin-left:auto}
 .av{--h:200;display:inline-grid;place-items:center;flex:0 0 auto;width:var(--s,40px);height:var(--s,40px);border-radius:50%;background:hsl(var(--h) 55% 46%);color:#fff;font-weight:800;font-size:calc(var(--s,40px)*.38);letter-spacing:.5px;user-select:none}
-.bar{height:6px;border-radius:99px;background:var(--soft);overflow:hidden;margin-top:5px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--b),#14b8a6);border-radius:99px;transition:width .6s ease}
+.bar{height:6px;border-radius:99px;background:var(--soft);overflow:hidden;margin-top:5px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--b),#f5a524);border-radius:99px;transition:width .6s ease}
 .rank{list-style:none;margin:0;padding:0}.rank li{display:flex;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--bd);cursor:pointer}.rank li:last-child{border:0}.rank .m{flex:1;min-width:0}.rank .m b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .f{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin:10px 0}.f label{display:block;font-size:12px;color:var(--mu);font-weight:600}
 input,select,textarea{font:inherit;padding:9px 12px;border:1px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx);min-height:42px;display:block;margin-top:3px;max-width:100%;transition:border-color .15s,box-shadow .15s}

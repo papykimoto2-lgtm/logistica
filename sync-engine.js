@@ -24,6 +24,7 @@
 
   function lire(k) { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } }
   function conf() {
+    if (lire("angels_demo_local")) return null;   /* démonstration locale (demo.html) : rien n'est jamais envoyé au serveur */
     var u = lire(CFG_K), s = lire(SYNC_K), def = G.ANGELS_PASSERELLE || {}, url = (u && u.off) ? "" : (u && u.url) || def.url || "";
     if (!s || !s.actif || !s.cle || !/^https:\/\//.test(url)) return null;
     return { fn: String(url).replace(/\/+$/, "") + "/functions/v1/sync", cle: s.cle };
