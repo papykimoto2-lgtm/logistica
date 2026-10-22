@@ -1,4 +1,4 @@
-/* Synchronisation entre postes ANGEL'S : logique pure, testée hors Supabase (voir tests/sync-serveur.js).
+/* Synchronisation entre postes LOGISTICA : logique pure, testée hors Supabase (voir tests/sync-serveur.js).
 
    Principe : chaque poste garde ses données dans son navigateur (rapide, utilisable hors ligne) et les synchronise avec le serveur, enregistrement par enregistrement.
    - « tirer » : le poste récupère tout ce qui a changé sur le serveur depuis son dernier curseur ;

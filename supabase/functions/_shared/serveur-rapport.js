@@ -22,9 +22,9 @@ export function dbRapport(sb = createClient(Deno.env.get("SUPABASE_URL"), Deno.e
   };
 }
 
-/* Resend (https://resend.com) : secrets RESEND_API_KEY et RAPPORT_DE (ex. « ANGEL'S GROUP <rapport@votre-domaine.com> »). Sans domaine vérifié, Resend n'envoie qu'à l'adresse du compte. */
+/* Resend (https://resend.com) : secrets RESEND_API_KEY et RAPPORT_DE (ex. « LOGISTICA <rapport@votre-domaine.com> »). Sans domaine vérifié, Resend n'envoie qu'à l'adresse du compte. */
 export async function envoyerMail({ a, sujet, html, texte }) {
   const cle = Deno.env.get("RESEND_API_KEY"); if (!cle) throw new Error("Service d'e-mail non configuré (secret RESEND_API_KEY absent)");
-  const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { "content-type": "application/json", authorization: "Bearer " + cle }, body: JSON.stringify({ from: Deno.env.get("RAPPORT_DE") || "ANGEL'S GROUP <onboarding@resend.dev>", to: a, subject: sujet, html, text: texte }) });
+  const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { "content-type": "application/json", authorization: "Bearer " + cle }, body: JSON.stringify({ from: Deno.env.get("RAPPORT_DE") || "LOGISTICA <onboarding@resend.dev>", to: a, subject: sujet, html, text: texte }) });
   if (!r.ok) throw new Error("Envoi refusé par le service d'e-mail (" + r.status + ")");
 }

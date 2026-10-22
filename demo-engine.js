@@ -1,5 +1,5 @@
 /* Données de DÉMONSTRATION (placement de personnel, assurance, CRM) : fictives, locales à l'appareil, datées par rapport à aujourd'hui.
-   Utilisé uniquement par demo.html. Jamais envoyées au serveur (la synchronisation est coupée tant que « angels_demo_local » vaut 1).
+   Utilisé uniquement par demo.html. Jamais envoyées au serveur (la synchronisation est coupée tant que « logistica_demo_local » vaut 1).
    Aucune vraie personne ni vraie entreprise : noms et numéros inventés (numéros 07 00 00 xx xx). */
 (function (G) {
   "use strict";
@@ -113,11 +113,11 @@
   }
 
   /* Efface les données de démonstration de cet appareil (et seulement les clés de l'ERP) puis coupe le mode démo. */
-  var CLES = ["angels_erp_v1", "angels_transport_v3", "angels_agro_v1", "angels_placement_v1", "angels_assurance_v1", "angels_crm_v1", "angels_compta_distribution", "angels_compta_transport", "angels_compta_agro", "angels_portail_v1", "angels_transport_files", "angels_demo", "angels_demo_local", "angels_panier"];
+  var CLES = ["logistica_erp_v1", "logistica_transport_v3", "logistica_agro_v1", "logistica_placement_v1", "logistica_assurance_v1", "logistica_crm_v1", "logistica_compta_distribution", "logistica_compta_transport", "logistica_compta_agro", "logistica_portail_v1", "logistica_transport_files", "logistica_demo", "logistica_demo_local", "logistica_panier"];
   function effacer() {
     CLES.forEach(function (k) { try { localStorage.removeItem(k); } catch (e) { } });
-    try { Object.keys(localStorage).filter(function (k) { return /^angels_(sync_base_|demo_garde_)/.test(k); }).forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { }
+    try { Object.keys(localStorage).filter(function (k) { return /^logistica_(sync_base_|demo_garde_)/.test(k); }).forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { }
     try { sessionStorage.clear(); } catch (e) { }
   }
-  G.ANGELS_DEMO = { placement: placement, assurance: assurance, crm: crm, effacer: effacer };
+  G.LOGISTICA_DEMO = { placement: placement, assurance: assurance, crm: crm, effacer: effacer };
 })(window);

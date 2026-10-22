@@ -42,7 +42,7 @@ export function construire(sources, debut, fin) {
 }
 
 export function texte(r) {
-  const L = ["*ANGEL'S GROUP — Rapport de connexion*", "Du " + dh(r.debut) + " au " + dh(r.fin), "Connexions réussies : " + r.ok + " · Échecs : " + r.ko + " · Personnes connectées : " + r.personnes];
+  const L = ["*LOGISTICA — Rapport de connexion*", "Du " + dh(r.debut) + " au " + dh(r.fin), "Connexions réussies : " + r.ok + " · Échecs : " + r.ko + " · Personnes connectées : " + r.personnes];
   for (const a of r.apps) {
     L.push("", "*" + a.nom + "* : " + a.ok + " connexion(s)" + (a.ko ? " · " + a.ko + " échec(s)" : ""));
     a.users.filter((u) => u.ok).slice(0, 6).forEach((u) => L.push(" • " + u.nom + " : " + u.ok + " (dernière " + hh(u.derniere) + ")"));
@@ -62,7 +62,7 @@ export function html(r) {
       a.users.map((u) => `<tr><td style="${td}"><b>${esc(u.nom)}</b></td><td style="${td}">${esc(ROLES[u.role] || u.role)}</td><td style="${td}">${u.ok}</td><td style="${td}${u.ko ? ";color:#c62828;font-weight:700" : ""}">${u.ko}</td><td style="${td}">${u.derniere ? esc(dh(u.derniere)) : "—"}</td><td style="${td}">${esc(u.appareils.join(" ; ") || "—")}</td></tr>`).join("") + "</table>" : '<p style="color:#6b7390;font-size:13px">Aucune activité sur la période.</p>') +
     (a.jamais.length ? `<p style="font-size:13px;color:#b86e00">Comptes actifs jamais connectés : ${a.jamais.map((j) => esc(j.nom)).join(", ")}</p>` : "")).join("");
   const al = r.apps.flatMap((a) => a.alertes.map((n) => n + " (" + a.nom + ")"));
-  return `<div style="font-family:system-ui,Arial,sans-serif;color:#1b2240;max-width:720px"><h2 style="margin:0 0 4px">ANGEL'S GROUP — Rapport de connexion</h2><p style="margin:0 0 12px;color:#6b7390">Du ${esc(dh(r.debut))} au ${esc(dh(r.fin))}</p>` +
+  return `<div style="font-family:system-ui,Arial,sans-serif;color:#1b2240;max-width:720px"><h2 style="margin:0 0 4px">LOGISTICA — Rapport de connexion</h2><p style="margin:0 0 12px;color:#6b7390">Du ${esc(dh(r.debut))} au ${esc(dh(r.fin))}</p>` +
     `<p style="font-size:15px"><b>${r.ok}</b> connexion(s) réussie(s) · <b style="color:${r.ko ? "#c62828" : "inherit"}">${r.ko}</b> échec(s) · <b>${r.personnes}</b> personne(s) connectée(s)</p>` +
     (al.length ? `<p style="background:#fde5e5;border-radius:8px;padding:8px 12px;color:#c62828"><b>⚠ Échecs répétés (3 ou plus) :</b> ${esc(al.join(", "))}</p>` : "") + blocs +
     `<p style="margin-top:20px;color:#6b7390;font-size:12px">Rapport automatique. Détail et historique complet : Paramètres du hub → Connexions.</p></div>`;
@@ -98,7 +98,7 @@ export async function traiter(db, cfgSrv, req, cles, envoyer, now = Date.now()) 
   const fin = new Date(now).toISOString(), debut = new Date(now - 864e5).toISOString(), emails = a === "tester" ? validerEmails(req.emails && req.emails.length ? req.emails : cfg.emails) : cfg.emails;
   if (!emails.length) return err(400, "Aucune adresse e-mail pour le DG");
   const r = construire(await db.sources(new Date(now - 90 * 864e5).toISOString()), debut, fin);
-  await envoyer({ a: emails, sujet: (a === "tester" ? "[TEST] " : "") + "ANGEL'S GROUP — Rapport de connexion du " + new Date(now).toLocaleDateString("fr-FR", { timeZone: TZ }), html: html(r), texte: texte(r) });
+  await envoyer({ a: emails, sujet: (a === "tester" ? "[TEST] " : "") + "LOGISTICA — Rapport de connexion du " + new Date(now).toLocaleDateString("fr-FR", { timeZone: TZ }), html: html(r), texte: texte(r) });
   if (a === "cron") await db.ecrireCfg({ derniere_date: jourDe(now), derniere_le: fin });
   return rep(200, { ok: true, envoye: true, a: emails.length, connexions: r.ok, echecs: r.ko });
 }

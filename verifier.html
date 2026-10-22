@@ -36,14 +36,14 @@ var DIV={transport:"Transport",distribution:"Distribution",agro:"Agro",groupe:"G
 var ALGO={name:"ECDSA",namedCurve:"P-256"},SIGN={name:"ECDSA",hash:"SHA-256"};
 function unb64u(s){s=String(s).replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";var b=atob(s),a=new Uint8Array(b.length);for(var i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a}
 function lire(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}}
-function cles(){var L=[],P=window.__PORTAIL_DATA&&window.__PORTAIL_DATA.print;if(P&&Array.isArray(P.keys))P.keys.forEach(function(k){if(k&&k.kid&&k.pub)L.push(k)});var l=lire("angels_print_key_v1");if(l&&l.pub&&l.kid&&!L.some(function(k){return k.kid===l.kid}))L.push({kid:l.kid,pub:l.pub,local:true});return L}
+function cles(){var L=[],P=window.__PORTAIL_DATA&&window.__PORTAIL_DATA.print;if(P&&Array.isArray(P.keys))P.keys.forEach(function(k){if(k&&k.kid&&k.pub)L.push(k)});var l=lire("logistica_print_key_v1");if(l&&l.pub&&l.kid&&!L.some(function(k){return k.kid===l.kid}))L.push({kid:l.kid,pub:l.pub,local:true});return L}
 function noms(){var P=window.__PORTAIL_DATA&&window.__PORTAIL_DATA.print;return(P&&P.noms)||{}}
-function extraire(t){t=String(t||"").trim();var m=/(?:verifier(?:\.html)?#|ANGELS-VERIF:|^#)?([A-Za-z0-9_-]{20,})\.([A-Za-z0-9_-]{8,})\s*$/.exec(t);return m?{c:m[1],s:m[2]}:null}
+function extraire(t){t=String(t||"").trim();var m=/(?:verifier(?:\.html)?#|LOGISTICA-VERIF:|^#)?([A-Za-z0-9_-]{20,})\.([A-Za-z0-9_-]{8,})\s*$/.exec(t);return m?{c:m[1],s:m[2]}:null}
 async function verifier(sig,canon,pub){try{var k=await crypto.subtle.importKey("jwk",pub,ALGO,false,["verify"]);return await crypto.subtle.verify(SIGN,k,unb64u(sig),new TextEncoder().encode(canon))}catch(e){return false}}
 var ICO={ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/></svg>',er:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>',wa:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18h.01"/></svg>'};
 async function lancer(txt){
   var el=document.getElementById("res"),e=extraire(txt);
-  if(!e){el.innerHTML=txt?'<div class="card verdict er">'+ICO.er+'<div>Lien illisible : ce n\'est pas un QR de sécurité ANGEL\'S GROUP.</div></div>':"";return}
+  if(!e){el.innerHTML=txt?'<div class="card verdict er">'+ICO.er+'<div>Lien illisible : ce n\'est pas un QR de sécurité LOGISTICA.</div></div>':"";return}
   var canon;try{canon=new TextDecoder().decode(unb64u(e.c))}catch(x){canon=""}
   var p=canon.split("|");if(p.length!==7||(p[0]!=="A1"&&p[0]!=="A0")){el.innerHTML='<div class="card verdict er">'+ICO.er+'<div>Contenu du QR non reconnu.</div></div>';return}
   var d={v:p[0],div:p[1],ref:p[2],date:p[3],montant:p[4],h:p[5],kid:p[6]},v,cls,msg;
@@ -52,7 +52,7 @@ async function lancer(txt){
   else{var k=cles().filter(function(x){return x.kid===d.kid})[0];
     if(!k){cls="wa";msg="Clé de signature introuvable ("+esc(d.kid)+"). Impossible de confirmer ce document ici : contactez l'émetteur."}
     else{v=await verifier(e.s,canon,k.pub);cls=v?"ok":"er";msg=v?"Document AUTHENTIQUE : signature valide.":"Document NON AUTHENTIQUE : la signature ne correspond pas (document modifié ou falsifié)."}}
-  var reg=(lire("angels_docs_v1")||[]).filter(function(r){return r.r===d.ref&&r.h===d.h})[0],m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(d.date),nm=noms()[d.div];
+  var reg=(lire("logistica_docs_v1")||[]).filter(function(r){return r.r===d.ref&&r.h===d.h})[0],m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(d.date),nm=noms()[d.div];
   el.innerHTML='<div class="card verdict '+cls+'">'+ICO[cls]+'<div>'+msg+'</div></div><div class="card"><dl><dt>Émetteur</dt><dd>'+esc(nm||"LOGISTICA")+' — '+esc(DIV[d.div]||d.div)+'</dd><dt>Référence</dt><dd>'+esc(d.ref)+'</dd><dt>Date</dt><dd>'+(m?m[3]+"/"+m[2]+"/"+m[1]:esc(d.date))+'</dd>'+(+d.montant?'<dt>Montant</dt><dd>'+Number(d.montant).toLocaleString("fr-FR")+' F</dd>':"")+'<dt>Empreinte</dt><dd>'+esc(d.h)+'</dd><dt>Clé</dt><dd>'+esc(d.kid)+'</dd>'+(reg?'<dt>Registre</dt><dd>Enregistré sur cet appareil le '+esc(String(reg.u).slice(0,10))+(reg.p?" par "+esc(reg.p):"")+'</dd>':"")+'</dl></div>';
 }
 document.getElementById("go").onclick=function(){lancer(document.getElementById("lien").value)};

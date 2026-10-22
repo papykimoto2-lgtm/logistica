@@ -157,7 +157,7 @@
     var P = provision(); out.prov = { actif: P.cfg.actif, requise: P.cfg.actif ? P.requise : 0, constatee: P.constatee, ajust: P.cfg.actif ? P.ajust : 0 };
     return out;
   }
-  function publier(host) { if (host) H = host; try { if (!H.can("v")) return null; var r = resume(); localStorage.setItem("angels_tiers_" + H.division, JSON.stringify(r)); return r; } catch (e) { return null; } }
+  function publier(host) { if (host) H = host; try { if (!H.can("v")) return null; var r = resume(); localStorage.setItem("logistica_tiers_" + H.division, JSON.stringify(r)); return r; } catch (e) { return null; } }
 
   /* ---------- Affichage ---------- */
   var CSS = ".tr-w{overflow:auto}.tr-w table{width:100%;border-collapse:collapse;font-size:13px}.tr-w th,.tr-w td{border-bottom:1px solid var(--bd,#d5dbe3);padding:6px 8px;text-align:left;vertical-align:top}.tr-w th{font-size:12px;color:var(--mu,#5b6572);white-space:nowrap}.tr-w td.n,.tr-w th.n{text-align:right;white-space:nowrap}" +
@@ -226,7 +226,7 @@
     return '<div class="tr-root">' + modes + sel + (UIS.mode === "synthese" && !UIS.tiers ? vSynthese(UIS.compte) : UIS.tiers ? vReleve(UIS.compte, UIS.tiers) : vListe(UIS.compte)) + "</div>";
   }
   function view(host) {
-    H = host; css(); G.ANGELS_TIERS.host = host;
+    H = host; css(); G.LOGISTICA_TIERS.host = host;
     if (!H.can("v")) return '<div class="tr-n">Accès aux comptes de tiers non autorisé pour votre profil.</div>';
     return vue();
   }
@@ -245,10 +245,10 @@
       '<p class="sub" style="margin-top:8px">Les règlements sont imputés sur les pièces les plus anciennes. Merci de signaler toute différence dans un délai de 15 jours.</p>';
   }
   function imprimer() {
-    if (!G.ANGELS_PRINT) { alert("Moteur d'impression indisponible."); return; }
+    if (!G.LOGISTICA_PRINT) { alert("Moteur d'impression indisponible."); return; }
     if (!H.can("p")) { alert("Droits insuffisants pour imprimer."); return; }
     var r = releve(UIS.compte, UIS.tiers, UIS);
-    G.ANGELS_PRINT.ouvrir({ division: H.division, emetteur: H.user(), fallback: H.identite ? H.identite() : null, titre: "Relevé de compte " + (r.nature === "C" ? "fournisseur" : "client"), ref: "RC-" + r.compte + "-" + norm(r.tiers.nom).replace(/[^a-z0-9]+/g, "").slice(0, 8).toUpperCase(), date: r.au || r.edite, montant: Math.abs(r.solde), corps: corpsImpression(r) }).catch(function (e) { alert("Impression impossible : " + e.message); });
+    G.LOGISTICA_PRINT.ouvrir({ division: H.division, emetteur: H.user(), fallback: H.identite ? H.identite() : null, titre: "Relevé de compte " + (r.nature === "C" ? "fournisseur" : "client"), ref: "RC-" + r.compte + "-" + norm(r.tiers.nom).replace(/[^a-z0-9]+/g, "").slice(0, 8).toUpperCase(), date: r.au || r.edite, montant: Math.abs(r.solde), corps: corpsImpression(r) }).catch(function (e) { alert("Impression impossible : " + e.message); });
     if (H.audit) H.audit("Relevé de compte imprimé", r.tiers.nom + " — " + r.compte);
   }
   function csv() {
@@ -286,15 +286,15 @@
     retirer: function (cle) { if (!confirm("Retirer le taux forcé ?")) return; var r = H.run ? H.run(function () { retirerForce(cle); }) : (retirerForce(cle), true); if (r !== false) H.render(); },
     provecr: function () { var r = H.run ? H.run(function () { ecritureProvision(UIS.provdate || today()); }) : (ecritureProvision(UIS.provdate || today()), true); if (r !== false) { alert("Écriture générée en brouillard : elle sera comptabilisée après visa (Comptabilité → Saisie & visa)."); H.render(); } },
     provprint: function () {
-      if (!G.ANGELS_PRINT || !H.can("p")) return; var P = provision(), tb = function (cols, rows) { return "<table><thead><tr>" + cols.map(function (c) { return '<th class="' + (c[1] || "") + '">' + esc(c[0]) + "</th>"; }).join("") + "</tr></thead><tbody>" + rows.join("") + "</tbody></table>"; };
+      if (!G.LOGISTICA_PRINT || !H.can("p")) return; var P = provision(), tb = function (cols, rows) { return "<table><thead><tr>" + cols.map(function (c) { return '<th class="' + (c[1] || "") + '">' + esc(c[0]) + "</th>"; }).join("") + "</tr></thead><tbody>" + rows.join("") + "</tbody></table>"; };
       var rows = P.lignes.map(function (l) { return "<tr><td>" + esc(l.nom) + "</td>" + l.tr.map(function (v) { return '<td class="n">' + (v ? fcfa(v) : "") + "</td>"; }).join("") + '<td class="n">' + fcfa(l.prov) + "</td><td>" + (l.force ? l.force.taux + " % — " + esc(l.force.motif) : "") + "</td></tr>"; }); rows.push('<tr class="tot"><td colspan="6">Dépréciation requise</td><td class="n">' + fcfa(P.requise) + "</td><td></td></tr>");
-      G.ANGELS_PRINT.ouvrir({ division: H.division, emetteur: H.user(), fallback: H.identite ? H.identite() : null, titre: "État des provisions pour créances douteuses", ref: "PROV-" + today().replace(/-/g, ""), date: today(), montant: P.requise, paysage: true,
+      G.LOGISTICA_PRINT.ouvrir({ division: H.division, emetteur: H.user(), fallback: H.identite ? H.identite() : null, titre: "État des provisions pour créances douteuses", ref: "PROV-" + today().replace(/-/g, ""), date: today(), montant: P.requise, paysage: true,
         corps: '<p class="sub">Taux par tranche : ' + TR.map(function (t, i) { return t + " " + P.cfg.taux[i] + " %"; }).join(" · ") + ". Dépréciation constatée (compte " + esc(P.cfg.compte_prov) + ") : " + fcfa(P.constatee) + ". Ajustement : " + fcfa(P.ajust) + ".</p>" + tb([["Client"]].concat(TR.map(function (t) { return [t, "n"]; }), [["Provision", "n"], ["Taux forcé / motif"]]), rows) + '<p class="sub" style="margin-top:8px">Montants à valider par l\'expert-comptable avant comptabilisation.</p>' }).catch(function (e) { alert("Impression impossible : " + e.message); });
       if (H.audit) H.audit("État des provisions imprimé", fcfa(P.requise));
     }
   };
   document.addEventListener("click", function (e) {
-    var t = e.target.closest && e.target.closest("[data-tr]"); if (!t || !G.ANGELS_TIERS.host) return; var f = ACT[t.dataset.tr]; if (!f) return; e.preventDefault(); H = G.ANGELS_TIERS.host;
+    var t = e.target.closest && e.target.closest("[data-tr]"); if (!t || !G.LOGISTICA_TIERS.host) return; var f = ACT[t.dataset.tr]; if (!f) return; e.preventDefault(); H = G.LOGISTICA_TIERS.host;
     try { f(t.dataset.id, t); } catch (x) { alert(x.message); }
   });
   document.addEventListener("input", function (e) { var t = e.target; if (!t.dataset || t.dataset.trf !== "q" || !H) return; UIS.q = t.value; var pos = t.selectionStart; H.render(); var n = document.querySelector('[data-trf="q"]'); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (x) { } } });
@@ -311,5 +311,5 @@
     for (var i = 0; i < cs.length; i++) { var t = liste(cs[i].compte).filter(function (x) { return x.nom === nom; })[0]; if (t) { ouvrir(H, cs[i].compte, t.id); return true; } }
     return false;
   }
-  G.ANGELS_TIERS = { host: null, view: view, ouvrir: ouvrir, ouvrirParNom: ouvrirParNom, synthese: function (c, h) { if (h) H = h; return synthese(c); }, delai: delai, provision: function (h) { if (h) H = h; return provision(); }, ecritureProvision: function (d, h) { if (h) H = h; return ecritureProvision(d); }, enregistrerProv: function (c, m, h) { if (h) H = h; return enregistrerProv(c, m); }, forcerTaux: function (k, t, m, h) { if (h) H = h; return forcerTaux(k, t, m); }, retirerForce: function (k, h) { if (h) H = h; return retirerForce(k); }, resume: function (h) { if (h) H = h; return resume(); }, publier: publier, releve: function (compte, tid, o, h) { if (h) H = h; return releve(compte, tid, o); }, liste: function (compte, h) { if (h) H = h; return liste(compte); }, age: age, UI: UIS, TRANCHES: TR, use: function (h) { H = h; this.host = h; } };
+  G.LOGISTICA_TIERS = { host: null, view: view, ouvrir: ouvrir, ouvrirParNom: ouvrirParNom, synthese: function (c, h) { if (h) H = h; return synthese(c); }, delai: delai, provision: function (h) { if (h) H = h; return provision(); }, ecritureProvision: function (d, h) { if (h) H = h; return ecritureProvision(d); }, enregistrerProv: function (c, m, h) { if (h) H = h; return enregistrerProv(c, m); }, forcerTaux: function (k, t, m, h) { if (h) H = h; return forcerTaux(k, t, m); }, retirerForce: function (k, h) { if (h) H = h; return retirerForce(k); }, resume: function (h) { if (h) H = h; return resume(); }, publier: publier, releve: function (compte, tid, o, h) { if (h) H = h; return releve(compte, tid, o); }, liste: function (compte, h) { if (h) H = h; return liste(compte); }, age: age, UI: UIS, TRANCHES: TR, use: function (h) { H = h; this.host = h; } };
 })(window);

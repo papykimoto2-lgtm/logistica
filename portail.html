@@ -140,7 +140,7 @@ function geoPrecis(){return new Promise(function(ok,ko){if(!navigator.geolocatio
 function geoTxt(a){return a<1000?"±"+Math.round(a)+" m":"±"+(Math.round(a/100)/10).toString().replace(".",",")+" km"}
 function geoBouton(out,set,clear){out.textContent="Recherche de votre position (jusqu'à 20 s)…";geoPrecis().then(function(q){if(q.acc>1000){clear();out.textContent="Position trop imprécise ("+geoTxt(q.acc)+") : activez le GPS (localisation précise) du téléphone, ou indiquez votre quartier et un repère.";return}set(q);out.textContent=(q.acc<=60?"✔ Position enregistrée (":"Position approximative enregistrée (")+geoTxt(q.acc)+")"+(q.acc<=60?"":" : précisez bien le repère")}).catch(function(){out.textContent="Position impossible : autorisez la localisation ou indiquez votre quartier."})}
 
-const KEY="angels_portail_v1",SKEY="angels_portail_cfg";
+const KEY="logistica_portail_v1",SKEY="logistica_portail_cfg";
 const DEF={v:5,motdg:{titre:"",nom:"",fonction:"",accroche:"",texte:"",photo:""},logo:"",couleur2:"",couleur3:"",legal:{raison:"",forme:"",rccm:"",siege:"",capital:"",dirigeant:""},nom:"LOGISTICA",slogan:"Commandez en ligne, faites-vous livrer. Vendez avec nous.",apropos:"Distribution, transport, négoce de véhicules et agro : commandez dans notre boutique en ligne, ou devenez vendeur partenaire et faites livrer vos produits.",couleur:"#c8352b",
  societe:"Le groupe réunit plusieurs activités complémentaires au service de ses clients et de ses partenaires : la livraison à moto et la vente en ligne, le transport de personnes, le négoce et l'import de véhicules, et l'élevage.",
  bandeau:["Commandez en ligne, livraison rapide.","Devenez vendeur partenaire : postulez en quelques minutes.","Paiement à la livraison ou par Mobile Money."],
@@ -210,12 +210,12 @@ function charger(){ // priorité : lien partagé (#p=…, mémorisé pour la vis
  if(REMOTE&&!(c.boutique_sync&&String(c.boutique_sync)>=REMOTE.maj)){const sr=tokBoutique(REMOTE.boutique);if(sr){T.shop=sr;Object.entries(REMOTE.photos||{}).slice(0,300).forEach(([k,v])=>{const code=String(k).slice(0,30),L=(Array.isArray(v)?v:[v]).map(okImg).filter(Boolean).slice(0,5);if(L.length){T.photosProduits[code]=L[0];if(L.length>1)T.galeries[code]=L;else delete T.galeries[code]}})}}for(const k of Object.keys(T.contact))T.contact[k]=tx(T.contact[k],120);return T;
 }
 /* Panier de la boutique : conservé sur l'appareil du visiteur (il peut quitter la page et revenir), jamais envoyé avant la commande */
-function panierLire(){try{const o=JSON.parse(localStorage.getItem("angels_panier")||"{}");return o&&typeof o==="object"&&!Array.isArray(o)?o:{}}catch(e){return{}}}
-function panierSave(){try{const o={};Object.keys(ST.q).forEach(k=>{if(ST.q[k]>0)o[k]=ST.q[k]});if(Object.keys(o).length)localStorage.setItem("angels_panier",JSON.stringify(o));else localStorage.removeItem("angels_panier")}catch(e){}}
+function panierLire(){try{const o=JSON.parse(localStorage.getItem("logistica_panier")||"{}");return o&&typeof o==="object"&&!Array.isArray(o)?o:{}}catch(e){return{}}}
+function panierSave(){try{const o={};Object.keys(ST.q).forEach(k=>{if(ST.q[k]>0)o[k]=ST.q[k]});if(Object.keys(o).length)localStorage.setItem("logistica_panier",JSON.stringify(o));else localStorage.removeItem("logistica_panier")}catch(e){}}
 function panierVider(){ST.q={};panierSave()}
 let T=charger(),ST={q:panierLire(),gps:null,vs:"form",vc:"form"};
 /* Catalogue publié par le bureau (fonction serveur « portail-catalogue ») : prix, stock, prestations, forfaits et photos à jour sans republier le portail. Sur l'appareil du bureau, la version locale (plus récente) prévaut. */
-async function catalogueDistant(){const c=window.ANGELS_PASSERELLE;if(!c||!/^https:\/\//.test(c.url||""))return;
+async function catalogueDistant(){const c=window.LOGISTICA_PASSERELLE;if(!c||!/^https:\/\//.test(c.url||""))return;
  try{const r=await fetch(c.url.replace(/\/+$/,"")+"/functions/v1/portail-catalogue",{cache:"no-store"}),j=await r.json();if(!r.ok||!j.ok||!j.boutique||typeof j.boutique!=="string")return;if(REMOTE&&REMOTE.maj===String(j.maj_le||""))return;
   REMOTE={boutique:j.boutique,photos:j.photos&&typeof j.photos==="object"?j.photos:{},maj:String(j.maj_le||"")};T=charger();const a=document.activeElement;if(!(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&a.closest("#page")))rendre()}catch(e){}}
 catalogueDistant();setInterval(catalogueDistant,60000);
@@ -223,7 +223,7 @@ const ref6=()=>Array.from(crypto.getRandomValues(new Uint8Array(6)),x=>"ABCDEFGH
 const waNum=()=>telWA(T.contact.whatsapp||(T.shop&&T.shop.w)||"");
 function lienWA(msg){const n=waNum();return n?"https://wa.me/"+n+"?text="+encodeURIComponent(msg):""}
 /* Envoi direct au bureau (fonction serveur « portail-demande ») : seulement si la passerelle est configurée ; WhatsApp reste toujours disponible */
-const portailDirect=()=>{const c=window.ANGELS_PASSERELLE;return c&&/^https:\/\//.test(c.url||"")?c.url.replace(/\/+$/,"")+"/functions/v1/portail-demande":""};
+const portailDirect=()=>{const c=window.LOGISTICA_PASSERELLE;return c&&/^https:\/\//.test(c.url||"")?c.url.replace(/\/+$/,"")+"/functions/v1/portail-demande":""};
 async function envoiDirect(btn){const card=btn.closest(".card"),st=card.querySelector("#dir_st"),ta=card.querySelector("textarea"),u=portailDirect();if(!u||!ta)return;btn.disabled=true;const dm=btn.dataset.dm&&ST.cdm?ST.cdm:ta.value;st.textContent="Envoi en cours…";
  try{const r=await fetch(u,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(dm===ST.cdm&&ST.cphotos&&ST.cphotos.length?{message:dm,photos:ST.cphotos}:{message:dm})}),j=await r.json().catch(()=>({}));
   if(r.ok&&j.ok){if(card.closest("#shop"))panierVider();if(dm===ST.cdm){ST.cphotos=[];ST.lq={};ST.ac=null}card.querySelector("h3").textContent="Demande envoyée ✔";btn.remove();st.textContent="Nous avons bien reçu votre demande (réf. "+(j.refs&&j.refs[0]||"")+"). Nous vous recontactons très vite."+(j.doublons?" (Elle avait déjà été reçue.)":"");st.style.color="var(--ok,#118a4b)";return}
@@ -272,7 +272,7 @@ function rendreShop(){
  if(!S||!S.items.length){el.innerHTML='<div class="empty">La boutique ouvre bientôt. Contactez-nous pour commander.</div>';return}
  Object.keys(ST.q).forEach(c=>{const i=S.items.find(x=>x.c===c);if(!i||i.st<=0||!(ST.q[c]>0))delete ST.q[c];else ST.q[c]=Math.max(1,Math.min(ST.q[c]|0,i.st,99))});   /* article retiré ou épuisé depuis la dernière visite : sorti du panier */
  if(ST.vs==="cmd"){el.innerHTML=envoi("Touchez le bouton pour envoyer votre commande à <b>"+esc(T.nom)+"</b>. Elle est vérifiée puis confirmée avant livraison.",ST.msg,ST.ref,"shop");return}
- if(!ST.vue){let v="";try{v=localStorage.getItem("angels_shop_vue")||""}catch(e){}ST.vue=v==="liste"||v==="grille"?v:(S.items.filter(i=>T.photosProduits[i.c]).length*2>=S.items.length?"grille":"liste")}
+ if(!ST.vue){let v="";try{v=localStorage.getItem("logistica_shop_vue")||""}catch(e){}ST.vue=v==="liste"||v==="grille"?v:(S.items.filter(i=>T.photosProduits[i.c]).length*2>=S.items.length?"grille":"liste")}
  const grille=ST.vue==="grille";
  const nbArt=()=>S.items.reduce((t,i)=>t+(ST.q[i.c]||0),0),ssTot=()=>S.items.reduce((t,i)=>t+i.pu*(ST.q[i.c]||0),0);
  const panierHtml=n=>{const L=S.items.filter(i=>ST.q[i.c]>0);return`<h3 id="b_cart_t">${n}. Mon panier</h3><div id="b_cart">${L.length?L.map(i=>`<div class="cl" data-c="${esc(i.c)}"><div class="nm"><b>${esc(i.n)}</b> <span class="mu">· ${F(i.pu)} l'unité</span></div>${stepper(i)}<b class="lt">${F(i.pu*ST.q[i.c])}</b><button type="button" class="chip" data-b="del" aria-label="Retirer ${esc(i.n)} du panier">Retirer</button></div>`).join("")+`<div class="between"><button type="button" class="chip" data-b="clear">Vider le panier</button><span><b>${nbArt()}</b> article(s) · <b>${F(ssTot())}</b></span></div>`:`<p class="mu">Votre panier est vide. Ajoutez des produits ou des services ci-dessus : vous pouvez en prendre plusieurs et commander en une seule fois.</p>`}</div>`};
@@ -294,7 +294,7 @@ ${panierHtml(++num)}
  <div class="tot"><div><span>Articles</span><b id="b_sub">0 F</b></div><div><span>Livraison</span><b id="b_fee">—</b></div><div class="big"><span>Total à payer</span><b id="b_tot">0 F</b></div></div>
  <div id="b_err" class="err" style="display:none"></div><button type="button" class="go" id="b_send" style="width:100%;justify-content:center">Envoyer ma commande</button>
  <p class="mu">Votre commande part par WhatsApp : nous la vérifions, confirmons le prix et vous contactons. Prix et stock indiqués à la date de publication.</p></div>${nbArt()?`<div class="cartbar" role="region" aria-label="Panier"><span>${ico("cart")}<b>${nbArt()}</b> article(s) · <b>${F(ssTot())}</b></span><button type="button" class="go" data-b="goto">Voir mon panier</button></div>`:""}`;
- el.querySelectorAll("[data-vue-shop]").forEach(b=>b.onclick=()=>{ST.vue=b.dataset.vueShop;try{localStorage.setItem("angels_shop_vue",ST.vue)}catch(e){}const g=id=>(document.getElementById(id)||{}).value||"";ST.pre={n:g("b_nom"),t:g("b_tel"),z:g("b_zone"),q:g("b_q"),r:g("b_rep")};rendreShop()});
+ el.querySelectorAll("[data-vue-shop]").forEach(b=>b.onclick=()=>{ST.vue=b.dataset.vueShop;try{localStorage.setItem("logistica_shop_vue",ST.vue)}catch(e){}const g=id=>(document.getElementById(id)||{}).value||"";ST.pre={n:g("b_nom"),t:g("b_tel"),z:g("b_zone"),q:g("b_q"),r:g("b_rep")};rendreShop()});
  const $b=id=>document.getElementById(id),zf=()=>(S.zones.find(z=>z.nom===$b("b_zone").value)||{}).frais,lines=()=>S.items.filter(i=>ST.q[i.c]>0),sub=()=>lines().reduce((t,i)=>t+i.pu*ST.q[i.c],0);
  const calc=()=>{const s=sub(),f=zf();$b("b_sub").textContent=F(s);$b("b_fee").textContent=f==null?"— (choisir la zone)":F(f);$b("b_tot").textContent=F(s+(f||0))};
  el.onclick=e=>{const b=e.target.closest("[data-b]");if(!b)return;const a=b.dataset.b;
@@ -333,7 +333,7 @@ function rendreVend(){
 
 /* ---------- Médias publiables (photos, vidéos par lien, documents) : IndexedDB de cet appareil, sinon portail-data.js publié ---------- */
 let MED=[];const cut=(v,n)=>String(v==null?"":v).slice(0,n);
-function idbOpen(){return new Promise((ok,ko)=>{if(!window.indexedDB)return ko();const r=indexedDB.open("angels_portail",2);r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains("media"))d.createObjectStore("media",{keyPath:"id"});if(!d.objectStoreNames.contains("veh"))d.createObjectStore("veh",{keyPath:"id"})};r.onsuccess=()=>ok(r.result);r.onerror=()=>ko(r.error)})}
+function idbOpen(){return new Promise((ok,ko)=>{if(!window.indexedDB)return ko();const r=indexedDB.open("logistica_portail",2);r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains("media"))d.createObjectStore("media",{keyPath:"id"});if(!d.objectStoreNames.contains("veh"))d.createObjectStore("veh",{keyPath:"id"})};r.onsuccess=()=>ok(r.result);r.onerror=()=>ko(r.error)})}
 async function lireMedias(){let L=[];
  try{const db=await idbOpen();L=await new Promise((ok,ko)=>{const q=db.transaction("media").objectStore("media").getAll();q.onsuccess=()=>ok(q.result);q.onerror=()=>ko(q.error)})}catch(e){}
  if(!L.length&&window.__PORTAIL_DATA&&Array.isArray(window.__PORTAIL_DATA.media))L=window.__PORTAIL_DATA.media;
@@ -414,7 +414,7 @@ async function suiviVerifier(tok){ // etat : ok (signature valide) · ko (signat
  const p=String(tok).split(".");if(p.length!==3||!/^[A-Za-z0-9_-]{8,}$/.test(p[0]))return{etat:"illisible"};
  let d;try{d=unb64(p[0])}catch(e){return{etat:"illisible"}}if(!d||typeof d!=="object")return{etat:"illisible"};
  if(p[1]==="-")return{etat:"simple",d:suiviNet(d)};
- const keys=[...(((window.__PORTAIL_DATA||{}).print||{}).keys||[])];try{const l=JSON.parse(localStorage.getItem("angels_print_key_v1")||"null");if(l&&l.pub&&l.kid)keys.push({kid:l.kid,pub:l.pub})}catch(e){}
+ const keys=[...(((window.__PORTAIL_DATA||{}).print||{}).keys||[])];try{const l=JSON.parse(localStorage.getItem("logistica_print_key_v1")||"null");if(l&&l.pub&&l.kid)keys.push({kid:l.kid,pub:l.pub})}catch(e){}
  const k=keys.filter(x=>x&&x.kid===p[2]&&x.pub)[0];if(!k||!window.crypto||!crypto.subtle)return{etat:"inconnu",d:suiviNet(d)};
  try{const key=await crypto.subtle.importKey("jwk",k.pub,{name:"ECDSA",namedCurve:"P-256"},false,["verify"]);
   const ok=await crypto.subtle.verify({name:"ECDSA",hash:"SHA-256"},key,u8(p[1]),new TextEncoder().encode("T1|"+p[0]));return ok?{etat:"ok",d:suiviNet(d)}:{etat:"ko"}}catch(e){return{etat:"ko"}}}
@@ -521,7 +521,7 @@ function commanderRendre(){
   if(!lg.length&&!vi.length)return err("Choisissez ou décrivez au moins un article");if(!val("c_nom"))return err("Indiquez votre nom");if(digits(val("c_tel")).length<8)return err("Indiquez un numéro de téléphone valide");if(!val("c_zone"))return err("Choisissez votre zone de livraison");const acp=acLire();if(acp.err)return err(acp.err);if(!val("c_q")&&!val("c_rep")&&!ST.cgps)return err("Indiquez votre quartier, un point de repère ou envoyez votre position");
   const ref=ref6(),ls=vi.map(x=>({d:x.d,q:x.q,p:x.p})).concat(lg).map(l=>({d:String(l.d).trim().slice(0,120),q:Math.max(1,Math.min(99,parseInt(l.q)||1)),p:l.p===""||isNaN(+String(l.p).replace(/\s/g,""))?null:Math.max(0,Math.round(+String(l.p).replace(/\s/g,"")))}));
   const pay={f:ref,n:val("c_nom"),t:val("c_tel"),z:val("c_zone"),q:val("c_q"),r:val("c_rep"),m:val("c_note"),a:ST.cgps?ST.cgps.lat:null,o:ST.cgps?ST.cgps.lng:null,l:ls.map(l=>[l.d,l.q,l.p])};if(acp.ac)pay.ac=acp.ac;
-  ST.cmsg=`Commande — ${o.v} (réf. ${ref})\nNom : ${pay.n}\nTél : ${pay.t}\nZone : ${pay.z}${pay.q?" · "+pay.q:""}${pay.r?" · "+pay.r:""}\n${ST.cgps?"Position : https://maps.google.com/?q="+ST.cgps.lat+","+ST.cgps.lng+"\n":""}Articles :\n${ls.map(l=>"- "+l.q+" x "+l.d+(l.p!=null?" ("+F(l.p)+")":"")).join("\n")}${pay.m?"\nMessage : "+pay.m:""}${pay.ac?"\nAcompte Mobile Money : "+F(pay.ac.m)+" ("+pay.ac.op+", réf. "+pay.ac.rf+") — à vérifier":""}\n${ST.cphotos&&ST.cphotos.length?"("+ST.cphotos.length+" capture(s) d'écran : à joindre dans cette conversation)\n":"(Captures d'écran à envoyer dans cette conversation)\n"}[ANGELS:${b64(pay)}]`;
+  ST.cmsg=`Commande — ${o.v} (réf. ${ref})\nNom : ${pay.n}\nTél : ${pay.t}\nZone : ${pay.z}${pay.q?" · "+pay.q:""}${pay.r?" · "+pay.r:""}\n${ST.cgps?"Position : https://maps.google.com/?q="+ST.cgps.lat+","+ST.cgps.lng+"\n":""}Articles :\n${ls.map(l=>"- "+l.q+" x "+l.d+(l.p!=null?" ("+F(l.p)+")":"")).join("\n")}${pay.m?"\nMessage : "+pay.m:""}${pay.ac?"\nAcompte Mobile Money : "+F(pay.ac.m)+" ("+pay.ac.op+", réf. "+pay.ac.rf+") — à vérifier":""}\n${ST.cphotos&&ST.cphotos.length?"("+ST.cphotos.length+" capture(s) d'écran : à joindre dans cette conversation)\n":"(Captures d'écran à envoyer dans cette conversation)\n"}[LOGISTICA:${b64(pay)}]`;
   /* Envoi direct au serveur : la commande arrive dans l'espace du vendeur ; le message WhatsApp reste disponible (et sert aux captures d'écran) */
   {const ko=ST.verif==="ko",pv=Object.assign({},pay,{v:ko?"":o.i||"",vt:ko?"":o.t||"",vn:o.v||"",s:srcDe(o),m:String(pay.m||"").slice(0,300)}),dm="Commande vendeur "+o.v+" (réf. "+ref+")\n[BOUTIQUE:"+b64(pv)+"]";ST.cdm=dm.length<=5800?dm:""}
   ST.cref=ref;ST.cs="fin";commanderRendre()}}
@@ -684,7 +684,7 @@ document.addEventListener("click",e=>{
  const vd=e.target.closest("[data-vd]");if(vd){vehFiche(vd.dataset.vd);return}
  const v=e.target.closest("[data-vue]");if(v){if(v.dataset.vue==="abr"){ST.as="form";abonnementRendre()}else if(v.dataset.vue==="lvr"){ST.ls="form";ST.lcg=null;livraisonRendre()}else if(v.dataset.vue==="cmd"){ST.cs="form";ST.cl=null;ST.cgps=null;commanderRendre()}else if(v.dataset.vue==="shop"){ST.vs="form";ST.q={};ST.gps=null;rendreShop()}else{ST.vc="form";rendreVend()}}
  if(e.target.dataset.cp){const t=e.target.parentElement.querySelector("textarea");(navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).catch(()=>t.select())}});
-addEventListener("storage",ev=>{if(ev.key===KEY){T=charger();rendre()}});try{new BroadcastChannel("angels_portail").onmessage=()=>{T=charger();Promise.all([lireMedias(),lireVehicules()]).then(([m,v])=>{MED=m;VEH=v;rendre()})}}catch(e){}
+addEventListener("storage",ev=>{if(ev.key===KEY){T=charger();rendre()}});try{new BroadcastChannel("logistica_portail").onmessage=()=>{T=charger();Promise.all([lireMedias(),lireVehicules()]).then(([m,v])=>{MED=m;VEH=v;rendre()})}}catch(e){}
 addEventListener("hashchange",()=>{if(/[#&]p=/.test(location.hash)){T=charger();location.hash="#/accueil"}else rendre()});
 if(/[#&]p=/.test(location.hash)){T=charger();history.replaceState(null,"",location.pathname+"#/accueil")}
 if(!location.hash&&/[?&](boutique|client)=/.test(location.search))history.replaceState(null,"",location.pathname+location.search+"#/commander");

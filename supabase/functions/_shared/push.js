@@ -41,7 +41,7 @@ export async function traiterEnvoi(db, cfg, req, adminKey, envoyer, now = Date.n
   const ref = txt(req.livreur_ref, 60), titre = txt(req.titre, 80), corps = txt(req.corps, 160);
   if (!ref || !titre) return err(400, "Livreur et titre obligatoires");
   let url = txt(req.url, 120) || "livreur.html"; if (/^[a-z]+:/i.test(url) || url.startsWith("//")) url = "livreur.html";   // lien relatif uniquement
-  const payload = JSON.stringify({ t: titre, b: corps, tag: txt(req.tag, 60) || "angels", u: url });
+  const payload = JSON.stringify({ t: titre, b: corps, tag: txt(req.tag, 60) || "logistica", u: url });
   const L = await db.abonnementsDe(ref); let envoyes = 0, supprimes = 0, echecs = 0;
   for (const s of L) {
     let r; try { r = await envoyer({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, payload); } catch { r = { status: 0 }; }

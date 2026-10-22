@@ -1,13 +1,13 @@
 /* LOGISTICA — moteur CRM central du hub (et des instances clientes : Distribution, Placement, Assurance, selon les modules choisis).
    Principe : UNE fiche par personne pour tout le groupe. Les clients, vendeurs partenaires, candidats et chauffeurs des trois applications
    (Distributions, Transport, Agro) sont lus (jamais modifiés) et fusionnés par numéro de téléphone ; le CRM ne garde que SON propre état :
-   interactions, tâches, opportunités, étiquettes, oppositions et journal d'audit (clé locale « angels_crm_v1 »).
+   interactions, tâches, opportunités, étiquettes, oppositions et journal d'audit (clé locale « logistica_crm_v1 »).
    Rien de ce qui est calculé (chiffre d'affaires, encours, segments) n'est enregistré : tout est dérivé des applications, donc toujours cohérent avec elles.
    Données personnelles : l'opposition à la prospection (loi ivoirienne 2013-450) exclut le contact de toute relance et de tout export marketing. */
 (function (G) {
   "use strict";
-  var K = "angels_crm_v1", DJ = 864e5;
-  var APPS = [["distribution", "angels_erp_v1", "Distributions"], ["transport", "angels_transport_v3", "Transport"], ["agro", "angels_agro_v1", "Agro"], ["placement", "angels_placement_v1", "Placement"], ["assurance", "angels_assurance_v1", "Assurance"]];
+  var K = "logistica_crm_v1", DJ = 864e5;
+  var APPS = [["distribution", "logistica_erp_v1", "Distributions"], ["transport", "logistica_transport_v3", "Transport"], ["agro", "logistica_agro_v1", "Agro"], ["placement", "logistica_placement_v1", "Placement"], ["assurance", "logistica_assurance_v1", "Assurance"]];
   var CFG0 = { nouveau_j: 30, fidele_n: 3, actif_j: 60, risque_j: 120, vip_f: 500000, impaye_j: 30 };
   var ETAPES = [["nouveau", "Nouveau"], ["contact", "Contacté"], ["devis", "Devis / offre"], ["negoc", "Négociation"], ["gagne", "Gagné"], ["perdu", "Perdu"]];
   var TYPES_INT = [["appel", "📞 Appel"], ["whatsapp", "💬 WhatsApp"], ["visite", "🤝 Visite"], ["email", "✉️ E-mail"], ["note", "📝 Note"]];
@@ -40,7 +40,7 @@
     S.marques = S.marques.filter(function (m) { return (m.tags && m.tags.length) || m.stop || m.relance; });
     var ok = true;
     try { localStorage.setItem(K, JSON.stringify(S)); } catch (e) { ok = false; }
-    try { if (G.ANGELS_SYNC) G.ANGELS_SYNC.signal(); } catch (e) { }
+    try { if (G.LOGISTICA_SYNC) G.LOGISTICA_SYNC.signal(); } catch (e) { }
     return ok;
   }
   function marque(S, cle, creer) {
@@ -48,7 +48,7 @@
     if (!m && creer) { m = { id: cle, tags: [], stop: "", relance: "" }; S.marques.push(m); }
     return m || null;
   }
-  if (G.addEventListener) G.addEventListener("storage", function (e) { if (e.key === K) { CACHE = null; try { if (G.ANGELS_CRM_RAFRAICHIR) G.ANGELS_CRM_RAFRAICHIR(); } catch (x) { } } });
+  if (G.addEventListener) G.addEventListener("storage", function (e) { if (e.key === K) { CACHE = null; try { if (G.LOGISTICA_CRM_RAFRAICHIR) G.LOGISTICA_CRM_RAFRAICHIR(); } catch (x) { } } });
   function cfg(S) { var c = {}; Object.keys(CFG0).forEach(function (k) { var v = +((S || etat()).cfg || {})[k]; c[k] = v > 0 ? v : CFG0[k]; }); return c; }
   function audit(S, par, action, detail) { S.audit.push({ id: uid("au"), t: nowIso(), par: par || "?", action: action, detail: String(detail || "").slice(0, 300) }); }
 
@@ -368,7 +368,7 @@
     return "﻿" + [H].concat(rows).map(function (r) { return r.map(cellule).join(";"); }).join("\r\n");
   }
 
-  G.ANGELS_CRM = {
+  G.LOGISTICA_CRM = {
     K: K, APPS: APPS, ETAPES: ETAPES, TYPES_INT: TYPES_INT, SEG: SEG, CFG0: CFG0, esc: esc,
     etat: etat, sauver: sauver, cfg: cfg, contacts: contacts, pilotage: pilotage, serie: serie, relances: relances, qualite: qualite, historique: historique, exportCsv: exportCsv,
     chiffres: chiffres, cleTel: cleTel, waLien: waLien, norm: norm,

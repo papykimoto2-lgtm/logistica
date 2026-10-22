@@ -1,4 +1,4 @@
--- Synchronisation entre postes ANGEL'S : un enregistrement = une ligne (application, collection, identifiant).
+-- Synchronisation entre postes LOGISTICA : un enregistrement = une ligne (application, collection, identifiant).
 -- Accès réservé à la fonction « sync » (clé service) : aucun droit pour les navigateurs.
 
 create sequence if not exists public.sync_seq;

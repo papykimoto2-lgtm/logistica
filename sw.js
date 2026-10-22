@@ -14,7 +14,7 @@ self.addEventListener("install", e => {
   e.waitUntil(caches.open(V).then(c => Promise.all(COQUE.map(u => c.add(u).catch(() => null)))).then(() => self.skipWaiting()));
 });
 self.addEventListener("activate", e => {
-  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== V && k !== "angels-partage").map(k => caches.delete(k)))).then(() => self.clients.claim()));
+  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== V && k !== "logistica-partage").map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
 self.addEventListener("message", e => { if (e.data === "skipWaiting") self.skipWaiting(); });
 const cle = u => { const x = new URL(u); x.search = ""; x.hash = ""; return x.href; };   // le cache ignore les paramètres d'URL
@@ -23,7 +23,7 @@ self.addEventListener("fetch", e => {
   if (r.method === "POST" && u.origin === location.origin && u.searchParams.get("partage") === "1") {   // partage depuis WhatsApp (Web Share Target, Livraison)
     e.respondWith((async () => {
       try {
-        const fd = await r.formData(), c = await caches.open("angels-partage"), meta = { text: [fd.get("title"), fd.get("text"), fd.get("url")].filter(Boolean).join("\n"), files: [] };
+        const fd = await r.formData(), c = await caches.open("logistica-partage"), meta = { text: [fd.get("title"), fd.get("text"), fd.get("url")].filter(Boolean).join("\n"), files: [] };
         let i = 0;
         for (const f of fd.getAll("medias")) {
           if (typeof f === "string") continue;

@@ -10,7 +10,7 @@
      treso() : [{compte, lib, solde}] comptes de trésorerie ; liaison (facultatif) : compte de liaison, "466" par défaut */
 (function (G) {
   "use strict";
-  var H = null, R = Math.round, KEY = "angels_inter";
+  var H = null, R = Math.round, KEY = "logistica_inter";
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   var fcfa = function (n) { return H && H.util && H.util.fcfa ? H.util.fcfa(n) : R(n || 0).toLocaleString("fr-FR").replace(/[  ]/g, " ") + " F"; };
   var today = function () { return new Date().toISOString().slice(0, 10); };
@@ -141,7 +141,7 @@
     ops.forEach(function (o) { if (o.statut === "annulee") return; if (o.de === H.division && !o.reg.de) cre[o.a] = (cre[o.a] || 0) + o.montant; if (o.a === H.division && o.statut === "confirmee" && !o.reg.a) det[o.de] = (det[o.de] || 0) + o.montant; });
     return { t: new Date().toISOString(), division: H.division, nb: ops.filter(function (o) { return o.statut !== "annulee"; }).length, a_confirmer: ops.filter(function (o) { return o.a === H.division && o.statut === "emise"; }).length, contestees: ops.filter(function (o) { return o.statut === "contestee"; }).length, creances: cre, dettes: det, solde: c.solde, attendu: c.attendu, ecart: c.solde - c.attendu, alertes: c.alertes.length };
   }
-  function publier(host) { if (host) H = host; try { if (!H.can("v")) return null; var r = resume(); localStorage.setItem("angels_inter_" + H.division, JSON.stringify(r)); return r; } catch (e) { return null; } }
+  function publier(host) { if (host) H = host; try { if (!H.can("v")) return null; var r = resume(); localStorage.setItem("logistica_inter_" + H.division, JSON.stringify(r)); return r; } catch (e) { return null; } }
 
   /* ---------- Affichage ---------- */
   var CSS = ".ig-w{overflow:auto}.ig-w table{width:100%;border-collapse:collapse;font-size:13px}.ig-w th,.ig-w td{border-bottom:1px solid var(--bd,#d5dbe3);padding:6px 8px;text-align:left;vertical-align:top}.ig-w th{font-size:12px;color:var(--mu,#5b6572);white-space:nowrap}.ig-w td.n,.ig-w th.n{text-align:right;white-space:nowrap}" +
@@ -180,13 +180,13 @@
     h += '<div class="ig-n">Le registre est partagé entre les applications ouvertes sur cet appareil. Montants hors taxes (la TVA se comptabilise séparément). Une opération confirmée ne s\'annule plus : passez une opération inverse après accord des deux divisions.</div></div>';
     return h;
   }
-  function view(host) { H = host; css(); G.ANGELS_INTER.host = host; if (!H.can("v")) return '<div class="ig-n">Accès aux opérations entre divisions non autorisé pour votre profil.</div>'; return vue(); }
+  function view(host) { H = host; css(); G.LOGISTICA_INTER.host = host; if (!H.can("v")) return '<div class="ig-n">Accès aux opérations entre divisions non autorisé pour votre profil.</div>'; return vue(); }
 
   function imprimer() {
-    if (!G.ANGELS_PRINT) { alert("Moteur d'impression indisponible."); return; } if (!H.can("p")) { alert("Droits insuffisants pour imprimer."); return; }
+    if (!G.LOGISTICA_PRINT) { alert("Moteur d'impression indisponible."); return; } if (!H.can("p")) { alert("Droits insuffisants pour imprimer."); return; }
     var ops = lire().ops.filter(moi).sort(function (a, b) { return a.date < b.date ? -1 : 1; }), C = controle();
     var rows = ops.map(function (o) { return "<tr><td>" + esc(o.ref) + "</td><td>" + fd(o.date) + "</td><td>" + (o.de === H.division ? "→ " + esc(DIV[o.a]) : "← " + esc(DIV[o.de])) + "</td><td>" + esc(NAT[o.nature].lib + " — " + o.objet) + '</td><td class="n">' + fcfa(o.montant) + "</td><td>" + ({ emise: "En attente", contestee: "Contestée", annulee: "Annulée", confirmee: o.reg.de && o.reg.a ? "Soldée" : "Confirmée" }[o.statut]) + "</td></tr>"; });
-    G.ANGELS_PRINT.ouvrir({ division: H.division, emetteur: H.user(), fallback: H.identite ? H.identite() : null, titre: "Opérations entre divisions du groupe", ref: "IGL-" + today().replace(/-/g, ""), date: today(), montant: 0, paysage: true,
+    G.LOGISTICA_PRINT.ouvrir({ division: H.division, emetteur: H.user(), fallback: H.identite ? H.identite() : null, titre: "Opérations entre divisions du groupe", ref: "IGL-" + today().replace(/-/g, ""), date: today(), montant: 0, paysage: true,
       corps: '<p class="sub">Solde du compte ' + esc(liaison()) + " : " + fcfa(C.solde) + " — attendu d'après le registre : " + fcfa(C.attendu) + '.</p><table><thead><tr><th>Pièce</th><th>Date</th><th>Sens</th><th>Opération</th><th class="n">Montant</th><th>État</th></tr></thead><tbody>' + rows.join("") + '</tbody></table><p class="sub" style="margin-top:8px">Montants hors taxes. Registre propre à l\'appareil.</p>' }).catch(function (e) { alert("Impression impossible : " + e.message); });
     if (H.audit) H.audit("Opérations inter-divisions imprimées", String(ops.length));
   }
@@ -217,8 +217,8 @@
     reg: function (id) { form("Constater le règlement", [{ k: "compte", l: "Compte de trésorerie", t: "select", o: tresoOpts() }, { k: "date", l: "Date du règlement", t: "date" }], { date: today() }, function (f) { regler(id, f); }, "Enregistrer en brouillard"); },
     print: imprimer
   };
-  document.addEventListener("click", function (e) { var t = e.target.closest && e.target.closest("[data-ig]"); if (!t || !G.ANGELS_INTER.host) return; var f = ACT[t.dataset.ig]; if (!f) return; e.preventDefault(); H = G.ANGELS_INTER.host; try { f(t.dataset.id, t); } catch (x) { alert(x.message); } });
+  document.addEventListener("click", function (e) { var t = e.target.closest && e.target.closest("[data-ig]"); if (!t || !G.LOGISTICA_INTER.host) return; var f = ACT[t.dataset.ig]; if (!f) return; e.preventDefault(); H = G.LOGISTICA_INTER.host; try { f(t.dataset.id, t); } catch (x) { alert(x.message); } });
 
-  G.ANGELS_INTER = { host: null, view: view, DIV: DIV, NAT: NAT, KEY: KEY, UI: UIS, lire: lire, agreger: agreger, attendu: attendu, controle: function (h) { if (h) H = h; return controle(); }, emettre: function (f, h) { if (h) H = h; return emettre(f); }, confirmer: function (i, f, h) { if (h) H = h; return confirmer(i, f); }, contester: function (i, m, h) { if (h) H = h; return contester(i, m); },
+  G.LOGISTICA_INTER = { host: null, view: view, DIV: DIV, NAT: NAT, KEY: KEY, UI: UIS, lire: lire, agreger: agreger, attendu: attendu, controle: function (h) { if (h) H = h; return controle(); }, emettre: function (f, h) { if (h) H = h; return emettre(f); }, confirmer: function (i, f, h) { if (h) H = h; return confirmer(i, f); }, contester: function (i, m, h) { if (h) H = h; return contester(i, m); },
     representer: function (i, h) { if (h) H = h; return representer(i); }, annuler: function (i, m, h) { if (h) H = h; return annuler(i, m); }, regler: function (i, f, h) { if (h) H = h; return regler(i, f); }, resume: function (h) { if (h) H = h; return resume(); }, publier: publier, imprimer: function (h) { if (h) H = h; return imprimer(); }, use: function (h) { H = h; this.host = h; } };
 })(window);

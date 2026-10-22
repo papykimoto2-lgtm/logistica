@@ -1,4 +1,4 @@
-/* Passerelle livreur ANGEL'S : logique pure, testée hors Supabase (voir tests/passerelle.js).
+/* Passerelle livreur LOGISTICA : logique pure, testée hors Supabase (voir tests/passerelle.js).
 
    Principe : le bureau (application Distributions) reste la source de vérité. Il publie sur le serveur, pour chaque mission, une
    projection SANS numéro de téléphone et SANS code de confirmation (seule l'empreinte du code est conservée). Le livreur se connecte avec un
@@ -11,7 +11,7 @@ export { CORS } from "./pont.js";
 
 const rep = (status, body) => ({ status, body });
 const err = (status, message) => rep(status, { ok: false, erreur: message });
-export const emailDe = (ident) => { ident = String(ident || "").trim(); return ident.includes("@") ? ident.toLowerCase() : ident.toLowerCase().replace(/[^a-z0-9._-]/g, "") + "@users.angels-erp.app"; };
+export const emailDe = (ident) => { ident = String(ident || "").trim(); return ident.includes("@") ? ident.toLowerCase() : ident.toLowerCase().replace(/[^a-z0-9._-]/g, "") + "@users.logistica-erp.app"; };
 
 /* Mot de passe temporaire (14 caractères : 4 majuscules, 4 minuscules, 4 chiffres, 2 symboles, mélangés) */
 export function genererMdp() {

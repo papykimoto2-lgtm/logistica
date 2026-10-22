@@ -148,7 +148,7 @@
     return h;
   }
   function view(host) {
-    H = host; css(); G.ANGELS_ETATS.host = host; if (!H.can("v")) return '<div class="et-n">Accès aux états financiers non autorisé pour votre profil.</div>';
+    H = host; css(); G.LOGISTICA_ETATS.host = host; if (!H.can("v")) return '<div class="et-n">Accès aux états financiers non autorisé pour votre profil.</div>';
     var E = etats(), bl = vBilan(E);
     return '<div class="et-root"><div class="et-bar"><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" data-etf="cmp" ' + (UIS.cmp ? "checked" : "") + '> Comparatif N-1</label><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" data-etf="det" ' + (UIS.det ? "checked" : "") + "> Détail par compte</label>" +
       (H.can("p") ? '<button type="button" class="et-b p" data-et="imprimer">🖨 Imprimer / PDF</button><button type="button" class="et-b" data-et="csv">⬇ CSV</button>' : "") + '<span style="color:var(--mu,#5b6572);font-size:13px">Période du ' + fd(E.from) + " au " + fd(E.to) + " (bilan au " + fd(E.to) + ")</span></div>" +
@@ -161,8 +161,8 @@
       '<p class="sub" style="margin-top:8px">' + (E.bilan.ecart === 0 ? "Bilan équilibré." : "Bilan déséquilibré : écart de " + fcfa(E.bilan.ecart) + ".") + " Charges entre parenthèses. États dérivés de la comptabilité, à valider par l'expert-comptable.</p>";
   }
   function imprimer() {
-    if (!G.ANGELS_PRINT) { alert("Moteur d'impression indisponible."); return; } if (!H.can("p")) { alert("Droits insuffisants pour imprimer."); return; }
-    var E = etats(); G.ANGELS_PRINT.ouvrir({ division: H.division, emetteur: H.user(), fallback: H.identite ? H.identite() : null, titre: "États financiers", ref: "ETF-" + E.to.replace(/-/g, ""), date: E.to, montant: E.v.XI, paysage: false, corps: corpsImpression(E) }).catch(function (e) { alert("Impression impossible : " + e.message); });
+    if (!G.LOGISTICA_PRINT) { alert("Moteur d'impression indisponible."); return; } if (!H.can("p")) { alert("Droits insuffisants pour imprimer."); return; }
+    var E = etats(); G.LOGISTICA_PRINT.ouvrir({ division: H.division, emetteur: H.user(), fallback: H.identite ? H.identite() : null, titre: "États financiers", ref: "ETF-" + E.to.replace(/-/g, ""), date: E.to, montant: E.v.XI, paysage: false, corps: corpsImpression(E) }).catch(function (e) { alert("Impression impossible : " + e.message); });
     if (H.audit) H.audit("États financiers imprimés", fd(E.from) + " → " + fd(E.to));
   }
   function csv() {
@@ -173,8 +173,8 @@
     ["A", "P"].forEach(function (c) { BIL[c].forEach(function (g) { g[2].forEach(function (x) { rows.push([c === "A" ? "Actif" : "Passif", x[0], x[1], R(E.bilan[c][x[0]] || 0), E.n1 ? R(E.n1.bilan[c][x[0]] || 0) : ""]); }); }); });
     var b = new Blob(["﻿" + rows.map(function (r) { return r.map(q).join(";"); }).join("\n")], { type: "text/csv" }), a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = "etats-financiers-" + E.to + ".csv"; a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
   }
-  document.addEventListener("click", function (e) { var t = e.target.closest && e.target.closest("[data-et]"); if (!t || !G.ANGELS_ETATS.host) return; e.preventDefault(); H = G.ANGELS_ETATS.host; try { if (t.dataset.et === "imprimer") imprimer(); else if (t.dataset.et === "csv") csv(); } catch (x) { alert(x.message); } });
-  document.addEventListener("change", function (e) { var t = e.target; if (!t.dataset || !t.dataset.etf || !G.ANGELS_ETATS.host) return; H = G.ANGELS_ETATS.host; UIS[t.dataset.etf] = t.checked; H.render(); });
+  document.addEventListener("click", function (e) { var t = e.target.closest && e.target.closest("[data-et]"); if (!t || !G.LOGISTICA_ETATS.host) return; e.preventDefault(); H = G.LOGISTICA_ETATS.host; try { if (t.dataset.et === "imprimer") imprimer(); else if (t.dataset.et === "csv") csv(); } catch (x) { alert(x.message); } });
+  document.addEventListener("change", function (e) { var t = e.target; if (!t.dataset || !t.dataset.etf || !G.LOGISTICA_ETATS.host) return; H = G.LOGISTICA_ETATS.host; UIS[t.dataset.etf] = t.checked; H.render(); });
 
   /* Synthèse de l'exercice en cours (1er janvier → aujourd'hui), publiée pour le consolidé du groupe : aucune donnée nominative */
   function publier(host) {
@@ -183,8 +183,8 @@
       if (!H.can("v")) return null; var t = today(), m = modele(lignes(), t.slice(0, 4) + "-01-01", t), b = m.bilan, cp = 0;
       BIL.P[0][2].forEach(function (x) { cp += b.P[x[0]] || 0; });
       var r = { t: new Date().toISOString(), division: H.division, du: t.slice(0, 4) + "-01-01", au: t, marge: R(m.v.XA), ca: R(m.v.XB), va: R(m.v.XC), ebe: R(m.v.XD), rex: R(m.v.XE), rfin: R(m.v.XF), hao: R(m.v.XH), rn: R(m.v.XI), caf: R(m.caf.total), actif: R(b.totA), passif: R(b.totP), ecart: b.ecart, capitaux: R(cp), treso: R((b.A.banque || 0) + (b.A.valeurs || 0) + (b.A.titres || 0) - (b.P.treso_p || 0)), clients: R(b.A.clients || 0), fournisseurs: R(b.P.fournisseurs || 0), dettes_fin: R(b.P.dettes_fin || 0) };
-      localStorage.setItem("angels_etats_" + H.division, JSON.stringify(r)); return r;
+      localStorage.setItem("logistica_etats_" + H.division, JSON.stringify(r)); return r;
     } catch (e) { return null; }
   }
-  G.ANGELS_ETATS = { host: null, view: view, publier: publier, etats: function (o, h) { if (h) H = h; return etats(o); }, modele: function (L, from, to) { return modele(L, from, to); }, ligneDe: ligneDe, rubrique: rubrique, PLAN: PLAN, LIB: LIB, UI: UIS, use: function (h) { H = h; this.host = h; } };
+  G.LOGISTICA_ETATS = { host: null, view: view, publier: publier, etats: function (o, h) { if (h) H = h; return etats(o); }, modele: function (L, from, to) { return modele(L, from, to); }, ligneDe: ligneDe, rubrique: rubrique, PLAN: PLAN, LIB: LIB, UI: UIS, use: function (h) { H = h; this.host = h; } };
 })(window);

@@ -1,4 +1,4 @@
--- Passerelle livreur ANGEL'S : le livreur lit uniquement ses missions, SANS numéro de téléphone du client et SANS code de confirmation.
+-- Passerelle livreur LOGISTICA : le livreur lit uniquement ses missions, SANS numéro de téléphone du client et SANS code de confirmation.
 -- Le bureau publie les missions (fonction mission-sync) ; le livreur agit par la fonction mission-action ; aucune écriture directe.
 
 create table if not exists public.pg_livreurs (

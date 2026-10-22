@@ -26,7 +26,7 @@ button{font:inherit;font-weight:700;border:0;border-radius:12px;padding:14px;wid
 <script>
 "use strict";
 const $=id=>document.getElementById(id),esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const T=new URLSearchParams(location.search).get("t")||"",C=window.ANGELS_PASSERELLE,U=C&&/^https:\/\//.test(C.url||"")?C.url.replace(/\/+$/,"")+"/functions/v1/livraison-signer":"";
+const T=new URLSearchParams(location.search).get("t")||"",C=window.LOGISTICA_PASSERELLE,U=C&&/^https:\/\//.test(C.url||"")?C.url.replace(/\/+$/,"")+"/functions/v1/livraison-signer":"";
 const post=async b=>{const r=await fetch(U,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(Object.assign({t:T},b))}),j=await r.json().catch(()=>({}));if(!r.ok||j.ok===false)throw new Error(j.erreur||"Service momentanément indisponible");return j};
 const F=n=>new Intl.NumberFormat("fr-FR").format(Math.round(n))+" F";
 let GPS=null;

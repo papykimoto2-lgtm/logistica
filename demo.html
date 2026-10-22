@@ -17,7 +17,7 @@
 <h2>Bienvenue 👋</h2>
 <p>Cette démonstration charge des <b>données fictives</b> sur <b>cet appareil seulement</b> : personnes, entreprises et numéros inventés. Rien n'est envoyé à un serveur, rien n'est partagé, et vous pouvez tout effacer en un clic.</p>
 <ul id="mods"></ul>
-<div class="cred">Connexion à la première ouverture :<br>Profil <b>Administrateur</b> · mot de passe <code>Demo@Angels2026</code></div>
+<div class="cred">Connexion à la première ouverture :<br>Profil <b>Administrateur</b> · mot de passe <code>Demo@Logistica2026</code></div>
 <button class="btn big" id="go" type="button">▶ Lancer la démonstration</button>
 <p class="note" id="msg" role="status"></p>
 </div>
@@ -37,17 +37,17 @@ $("mods").innerHTML=M.map(m=>`<li>${LB[m]||m}</li>`).join("")+((MQ.outils||[]).i
 $("go").onclick=()=>{
  const b=$("go");b.disabled=true;$("msg").textContent="Préparation des données…";
  try{
-  ANGELS_DEMO.effacer();
-  localStorage.setItem("angels_demo","1");localStorage.setItem("angels_demo_local","1");
+  LOGISTICA_DEMO.effacer();
+  localStorage.setItem("logistica_demo","1");localStorage.setItem("logistica_demo_local","1");
   const r={};
-  if(M.includes("placement")&&window.ANGELS_PLACEMENT)r.p=ANGELS_DEMO.placement(ANGELS_PLACEMENT);
-  if(M.includes("assurance")&&window.ANGELS_ASSURANCE)r.a=ANGELS_DEMO.assurance(ANGELS_ASSURANCE);
-  if((MQ.outils||[]).includes("crm")&&window.ANGELS_CRM&&(r.p||r.a))r.c=ANGELS_DEMO.crm(ANGELS_CRM);
+  if(M.includes("placement")&&window.LOGISTICA_PLACEMENT)r.p=LOGISTICA_DEMO.placement(LOGISTICA_PLACEMENT);
+  if(M.includes("assurance")&&window.LOGISTICA_ASSURANCE)r.a=LOGISTICA_DEMO.assurance(LOGISTICA_ASSURANCE);
+  if((MQ.outils||[]).includes("crm")&&window.LOGISTICA_CRM&&(r.p||r.a))r.c=LOGISTICA_DEMO.crm(LOGISTICA_CRM);
   $("msg").textContent="Données prêtes. Ouverture de l'application…";
   setTimeout(()=>{location.href=M.includes("distribution")?"distribution.html?demo=1":"index.html"},500);
  }catch(e){b.disabled=false;$("msg").textContent="Échec de la préparation : "+e.message}
 };
-$("out").onclick=()=>{if(!confirm("Effacer toutes les données de démonstration de cet appareil ?"))return;ANGELS_DEMO.effacer();$("msg").textContent="Démonstration effacée. L'application repart vide."};
+$("out").onclick=()=>{if(!confirm("Effacer toutes les données de démonstration de cet appareil ?"))return;LOGISTICA_DEMO.effacer();$("msg").textContent="Démonstration effacée. L'application repart vide."};
 </script>
 </body>
 </html>

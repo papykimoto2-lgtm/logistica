@@ -1,4 +1,4 @@
-/* Pont téléphonique ANGEL'S : logique pure, testable hors Supabase (voir tests/appel-pont.js).
+/* Pont téléphonique LOGISTICA : logique pure, testable hors Supabase (voir tests/appel-pont.js).
    Principe : le bureau enregistre un « ticket » (numéro du client, côté serveur seulement) ; le livreur présente
    uniquement sa clé d'appel ; le serveur appelle d'abord le livreur, puis le relie au client. Aucun numéro ne quitte le serveur. */
 

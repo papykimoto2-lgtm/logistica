@@ -63,13 +63,13 @@
     while (d <= fin && n < 400) { if (d > T && (!e.fin || d <= e.fin)) out.push(d); n++; d = suiv(d, n); if (e.fin && d > e.fin) break; }
     return out;
   }
-  function rhPub() { try { return JSON.parse(localStorage.getItem("angels_rh_" + H.division) || "null"); } catch (e) { return null; } }
+  function rhPub() { try { return JSON.parse(localStorage.getItem("logistica_rh_" + H.division) || "null"); } catch (e) { return null; } }
   function calcul(o) {
     var c = cfg(), sc = (o && o.scenario) || UIS.scenario || c.scenario, P = sc === "prudent", T = today(), fin = addJ(T, HZ), ev = [], exclus = { nb: 0, montant: 0, items: [] };
     var comptes = []; try { comptes = H.tiers.comptes() || []; } catch (e) { comptes = []; }
     var jours = function (r) { return r && r.m > 0 ? Math.round(r.s / r.m) : null; };
     comptes.forEach(function (cp) {
-      var liste = []; try { liste = G.ANGELS_TIERS.liste(cp.compte, H.tiers) || []; } catch (e) { liste = []; }
+      var liste = []; try { liste = G.LOGISTICA_TIERS.liste(cp.compte, H.tiers) || []; } catch (e) { liste = []; }
       liste.forEach(function (t) {
         (t.age.ouv || []).forEach(function (i) {
           var exp, nat = cp.nature;
@@ -126,7 +126,7 @@
     if (host) H = host; try {
       if (!H.can("v")) return null; var P = calcul({ scenario: "prevu" }), Q = calcul({ scenario: "prudent" });
       var r = { t: new Date().toISOString(), division: H.division, treso: P.treso0, seuil: P.seuil, h30: P.h[30], h60: P.h[60], h90: P.h[90], bas: P.bas, negatif: P.negatif || "", besoin: Math.max(0, -P.bas.solde), prudent: { h90: Q.h[90], bas: Q.bas, negatif: Q.negatif || "" }, exclus: P.exclus.montant };
-      localStorage.setItem("angels_prev_" + H.division, JSON.stringify(r)); return r;
+      localStorage.setItem("logistica_prev_" + H.division, JSON.stringify(r)); return r;
     } catch (e) { return null; }
   }
 
@@ -164,16 +164,16 @@
     h += '<div class="pv-n">Hypothèses : encaissements selon l\'habitude de règlement de chaque client (sinon échéance, sinon ' + c.delai_clients + ' j après la pièce) ; fournisseurs à l\'échéance (sinon ' + c.delai_fourn + ' j) ; créances en retard de plus de ' + (P.scenario === "prudent" ? 45 : 90) + ' j exclues ; arriérés fournisseurs réglés sous ' + (P.scenario === "prudent" ? 1 : 7) + ' j. ' + (P.scenario === "prudent" ? "Scénario prudent : encaissements retardés de 15 jours. " : "") + (c.paie ? (P.rh ? "Paie et charges sociales issues du module RH. " : "Aucune paie publiée par le module RH. ") : "Paie exclue. ") + "Estimation de pilotage, à ajuster : elle ne remplace pas un plan de trésorerie validé.</div></div>";
     return h;
   }
-  function view(host) { H = host; css(); G.ANGELS_PREV.host = host; if (!H.can("v")) return '<div class="pv-n">Accès à la trésorerie prévisionnelle non autorisé pour votre profil.</div>'; if (!UIS.scenario) UIS.scenario = cfg().scenario; return vue(); }
+  function view(host) { H = host; css(); G.LOGISTICA_PREV.host = host; if (!H.can("v")) return '<div class="pv-n">Accès à la trésorerie prévisionnelle non autorisé pour votre profil.</div>'; if (!UIS.scenario) UIS.scenario = cfg().scenario; return vue(); }
 
   /* ---------- Impression / export ---------- */
   function imprimer() {
-    if (!G.ANGELS_PRINT) { alert("Moteur d'impression indisponible."); return; } if (!H.can("p")) { alert("Droits insuffisants pour imprimer."); return; }
+    if (!G.LOGISTICA_PRINT) { alert("Moteur d'impression indisponible."); return; } if (!H.can("p")) { alert("Droits insuffisants pour imprimer."); return; }
     var P = calcul(), A = alertes(P), tb = function (cols, rows) { return "<table><thead><tr>" + cols.map(function (c) { return '<th class="' + (c[1] || "") + '">' + esc(c[0]) + "</th>"; }).join("") + "</tr></thead><tbody>" + rows.join("") + "</tbody></table>"; };
     var nat = Object.keys(NAT).map(function (k) { return "<tr><td>" + esc(NAT[k]) + "</td>" + [30, 60, 90].map(function (n) { return '<td class="n">' + (P.nat[n][k] ? num(P.nat[n][k]) : "—") + "</td>"; }).join("") + "</tr>"; });
     nat.push('<tr class="tot"><td>Solde projeté</td>' + [30, 60, 90].map(function (n) { return '<td class="n">' + num(P.h[n].solde) + "</td>"; }).join("") + "</tr>");
     var sem = P.sem.map(function (s) { return "<tr><td>" + fd(s.from) + " → " + fd(s.to) + '</td><td class="n">' + fcfa(s.enc) + '</td><td class="n">' + fcfa(s.dec) + '</td><td class="n">' + num(s.solde) + "</td></tr>"; });
-    G.ANGELS_PRINT.ouvrir({ division: H.division, emetteur: H.user(), fallback: H.identite ? H.identite() : null, titre: "Trésorerie prévisionnelle — 13 semaines (" + (P.scenario === "prudent" ? "scénario prudent" : "scénario prévisible") + ")", ref: "TRP-" + P.T.replace(/-/g, ""), date: P.T, montant: P.treso0, paysage: false,
+    G.LOGISTICA_PRINT.ouvrir({ division: H.division, emetteur: H.user(), fallback: H.identite ? H.identite() : null, titre: "Trésorerie prévisionnelle — 13 semaines (" + (P.scenario === "prudent" ? "scénario prudent" : "scénario prévisible") + ")", ref: "TRP-" + P.T.replace(/-/g, ""), date: P.T, montant: P.treso0, paysage: false,
       corps: "<p class=\"sub\">Trésorerie au " + fd(P.T) + " : " + num(P.treso0) + ". Point bas : " + num(P.bas.solde) + " le " + fd(P.bas.d) + ". " + A.map(function (a) { return esc(a.t); }).join(" ") + "</p>" + tb([["Nature"], ["À 30 jours", "n"], ["À 60 jours", "n"], ["À 90 jours", "n"]], nat) + "<br>" + tb([["Semaine"], ["Encaissements", "n"], ["Décaissements", "n"], ["Solde en fin de semaine", "n"]], sem) + '<p class="sub" style="margin-top:8px">Estimation de pilotage dérivée de la comptabilité (pièces ouvertes, habitudes de règlement, paie, flux prévus). Elle doit être ajustée par la direction.</p>' }).catch(function (e) { alert("Impression impossible : " + e.message); });
     if (H.audit) H.audit("Trésorerie prévisionnelle imprimée", P.scenario);
   }
@@ -204,8 +204,8 @@
     deng: function (id) { if (!confirm("Supprimer ce flux prévu ?")) return; var r = H.run ? H.run(function () { supprimerEng(id); }) : (supprimerEng(id), true); if (r !== false) H.render(); },
     print: imprimer, csv: csv
   };
-  document.addEventListener("click", function (e) { var t = e.target.closest && e.target.closest("[data-pv]"); if (!t || !G.ANGELS_PREV.host) return; var f = ACT[t.dataset.pv]; if (!f) return; e.preventDefault(); H = G.ANGELS_PREV.host; try { f(t.dataset.id, t); } catch (x) { alert(x.message); } });
+  document.addEventListener("click", function (e) { var t = e.target.closest && e.target.closest("[data-pv]"); if (!t || !G.LOGISTICA_PREV.host) return; var f = ACT[t.dataset.pv]; if (!f) return; e.preventDefault(); H = G.LOGISTICA_PREV.host; try { f(t.dataset.id, t); } catch (x) { alert(x.message); } });
 
-  G.ANGELS_PREV = { host: null, view: view, calcul: function (o, h) { if (h) H = h; return calcul(o); }, alertes: alertes, hypotheses: function (f, h) { if (h) H = h; return hypotheses(f); }, ajouterEng: function (f, h) { if (h) H = h; return ajouterEng(f); }, modifierEng: function (i, f, h) { if (h) H = h; return modifierEng(i, f); }, supprimerEng: function (i, h) { if (h) H = h; return supprimerEng(i); },
+  G.LOGISTICA_PREV = { host: null, view: view, calcul: function (o, h) { if (h) H = h; return calcul(o); }, alertes: alertes, hypotheses: function (f, h) { if (h) H = h; return hypotheses(f); }, ajouterEng: function (f, h) { if (h) H = h; return ajouterEng(f); }, modifierEng: function (i, f, h) { if (h) H = h; return modifierEng(i, f); }, supprimerEng: function (i, h) { if (h) H = h; return supprimerEng(i); },
     scenario: function (s, h) { if (h) H = h; return scenario(s); }, config: function (h) { if (h) H = h; return cfg(); }, publier: publier, imprimer: function (h) { if (h) H = h; return imprimer(); }, UI: UIS, use: function (h) { H = h; this.host = h; } };
 })(window);

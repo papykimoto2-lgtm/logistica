@@ -2,14 +2,14 @@
    Moteur commun (Distribution, application livreur) : sons synthétisés par le navigateur (aucun fichier), volume et sourdine propres à chaque appareil,
    répétition et vibration. Les règles (quels événements sonnent, avec quel son) sont définies par chaque application ; ce moteur ne fait que jouer.
 
-   ANGELS_SIGNAL.jouer(son, { rep, vib, force, dire })   joue un son (rep : 1 à 5 répétitions) puis, si « dire » est fourni, lit ce texte à voix haute ; renvoie false si coupé ou si l'audio n'est pas encore débloqué
-   ANGELS_SIGNAL.parler(texte, { force })          lecture vocale seule (synthèse vocale du navigateur, voix française) ; false si coupée, non prise en charge ou désactivée sur l'appareil
-   ANGELS_SIGNAL.tester(son)                       joue même en sourdine (bouton « Tester »)
-   ANGELS_SIGNAL.dev() / setDev({ mute, vol, vib })   réglages de l'appareil (stockage local : « angels_signal_dev »)
-   ANGELS_SIGNAL.pret()                            vrai quand le navigateur a autorisé le son (après un premier toucher de l'écran) */
+   LOGISTICA_SIGNAL.jouer(son, { rep, vib, force, dire })   joue un son (rep : 1 à 5 répétitions) puis, si « dire » est fourni, lit ce texte à voix haute ; renvoie false si coupé ou si l'audio n'est pas encore débloqué
+   LOGISTICA_SIGNAL.parler(texte, { force })          lecture vocale seule (synthèse vocale du navigateur, voix française) ; false si coupée, non prise en charge ou désactivée sur l'appareil
+   LOGISTICA_SIGNAL.tester(son)                       joue même en sourdine (bouton « Tester »)
+   LOGISTICA_SIGNAL.dev() / setDev({ mute, vol, vib })   réglages de l'appareil (stockage local : « logistica_signal_dev »)
+   LOGISTICA_SIGNAL.pret()                            vrai quand le navigateur a autorisé le son (après un premier toucher de l'écran) */
 (function (G) {
   "use strict";
-  var KEY = "angels_signal_dev", ctx = null, debloque = false;
+  var KEY = "logistica_signal_dev", ctx = null, debloque = false;
   var SONS = [
     { id: "carillon", nom: "Carillon (doux)" },
     { id: "cloche", nom: "Cloche" },
@@ -83,5 +83,5 @@
   }
   function tester(son) { return jouer(son, { force: true, rep: 1 }); }
 
-  G.ANGELS_SIGNAL = { SONS: SONS, jouer: jouer, parler: parler, vocal: vocal, tester: tester, dev: dev, setDev: setDev, unlock: unlock, pret: function () { unlock(); return !!ctx && ctx.state === "running"; } };
+  G.LOGISTICA_SIGNAL = { SONS: SONS, jouer: jouer, parler: parler, vocal: vocal, tester: tester, dev: dev, setDev: setDev, unlock: unlock, pret: function () { unlock(); return !!ctx && ctx.state === "running"; } };
 })(window);

@@ -4,7 +4,7 @@
      et les profils rattachés à une fiche : livreur, vendeur, chauffeur) et rétablis à leurs droits d'origine.
    - Stockage dans l'état de l'application (donc synchronisé entre postes) : S.roles_perso (rôles créés), S.droits_roles (droits modifiés des rôles d'origine).
      Transport garde sa matrice native S.perms[rôle][module] : le moteur la lit et l'écrit telle quelle.
-   - ANGELS_ROLES.ouvrir(...) affiche le gestionnaire (même écran dans les applications et dans le Hub). */
+   - LOGISTICA_ROLES.ouvrir(...) affiche le gestionnaire (même écran dans les applications et dans le Hub). */
 (function (G) {
   "use strict";
   var E = function (x) { return String(x == null ? "" : x).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
@@ -234,5 +234,5 @@
     return { fermer: fin };
   }
 
-  G.ANGELS_ROLES = { a: a, CAT: CAT, droits: droits, surcharge: surcharge, atomeDe: atomeDe, roles: listeRoles, libelle: libelle, majRoles: majRoles, creer: creer, modifier: modifier, supprimer: supprimer, retablir: retablir, utilisateursDe: utilisateursDe, nomValide: nomValide, ouvrir: ouvrir, atomes: plat, defSet: defSet };
+  G.LOGISTICA_ROLES = { a: a, CAT: CAT, droits: droits, surcharge: surcharge, atomeDe: atomeDe, roles: listeRoles, libelle: libelle, majRoles: majRoles, creer: creer, modifier: modifier, supprimer: supprimer, retablir: retablir, utilisateursDe: utilisateursDe, nomValide: nomValide, ouvrir: ouvrir, atomes: plat, defSet: defSet };
 })(window);

@@ -3,10 +3,10 @@
    reversement à la compagnie (prime encaissée − commission) ou commission facturée à la compagnie → renouvellement → sinistres.
    Garde-fous : un numéro de police par compagnie ; dates cohérentes ; sinistre seulement sur police en cours à la date du sinistre ; jamais plus encaissé que la prime TTC ; jamais plus reversé que le dû ;
    référence Mobile Money unique ; commission bornée ; chaque action tracée. Écritures SYSCOHADA générées à la demande (équilibrées).
-   État local « angels_assurance_v1 », synchronisé entre postes (profil « assurance »). Le courtage relève de la réglementation CIMA : numéro d'agrément et mentions légales à renseigner par le cabinet (Réglages). */
+   État local « logistica_assurance_v1 », synchronisé entre postes (profil « assurance »). Le courtage relève de la réglementation CIMA : numéro d'agrément et mentions légales à renseigner par le cabinet (Réglages). */
 (function (G) {
   "use strict";
-  var K = "angels_assurance_v1", DJ = 864e5;
+  var K = "logistica_assurance_v1", DJ = 864e5;
   var BRANCHES = { auto: "Automobile", sante: "Santé / maladie", incendie: "Incendie et multirisque habitation", pro: "Multirisque professionnelle", transport: "Transport de marchandises", rc: "Responsabilité civile", accident: "Individuelle accident", vie: "Vie / épargne / retraite", autre: "Autre" };
   var MODES = ["Espèces", "Wave", "Orange Money", "MTN MoMo", "Moov Money", "Virement"];
   var CFG0 = { tva_commission: 0, alerte_renouvellement: 30, delai_prime: 15 };
@@ -27,10 +27,10 @@
   function sauver(S) {
     S = S || etat(); S.audit = S.audit.slice(-1500); var ok = true;
     try { localStorage.setItem(K, JSON.stringify(S)); } catch (e) { ok = false; }
-    try { if (G.ANGELS_SYNC) G.ANGELS_SYNC.signal(); } catch (e) { }
+    try { if (G.LOGISTICA_SYNC) G.LOGISTICA_SYNC.signal(); } catch (e) { }
     return ok;
   }
-  if (G.addEventListener) G.addEventListener("storage", function (e) { if (e.key === K) { CACHE = null; try { if (G.ANGELS_ASSURANCE_RAFRAICHIR) G.ANGELS_ASSURANCE_RAFRAICHIR(); } catch (x) { } } });
+  if (G.addEventListener) G.addEventListener("storage", function (e) { if (e.key === K) { CACHE = null; try { if (G.LOGISTICA_ASSURANCE_RAFRAICHIR) G.LOGISTICA_ASSURANCE_RAFRAICHIR(); } catch (x) { } } });
   function cfg(S) { var c = Object.assign({}, CFG0), u = (S || etat()).cfg || {}; Object.keys(CFG0).forEach(function (k) { var v = +u[k]; if (isFinite(v) && v >= 0 && u[k] !== "" && u[k] != null) c[k] = v; }); c.agrement = String(u.agrement || ""); return c; }
   function comptes(S) { return Object.assign({}, COMPTES0, (S || etat()).cfg.comptes || {}); }
   function audit(S, par, action, detail) { S.audit.push({ id: uid("au"), t: nowIso(), par: par || "?", action: action, detail: String(detail || "").slice(0, 300) }); }
@@ -210,5 +210,5 @@
     return csv([["Police", "Assuré", "Compagnie", "Branche", "Effet", "Échéance", "Prime nette", "TTC", "Commission", "État"]].concat(S.polices.map(function (p) { return [p.numero, A(p.assure_id).nom, Cc(p.compagnie_id).nom, BRANCHES[p.branche], p.effet, p.echeance, p.prime_nette, ttcPolice(S, p), commPolice(S, p), statutPolice(S, p)]; }))); }
   function csvEcritures(S) { var rows = [["Date", "Journal", "Pièce", "Libellé", "Compte", "Débit", "Crédit"]]; ecritures(S).forEach(function (e) { e.lignes.forEach(function (l) { rows.push([e.date, e.journal, e.piece, e.libelle, l.compte, l.debit, l.credit]); }); }); return csv(rows); }
 
-  G.ANGELS_ASSURANCE = { K: K, BRANCHES: BRANCHES, MODES: MODES, ETAPES_SIN: ETAPES_SIN, SUIVANT: SUIVANT, esc: esc, norm: norm, etat: etat, sauver: sauver, cfg: cfg, ajouterAssure: ajouterAssure, ajouterCompagnie: ajouterCompagnie, tauxBranche: tauxBranche, tauxDe: tauxDe, creerDevis: creerDevis, meilleure: meilleure, refuserDevis: refuserDevis, emettrePolice: emettrePolice, emettreDepuisDevis: emettreDepuisDevis, encaisserPrime: encaisserPrime, reverserCompagnie: reverserCompagnie, recevoirCommission: recevoirCommission, avenant: avenant, resilier: resilier, renouveler: renouveler, declarerSinistre: declarerSinistre, avancerSinistre: avancerSinistre, resume: resume, aRenouveler: aRenouveler, statutPolice: statutPolice, ttcPolice: ttcPolice, commPolice: commPolice, encPrime: encPrime, dueCompagnie: dueCompagnie, commRecue: commRecue, ecritures: ecritures, equilibre: equilibre, reglages: reglages, exportPolices: exportPolices, csvEcritures: csvEcritures, plusMois: plusMois };
+  G.LOGISTICA_ASSURANCE = { K: K, BRANCHES: BRANCHES, MODES: MODES, ETAPES_SIN: ETAPES_SIN, SUIVANT: SUIVANT, esc: esc, norm: norm, etat: etat, sauver: sauver, cfg: cfg, ajouterAssure: ajouterAssure, ajouterCompagnie: ajouterCompagnie, tauxBranche: tauxBranche, tauxDe: tauxDe, creerDevis: creerDevis, meilleure: meilleure, refuserDevis: refuserDevis, emettrePolice: emettrePolice, emettreDepuisDevis: emettreDepuisDevis, encaisserPrime: encaisserPrime, reverserCompagnie: reverserCompagnie, recevoirCommission: recevoirCommission, avenant: avenant, resilier: resilier, renouveler: renouveler, declarerSinistre: declarerSinistre, avancerSinistre: avancerSinistre, resume: resume, aRenouveler: aRenouveler, statutPolice: statutPolice, ttcPolice: ttcPolice, commPolice: commPolice, encPrime: encPrime, dueCompagnie: dueCompagnie, commRecue: commRecue, ecritures: ecritures, equilibre: equilibre, reglages: reglages, exportPolices: exportPolices, csvEcritures: csvEcritures, plusMois: plusMois };
 })(typeof window !== "undefined" ? window : globalThis);

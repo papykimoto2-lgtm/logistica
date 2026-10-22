@@ -132,10 +132,10 @@ footer{text-align:center;color:var(--mu);font-size:12px;padding:12px 12px 90px}
 <script src="marque.js"></script><script src="auth-engine.js"></script>
 <script src="crm-engine.js"></script>
 <script>
-const $=s=>document.getElementById(s),C=ANGELS_CRM,E=C.esc,MQ=window.ERP_MARQUE||{modules:["distribution","transport","agro"]},APPS_UI=C.APPS.filter(a=>(MQ.modules||[]).includes(a[0])),fc=n=>Math.round(n||0).toLocaleString("fr-FR").replace(/[  ]/g," ")+" F";
+const $=s=>document.getElementById(s),C=LOGISTICA_CRM,E=C.esc,MQ=window.ERP_MARQUE||{modules:["distribution","transport","agro"]},APPS_UI=C.APPS.filter(a=>(MQ.modules||[]).includes(a[0])),fc=n=>Math.round(n||0).toLocaleString("fr-FR").replace(/[  ]/g," ")+" F";
 $("date").textContent=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
 /* ---------- Accès : un administrateur, la direction ou un responsable commercial de l'une des trois applications ---------- */
-const ROLES_OK=["admin","direction","commercial"],DUREE=30*60*1000,SK="angels_crm_sess";
+const ROLES_OK=["admin","direction","commercial"],DUREE=30*60*1000,SK="logistica_crm_sess";
 let SESS=null,TRY={n:0,until:0},ST={tab:"pil",q:"",seg:"",app:"",page:0,sel:null,msg:null,er:false,mq:"",vue:"cartes",focus:null};
 try{const s=JSON.parse(sessionStorage.getItem(SK)||"null");if(s&&s.exp>Date.now())SESS=s}catch(e){}
 const lire=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}};
@@ -268,7 +268,7 @@ document.addEventListener("input",e=>{if(e.target.id==="q"){ST.q=e.target.value;
 document.addEventListener("submit",e=>{const f=e.target;e.preventDefault();
  if(f.id==="gate"){const d=new FormData(f),c=comptes()[+d.get("u")];if(TRY.until>Date.now()){msg("Trop d'essais : patientez "+Math.ceil((TRY.until-Date.now())/1000)+" s.",1);return render()}
   const G=c&&lire(c.key),u=G&&(G.users||[]).find(x=>x.id===c.id&&x.actif!==false&&ROLES_OK.includes(x.role));
-  (async()=>{let r={ok:false};try{if(u)r=await ANGELS_AUTH.connecter(u,String(d.get("pwd")))}catch(x){}
+  (async()=>{let r={ok:false};try{if(u)r=await LOGISTICA_AUTH.connecter(u,String(d.get("pwd")))}catch(x){}
    if(r.ok&&r.legacy)msg("Les codes PIN ne sont plus acceptés : connectez-vous une fois à l'application pour créer votre mot de passe.",1);
    else if(r.ok&&u.chg)msg("Votre mot de passe est temporaire : ouvrez l'application et connectez-vous une fois pour le remplacer.",1);
    else if(r.ok){TRY={n:0,until:0};SESS={app:c.app,appNom:c.appNom,id:c.id,nom:c.nom,exp:Date.now()+DUREE};try{sessionStorage.setItem(SK,JSON.stringify(SESS))}catch(x){}ST.msg=null}
@@ -303,8 +303,8 @@ function deplacer(id,et){if(!garde())return render();let motif="";if(et==="perdu
  agir(()=>C.deplacerOpp(par(),id,et,motif),et==="gagne"?"🎉 Bravo, affaire gagnée !":"Opportunité déplacée.");if(et==="gagne"&&!ST.er)confetti()}
 document.addEventListener("drop",e=>{const c=e.target.closest&&e.target.closest(".col[data-et]");if(!c)return;e.preventDefault();const id=e.dataTransfer.getData("text/plain");if(id)deplacer(id,c.dataset.et)});
 render();
-window.ANGELS_CRM_RAFRAICHIR=()=>{if(garde())render()};
-ANGELS_SYNC.init({app:"crm",nom:"CRM",get:()=>C.etat(),persist:()=>C.sauver(),refresh:()=>{if(SESS&&garde())render()},qui:()=>SESS?SESS.nom:"poste"});
+window.LOGISTICA_CRM_RAFRAICHIR=()=>{if(garde())render()};
+LOGISTICA_SYNC.init({app:"crm",nom:"CRM",get:()=>C.etat(),persist:()=>C.sauver(),refresh:()=>{if(SESS&&garde())render()},qui:()=>SESS?SESS.nom:"poste"});
 if("serviceWorker"in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body>

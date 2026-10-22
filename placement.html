@@ -23,7 +23,7 @@
 <script src="shell-engine.js"></script>
 <script src="placement-engine.js"></script>
 <script>
-const $=s=>document.getElementById(s),P=ANGELS_PLACEMENT,{E,fc,av,kpi,ilya}=ANGELS_SHELL;
+const $=s=>document.getElementById(s),P=LOGISTICA_PLACEMENT,{E,fc,av,kpi,ilya}=LOGISTICA_SHELL;
 $("date").textContent=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
 const auj=()=>new Date().toISOString().slice(0,10),S=()=>P.etat(),opts=(o,sel)=>Object.keys(o).map(k=>`<option value="${E(k)}"${k===sel?" selected":""}>${E(o[k])}</option>`).join("");
 const tr=id=>S().travailleurs.find(x=>x.id===id)||{nom:"?"},cl=id=>S().clients.find(x=>x.id===id)||{nom:"?"},bs=id=>S().besoins.find(x=>x.id===id)||{};
@@ -77,7 +77,7 @@ function dl(nom,txt){const u=URL.createObjectURL(new Blob([txt],{type:"text/csv;
 function imprimer(id){const f=S().factures.find(x=>x.id===id),c=cl(f.client_id),w=window.open("","_blank");if(!w)return;
  w.document.write(`<!doctype html><meta charset="utf-8"><title>${E(f.numero)}</title><style>body{font:14px Arial;margin:30px;color:#111}table{width:100%;border-collapse:collapse}td,th{border:1px solid #999;padding:6px;text-align:left}.n{text-align:right}</style><h2>${E((window.ERP_MARQUE||{}).nom||"")} — Facture ${E(f.numero)}</h2><p>Date : ${fd(f.date)} · Échéance : ${fd(f.echeance)}<br>Client : <b>${E(c.nom)}</b> ${E(c.adresse||"")}</p><table><tr><th>Poste</th><th>Besoin</th><th class="n">Jours</th><th class="n">Tarif</th><th class="n">Montant</th></tr>${f.lignes.map(l=>`<tr><td>${E(l.poste)}</td><td>${E(l.besoin)}</td><td class="n">${l.jours}</td><td class="n">${fc(l.taux)}</td><td class="n">${fc(l.montant)}</td></tr>`).join("")}</table><p class="n">Total HT : ${fc(f.ht)}<br>TVA ${f.tva_taux} % : ${fc(f.tva)}<br><b>Total TTC : ${fc(f.ttc)}</b></p><script>onload=()=>print()<\/script>`);w.document.close()}
 /* ---------- Actions ---------- */
-SH=ANGELS_SHELL.init({id:"placement",titre:"Placement",
+SH=LOGISTICA_SHELL.init({id:"placement",titre:"Placement",
  vues:[{id:"pil",nom:"Accueil",ic:"🏠",fn:pil},{id:"tra",nom:"Travailleurs",ic:"👷",fn:tra},{id:"ent",nom:"Entreprises",ic:"🏢",fn:ent},{id:"bes",nom:"Besoins",ic:"📋",fn:bes,badge:()=>P.resume().besoins_ouverts},{id:"poi",nom:"Pointage",ic:"✅",fn:poi,badge:()=>P.resume().non_pointes},{id:"fac",nom:"Facturation",ic:"🧾",fn:fac},{id:"pai",nom:"Paie",ic:"💳",fn:pai},{id:"reg",nom:"Réglages",ic:"⚙️",fn:reg}],
  action(a,v,b,ST,agir,par){
   if(a==="ftype"){ST.ftype=v;return SH.render()}
@@ -101,7 +101,7 @@ SH=ANGELS_SHELL.init({id:"placement",titre:"Placement",
   if(k==="bes")return agir(()=>P.creerBesoin(par(),Object.fromEntries(d)),"Besoin créé.");
   if(k==="reg")return agir(()=>P.reglages(par(),Object.fromEntries(d)),"Réglages enregistrés.")}});
 document.addEventListener("change",e=>{if(e.target.id==="jour"&&SH.garde()){SH.ST.jour=e.target.value||auj();SH.render()}});
-ANGELS_SYNC.init({app:"placement",nom:"Placement",get:()=>P.etat(),persist:()=>P.sauver(),refresh:()=>{if(SH.garde())SH.render()},qui:()=>SH.session()?SH.session().nom:"poste"});
+LOGISTICA_SYNC.init({app:"placement",nom:"Placement",get:()=>P.etat(),persist:()=>P.sauver(),refresh:()=>{if(SH.garde())SH.render()},qui:()=>SH.session()?SH.session().nom:"poste"});
 if("serviceWorker"in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body>

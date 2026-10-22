@@ -23,7 +23,7 @@
 <script src="shell-engine.js"></script>
 <script src="assurance-engine.js"></script>
 <script>
-const $=s=>document.getElementById(s),A=ANGELS_ASSURANCE,{E,fc,av,kpi,ilya}=ANGELS_SHELL;
+const $=s=>document.getElementById(s),A=LOGISTICA_ASSURANCE,{E,fc,av,kpi,ilya}=LOGISTICA_SHELL;
 $("date").textContent=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
 const auj=()=>new Date().toISOString().slice(0,10),S=()=>A.etat(),opts=(o,sel)=>Object.keys(o).map(k=>`<option value="${E(k)}"${k===sel?" selected":""}>${E(o[k])}</option>`).join("");
 const as=id=>S().assures.find(x=>x.id===id)||{nom:"?"},co=id=>S().compagnies.find(x=>x.id===id)||{nom:"?"},po=id=>S().polices.find(x=>x.id===id)||{};
@@ -74,7 +74,7 @@ function reg(){const c=A.cfg(),E2=A.ecritures();
 function dl(nom,txt){const u=URL.createObjectURL(new Blob([txt],{type:"text/csv;charset=utf-8"})),l=document.createElement("a");l.href=u;l.download=nom;document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),2000)}
 const mode=(def)=>{const m=prompt("Mode de paiement : "+A.MODES.join(", "),def||"Espèces");if(m==null)return null;const r=m==="Espèces"?"":prompt("Référence de la transaction :")||"";return[m,r]};
 /* ---------- Actions ---------- */
-SH=ANGELS_SHELL.init({id:"assurance",titre:"Assurance",
+SH=LOGISTICA_SHELL.init({id:"assurance",titre:"Assurance",
  vues:[{id:"pil",nom:"Accueil",ic:"🏠",fn:pil,badge:()=>A.resume().a_renouveler},{id:"ass",nom:"Assurés",ic:"👥",fn:ass},{id:"cmp",nom:"Compagnies",ic:"🏛️",fn:cmp},{id:"dev",nom:"Devis",ic:"📝",fn:dev},{id:"pol",nom:"Polices",ic:"📄",fn:pol},{id:"sin",nom:"Sinistres",ic:"🚨",fn:sin,badge:()=>A.resume().sinistres_ouverts},{id:"reg",nom:"Réglages",ic:"⚙️",fn:reg}],
  action(a,v,b,ST,agir,par){
   if(a==="fpol"){ST.fpol=v;return SH.render()}
@@ -99,7 +99,7 @@ SH=ANGELS_SHELL.init({id:"assurance",titre:"Assurance",
   if(k==="pol")return agir(()=>A.emettrePolice(par(),Object.fromEntries(d)),"Police émise.");
   if(k==="sin")return agir(()=>A.declarerSinistre(par(),Object.fromEntries(d)),"Sinistre déclaré.");
   if(k==="reg")return agir(()=>A.reglages(par(),Object.fromEntries(d)),"Réglages enregistrés.")}});
-ANGELS_SYNC.init({app:"assurance",nom:"Assurance",get:()=>A.etat(),persist:()=>A.sauver(),refresh:()=>{if(SH.garde())SH.render()},qui:()=>SH.session()?SH.session().nom:"poste"});
+LOGISTICA_SYNC.init({app:"assurance",nom:"Assurance",get:()=>A.etat(),persist:()=>A.sauver(),refresh:()=>{if(SH.garde())SH.render()},qui:()=>SH.session()?SH.session().nom:"poste"});
 if("serviceWorker"in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body>

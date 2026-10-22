@@ -1,4 +1,4 @@
--- Pont téléphonique ANGEL'S : le livreur joint le client sans jamais voir son numéro.
+-- Pont téléphonique LOGISTICA : le livreur joint le client sans jamais voir son numéro.
 -- Tables lisibles uniquement par les fonctions serveur (clé « service role ») : aucune politique = aucun accès public.
 
 create table if not exists public.appel_tickets (

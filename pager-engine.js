@@ -2,7 +2,7 @@
    Le DOM reste léger même avec des milliers de lignes ; l'impression et les exports reprennent TOUTES les lignes (registre en mémoire). */
 (function (G) {
   "use strict";
-  var KS = "angels_pg_size", reg = {}, page = {}, size = lireTaille(), onChange = null;
+  var KS = "logistica_pg_size", reg = {}, page = {}, size = lireTaille(), onChange = null;
   function lireTaille() { try { var n = +localStorage.getItem(KS); if ([25, 50, 100, 200].indexOf(n) >= 0) return n; } catch (e) { } return 50; }
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function nb(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
@@ -50,5 +50,5 @@
     }
     if (t && t.closest && !t.closest(".pgr")) reset();   /* filtre, recherche, sélecteur : on repart de la page 1 */
   }, true);
-  G.ANGELS_PAGER = { decouper: decouper, reset: reset, depagine: depagine, taille: function () { return size; }, surChangement: function (f) { onChange = f; }, registre: function () { return reg; } };
+  G.LOGISTICA_PAGER = { decouper: decouper, reset: reset, depagine: depagine, taille: function () { return size; }, surChangement: function (f) { onChange = f; }, registre: function () { return reg; } };
 })(window);

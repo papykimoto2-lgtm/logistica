@@ -56,13 +56,13 @@ input,select,textarea{width:100%;padding:11px;border:1px solid var(--bd);border-
 /* Application LIVREUR (mode serveur). Le livreur s'identifie avec un compte Supabase : le mot de passe est vérifié par le serveur.
    Il ne reçoit JAMAIS le téléphone du client ni le code de confirmation : il demande l'appel au serveur (pont téléphonique) et saisit le code que le client lui communique. */
 "use strict";
-const CFG=(()=>{const d=window.ANGELS_PASSERELLE||{};try{const o=JSON.parse(localStorage.getItem("angels_supabase")||"null");if(o&&o.off)return{};if(o&&o.url&&o.key)return{url:o.url,key:o.key}}catch(e){}return d})(),FN=String(CFG.url||"").replace(/\/+$/,"")+"/functions/v1/";
+const CFG=(()=>{const d=window.LOGISTICA_PASSERELLE||{};try{const o=JSON.parse(localStorage.getItem("logistica_supabase")||"null");if(o&&o.off)return{};if(o&&o.url&&o.key)return{url:o.url,key:o.key}}catch(e){}return d})(),FN=String(CFG.url||"").replace(/\/+$/,"")+"/functions/v1/";
 const SB_LIB="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js",SB_SRI="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o";
 const $=s=>document.querySelector(s),esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fcfa=n=>(Math.round(+n||0)).toLocaleString("fr-FR").replace(/[  ]/g," ")+" F";
 /* L'identifiant est celui affiché au bureau (« livreur.test.2 ») ; on accepte aussi le nom tel qu'on le dit : majuscules, accents, espaces → points */
 const identDe=i=>String(i||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9._-]+/g,".").replace(/\.{2,}/g,".").replace(/^\.|\.$/g,"");
-const emailDe=i=>{i=String(i||"").trim();return i.includes("@")?i.toLowerCase():identDe(i)+"@users.angels-erp.app"};
+const emailDe=i=>{i=String(i||"").trim();return i.includes("@")?i.toLowerCase():identDe(i)+"@users.logistica-erp.app"};
 const STATUTS={affectee:"À accepter",acceptee:"Acceptée",en_cours:"En cours",livree:"Livrée",echouee:"Échec",refusee:"Refusée"};
 const ACTIFS=["affectee","acceptee","en_cours"];
 let sb=null,user=null,moi=null,missions=[],erreur="",timer=null,watch=null,derPos=0,ouvert=null;
@@ -102,10 +102,10 @@ const SIGM={vus:null};
 function sigMissions(){const nouv=missions.filter(m=>m.statut==="affectee").map(m=>m.livraison_ref);
  if(SIGM.vus===null){SIGM.vus=new Set(nouv);return}
  const n=nouv.filter(r=>!SIGM.vus.has(r));nouv.forEach(r=>SIGM.vus.add(r));
- if(n.length){(window.__signaux=window.__signaux||[]).push({id:"mission",n:n.length,ok:ANGELS_SIGNAL.jouer("alerte",{rep:3,dire:n.length>1?n.length+" nouvelles missions":"Nouvelle mission"})});toast(n.length+" nouvelle(s) mission(s)")}}
-try{if(localStorage.getItem("angels_signal_dev")==null)ANGELS_SIGNAL.setDev({voice:false})}catch(e){}   /* lecture vocale des missions : coupée par défaut, activée par le livreur (bouton « voix ») */
-const voixIcone=()=>ANGELS_SIGNAL.dev().voice?"🗣":"🤐";
-const sonIcone=()=>{const d=ANGELS_SIGNAL.dev();return d.mute?"🔕":d.vol<=.5?"🔉":"🔊"};
+ if(n.length){(window.__signaux=window.__signaux||[]).push({id:"mission",n:n.length,ok:LOGISTICA_SIGNAL.jouer("alerte",{rep:3,dire:n.length>1?n.length+" nouvelles missions":"Nouvelle mission"})});toast(n.length+" nouvelle(s) mission(s)")}}
+try{if(localStorage.getItem("logistica_signal_dev")==null)LOGISTICA_SIGNAL.setDev({voice:false})}catch(e){}   /* lecture vocale des missions : coupée par défaut, activée par le livreur (bouton « voix ») */
+const voixIcone=()=>LOGISTICA_SIGNAL.dev().voice?"🗣":"🤐";
+const sonIcone=()=>{const d=LOGISTICA_SIGNAL.dev();return d.mute?"🔕":d.vol<=.5?"🔉":"🔊"};
 async function charger(){try{const{data,error}=await sb.from("pg_missions").select("livraison_ref,livreur_ref,commande_ref,statut,payload,position,maj_le").order("maj_le",{ascending:false});if(error)throw error;const tout=data||[];missions=recevoir(tout);erreur="";try{sigMissions()}catch(e){}try{sigChat()}catch(e){}lsSet(LS.c,{t:Date.now(),uid:user&&user.id,moi,missions:tout})}catch(x){erreur=enLigne()?x.message:""}
  if(!ouvert&&!(PAGE==="chat"&&document.activeElement&&document.activeElement.id==="chin"))vueMissions()}
 const adrTxt=a=>[a.zone,a.quartier].filter(Boolean).map(esc).join(" · ");
@@ -214,7 +214,7 @@ function vigHeures(v){const d=new Date(),m=d.getHours()*60+d.getMinutes();return
 function vigFerme(){VIG.open=false;clearInterval(VIG.tm);const e=document.getElementById("vig");if(e)e.remove()}
 function vigPrompt(v){VIG.open=true;let reste=v.reponse_s;const el=document.createElement("div");el.id="vig";el.style.cssText="position:fixed;inset:0;z-index:9600;background:rgba(122,16,16,.96);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center";
  el.innerHTML=`<div style="font-size:48px">🛡️</div><b style="font-size:22px">Êtes-vous en sécurité ?</b><div>Aucune activité depuis ${v.inactif_min} min. Sans réponse, une alerte SOS part avec votre position dans <b id="vig_t">${reste}</b> s.</div><button type="button" class="btn ok" id="vig_ok" style="max-width:320px">✔ Je vais bien</button><button type="button" class="btn ghost" id="vig_p" style="max-width:320px">⏸ Pause 30 min</button><button type="button" class="btn er" id="vig_s" style="max-width:320px;background:#fff;color:#b3121e">🆘 J'ai un problème : alerter</button>`;
- document.body.appendChild(el);try{ANGELS_SIGNAL.jouer("alerte",{rep:6})}catch(e){}try{navigator.vibrate&&navigator.vibrate([500,200,500])}catch(e){}
+ document.body.appendChild(el);try{LOGISTICA_SIGNAL.jouer("alerte",{rep:6})}catch(e){}try{navigator.vibrate&&navigator.vibrate([500,200,500])}catch(e){}
  $("#vig_ok").onclick=()=>{VIG.act=Date.now();vigFerme()};$("#vig_p").onclick=async()=>{vigFerme();if(!(await pauseApp(30))){VIG.act=Date.now()+30*60000-v.inactif_min*60000;toast("Pause de 30 min","ok")}};
  $("#vig_s").onclick=()=>{vigFerme();sosEnvoyer("autre","Le livreur demande de l'aide depuis la vérification de sécurité",false)};
  VIG.tm=setInterval(()=>{reste--;const t=document.getElementById("vig_t");if(t)t.textContent=Math.max(0,reste);if(reste<=0){vigFerme();VIG.act=Date.now();sosEnvoyer("autre","⚠ ALERTE AUTOMATIQUE : aucune réponse après "+v.inactif_min+" min d'inactivité pendant les heures de travail. Vol, accident ou malaise possible : appelez-le.",true)}},1000)}
@@ -286,7 +286,7 @@ async function chatEnvoyer(texte){texte=String(texte||"").replace(/\|/g,"/").rep
  const x=await envoyer(refSos(),"incident",{nature:"CHAT",description:"CHAT|"+texte},"Message envoyé au centre");if(x!==undefined){const L=chatPend();L.push({texte,t:Date.now()});lsSet(LS.m,L)}vueMissions()}
 const chatBandeau=()=>{const n=chatNonLus();return n&&PAGE!=="chat"?`<div class="al" style="background:#e3f2fd;color:#7a1d17">💬 <b>${n}</b> nouveau(x) message(s) du centre. <a href="#" data-a="page" data-r="chat">Lire</a></div>`:""};
 const CH={vus:null};
-function sigChat(){const n=CHAT().filter(m=>m.de==="centre").length;if(CH.vus===null){CH.vus=n;return}if(n>CH.vus&&PAGE!=="chat"){(window.__signaux=window.__signaux||[]).push({id:"chat",ok:ANGELS_SIGNAL.jouer("bip",{rep:2,dire:"Nouveau message du centre"})});toast("💬 Nouveau message du centre")}CH.vus=n}
+function sigChat(){const n=CHAT().filter(m=>m.de==="centre").length;if(CH.vus===null){CH.vus=n;return}if(n>CH.vus&&PAGE!=="chat"){(window.__signaux=window.__signaux||[]).push({id:"chat",ok:LOGISTICA_SIGNAL.jouer("bip",{rep:2,dire:"Nouveau message du centre"})});toast("💬 Nouveau message du centre")}CH.vus=n}
 function chatHtml(){if(!PL().p)return`<h2 class="pg">Messages du centre</h2><div class="card mu">Pas encore disponible : le bureau relie votre compte.</div>`;
  const L=CHAT().map(m=>({de:m.de,texte:m.texte,t:Date.parse(m.ts)})).concat(chatPend().map(p=>({de:"livreur",texte:p.texte,t:p.t,att:true}))).sort((a,b)=>a.t-b.t).slice(-30);
  return`<h2 class="pg">Messages du centre</h2><div class="card" style="max-height:48vh;overflow:auto;display:flex;flex-direction:column;gap:6px" id="chlog">${L.length?L.map(m=>`<div style="align-self:${m.de==="livreur"?"flex-end":"flex-start"};max-width:85%;background:${m.de==="livreur"?"#d8f0f7":"#f1f1f1"};border-radius:10px;padding:6px 10px"><div>${esc(m.texte)}</div><div class="sm mu">${heureC(m.t)}${m.att?" · ⏳ en cours d'envoi":""}</div></div>`).join(""):'<div class="mu sm">Aucun message. Écrivez au centre ci-dessous.</div>'}</div>
@@ -324,7 +324,7 @@ function statsHtml(){const P=((STATS||{}).payload||{}).p,j7=((STATS||{}).payload
  ${j7.length?`<div class="card"><b>7 derniers jours</b><div style="display:flex;gap:6px;align-items:flex-end;height:90px;margin-top:8px">${j7.map(d=>`<div style="flex:1;text-align:center;font-size:11px"><div style="height:${Math.round(d.n/mx*60)}px;background:var(--b);border-radius:4px 4px 0 0;min-height:2px"></div>${d.n}<br><span class="mu">${esc(d.l)}</span></div>`).join("")}</div></div>`:""}
  <div class="sm mu" style="margin:6px 0">Statistiques calculées par le bureau à partir de vos courses terminées${STATS&&STATS.maj_le?" (mises à jour à "+new Date(STATS.maj_le).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})+")":""}.</div>`}
 /* ---------- Notifications push : missions, messages du centre et alertes même application fermée (navigateur installé ou application Android) ---------- */
-const VAPID=()=>String((window.ANGELS_PASSERELLE||{}).vapid||"").trim();
+const VAPID=()=>String((window.LOGISTICA_PASSERELLE||{}).vapid||"").trim();
 const pushOk=()=>"serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window;
 const cleVapid=b=>{const p="=".repeat((4-b.length%4)%4),r=atob((b+p).replace(/-/g,"+").replace(/_/g,"/")),o=new Uint8Array(r.length);for(let i=0;i<r.length;i++)o[i]=r.charCodeAt(i);return o};
 let PUSHST="";   /* "", "actif", "inactif", "refuse", "indispo", "bureau" */
@@ -344,7 +344,7 @@ function pushCarte(){const E={actif:`<span style="color:var(--ok)">✔ actives</
  return`<div class="card"><b>🔔 Notifications sur le téléphone</b><div class="sm mu" style="margin:4px 0 8px">Missions, messages du centre et alertes, même quand l'application est fermée.</div><div>État : ${E}</div>
   ${PUSHST==="actif"?'<button class="btn ghost" data-a="pushoff">🔕 Couper les notifications</button><button class="btn ghost" data-a="pushtest">🔔 Tester</button>':PUSHST==="inactif"?'<button class="btn" data-a="pushon">🔔 Activer les notifications</button>':""}</div>`}
 function reglagesHtml(){const st=GPSST==="granted"?'<span style="color:var(--ok)">✔ autorisé</span>':GPSST==="denied"?'<span style="color:var(--er)">✖ refusé</span> : autorisez la localisation dans les réglages du navigateur (icône à gauche de l\'adresse)':GPSST==="prompt"?"à demander":"inconnu";
- const sd=ANGELS_SIGNAL.dev();
+ const sd=LOGISTICA_SIGNAL.dev();
  return`<h2 class="pg">GPS et compte</h2>
  <div class="card"><b>📍 GPS</b><div class="sm mu" style="margin:4px 0 8px">Votre position n'est partagée avec le bureau que pendant une course en cours, et sert au calcul du meilleur itinéraire.</div>
   <div>Autorisation du téléphone : ${st}</div><button class="btn" data-a="gpsact">📍 Activer le GPS</button>
@@ -460,8 +460,8 @@ const ACT={
  pushtest:async()=>{try{const reg=await navigator.serviceWorker.ready;await reg.showNotification("🔔 Test",{body:"Les notifications fonctionnent sur ce téléphone.",tag:"test",icon:"icons/livreur-192.png",data:{u:"livreur.html"}})}catch(e){toast("Test impossible : "+e.message,"err")}},
  msgc:r=>msgClient(r),chatsend:()=>{const i=document.getElementById("chin");if(i)chatEnvoyer(i.value)},chatq:r=>chatEnvoyer(QCH[+r]),
  plan:r=>{const a=String(r).split("|");if(a.length===3)plReserverApp(a[0],a[1],a[2])},pause:r=>pauseApp(+r),reprise:()=>reprendreApp(),
- voix:()=>{const d=ANGELS_SIGNAL.dev();ANGELS_SIGNAL.setDev({voice:!d.voice});if(!d.voice)ANGELS_SIGNAL.parler("Lecture vocale activée",{force:true});vueMissions()},
- sons:()=>{const d=ANGELS_SIGNAL.dev();if(d.mute)ANGELS_SIGNAL.setDev({mute:false,vol:.5});else if(d.vol<=.5)ANGELS_SIGNAL.setDev({vol:1});else ANGELS_SIGNAL.setDev({mute:true});ANGELS_SIGNAL.jouer("bip",{rep:1,vib:false});vueMissions()},
+ voix:()=>{const d=LOGISTICA_SIGNAL.dev();LOGISTICA_SIGNAL.setDev({voice:!d.voice});if(!d.voice)LOGISTICA_SIGNAL.parler("Lecture vocale activée",{force:true});vueMissions()},
+ sons:()=>{const d=LOGISTICA_SIGNAL.dev();if(d.mute)LOGISTICA_SIGNAL.setDev({mute:false,vol:.5});else if(d.vol<=.5)LOGISTICA_SIGNAL.setDev({vol:1});else LOGISTICA_SIGNAL.setDev({mute:true});LOGISTICA_SIGNAL.jouer("bip",{rep:1,vib:false});vueMissions()},
  posclient:async r=>{const t=Date.now();const x=await envoyer(r,"incident",{nature:"Position du client",description:"Demande de la position GPS du client (envoyer le lien de partage)"},"Demande envoyée au bureau : vous pouvez partir, la position s'affichera ici.");if(x!==undefined){const P=lsGet(LS.p,{});P[r]=t;lsSet(LS.p,P)}vueMissions()},
  menu:()=>{MENU=!MENU;vueMissions()},
  sp:r=>{SP=["j","s7","m30","mois"].includes(r)?r:"s7";vueMissions()},

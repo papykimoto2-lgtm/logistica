@@ -6,7 +6,7 @@
    Aucun mot de passe ni donnée secrète dans le rapport. Les calculs sont identiques à ceux du serveur (supabase/functions/_shared/rapport-connexions.js) : voir tests/rapport-serveur.js. */
 (function (G) {
   "use strict";
-  var CFG = "angels_rapport_dg", LISTE = "angels_rapports_dg", ETATS = { distribution: "angels_erp_v1", transport: "angels_transport_v3", agro: "angels_agro_v1" };
+  var CFG = "logistica_rapport_dg", LISTE = "logistica_rapports_dg", ETATS = { distribution: "logistica_erp_v1", transport: "logistica_transport_v3", agro: "logistica_agro_v1" };
   var LBL = { distribution: "Distributions", transport: "Transport", agro: "Agro" };
   var ROLES = { admin: "Administrateur", direction: "Direction générale", directeur: "Directeur", superviseur: "Superviseur", commercial: "Commercial", preparateur: "Préparateur", caissier: "Caissier", livreur: "Livreur", vendeur: "Vendeur partenaire", flotte: "Gestionnaire de flotte", comptable: "Comptable", controleur: "Contrôleur", chauffeur: "Chauffeur", chef: "Chef d'exploitation", soigneur: "Soigneur", magasinier: "Magasinier" };
   var TZ = "Africa/Abidjan", opts = { peut: function () { return true; } }, tim = null;
@@ -79,7 +79,7 @@
           : '<p style="color:#6b7390;font-size:13px">Aucune activité sur la période.</p>') +
         (a.jamais.length ? '<p style="font-size:13px;color:#b86e00">Comptes actifs jamais connectés : ' + a.jamais.map(function (j) { return esc(j.nom); }).join(", ") + "</p>" : "");
     }).join("");
-    return '<div style="font-family:system-ui,Arial,sans-serif;color:#1b2240;max-width:720px"><h2 style="margin:0 0 4px">ANGEL\'S GROUP — Rapport de connexion</h2><p style="margin:0 0 12px;color:#6b7390">Du ' + esc(dh(r.debut)) + " au " + esc(dh(r.fin)) + "</p>" +
+    return '<div style="font-family:system-ui,Arial,sans-serif;color:#1b2240;max-width:720px"><h2 style="margin:0 0 4px">LOGISTICA — Rapport de connexion</h2><p style="margin:0 0 12px;color:#6b7390">Du ' + esc(dh(r.debut)) + " au " + esc(dh(r.fin)) + "</p>" +
       '<p style="font-size:15px"><b>' + r.ok + "</b> connexion(s) réussie(s) · <b" + (r.ko ? ' style="color:#c62828"' : "") + ">" + r.ko + "</b> échec(s) · <b>" + r.personnes + "</b> personne(s) connectée(s)</p>" +
       (al.length ? '<p style="background:#fde5e5;border-radius:8px;padding:8px 12px;color:#c62828"><b>⚠ Échecs répétés (3 ou plus) :</b> ' + esc(al.join(", ")) + "</p>" : "") + blocs +
       '<p style="margin-top:20px;color:#6b7390;font-size:12px">Rapport automatique. Détail et historique complet : Paramètres du hub → Connexions.</p></div>';
@@ -140,7 +140,7 @@
 
   /* ---------- Serveur (e-mail) ---------- */
   function serveur() {
-    var u = lire("angels_supabase", null), s = lire("angels_sync", null), def = G.ANGELS_PASSERELLE || {}, url = (u && u.off) ? "" : (u && u.url) || def.url || "";
+    var u = lire("logistica_supabase", null), s = lire("logistica_sync", null), def = G.LOGISTICA_PASSERELLE || {}, url = (u && u.off) ? "" : (u && u.url) || def.url || "";
     if (!s || !s.actif || !s.cle || !/^https:\/\//.test(url)) return null;
     return { fn: String(url).replace(/\/+$/, "") + "/functions/v1/rapport-connexions", cle: s.cle };
   }
@@ -159,5 +159,5 @@
     clearInterval(tim); tim = setInterval(function () { try { verifier(); if (!document.getElementById("rp-bar")) barre(); } catch (e) { } }, 30000);
     setTimeout(function () { try { verifier(); barre(); } catch (e) { } }, 2500);
   }
-  G.ANGELS_RAPPORT = { cfg: cfg, setCfg: setCfg, sources: sources, construire: construire, texte: texte, html: html, liste: liste, generer: generer, verifier: verifier, envoyerWA: envoyerWA, lienWA: lienWA, marquerVu: marquerVu, voir: voir, barre: barre, init: init, serveur: serveur, regler: regler, tester: tester, emailsListe: emailsListe, telWA: telWA };
+  G.LOGISTICA_RAPPORT = { cfg: cfg, setCfg: setCfg, sources: sources, construire: construire, texte: texte, html: html, liste: liste, generer: generer, verifier: verifier, envoyerWA: envoyerWA, lienWA: lienWA, marquerVu: marquerVu, voir: voir, barre: barre, init: init, serveur: serveur, regler: regler, tester: tester, emailsListe: emailsListe, telWA: telWA };
 })(window);

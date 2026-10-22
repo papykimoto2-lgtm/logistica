@@ -148,7 +148,7 @@
   function publier(host) {
     if (host) H = host; try {
       if (!H.can("v")) return null; var s = synthese(), r = { t: new Date().toISOString(), division: H.division, nb: s.nb, a_generer: s.aGenerer, alertes: s.alertes.filter(function (a) { return a.niveau !== "mu"; }).length, retard: s.alertes.filter(function (a) { return a.niveau === "er"; }).length, cca: s.par.cca.montant, pca: s.par.pca.montant, fnp: s.par.fnp.montant, fae: s.par.fae.montant, effet: s.effet + s.effetGenere };
-      localStorage.setItem("angels_regul_" + H.division, JSON.stringify(r)); return r;
+      localStorage.setItem("logistica_regul_" + H.division, JSON.stringify(r)); return r;
     } catch (e) { return null; }
   }
 
@@ -192,14 +192,14 @@
     h += '<div class="rg-n">Montants hors taxes. Une charge à payer (congés, intérêts courus…) se traite comme une facture non parvenue en choisissant le compte de régularisation adapté (4281, 4486…). À valider par votre expert-comptable.</div></div>';
     return h;
   }
-  function view(host) { H = host; css(); G.ANGELS_REGUL.host = host; if (!H.can("v")) return '<div class="rg-n">Accès aux régularisations non autorisé pour votre profil.</div>'; return vue(); }
+  function view(host) { H = host; css(); G.LOGISTICA_REGUL.host = host; if (!H.can("v")) return '<div class="rg-n">Accès aux régularisations non autorisé pour votre profil.</div>'; return vue(); }
 
   /* ---------- Impression ---------- */
   function imprimer() {
-    if (!G.ANGELS_PRINT) { alert("Moteur d'impression indisponible."); return; } if (!H.can("p")) { alert("Droits insuffisants pour imprimer."); return; }
+    if (!G.LOGISTICA_PRINT) { alert("Moteur d'impression indisponible."); return; } if (!H.can("p")) { alert("Droits insuffisants pour imprimer."); return; }
     var S = synthese(), its = items().filter(function (x) { return x.statut !== "neant"; }).sort(function (a, b) { return a.arret < b.arret ? -1 : 1; }), ref = "REG-" + today().replace(/-/g, "");
     var rows = its.map(function (x) { var t = TYPES[x.type], p = part(x); return "<tr><td>" + fd(x.arret) + "</td><td>" + t.court + "</td><td>" + esc(x.libelle) + "</td><td>" + esc(x.compte + " → " + x.reg) + "</td><td>" + (t.prorata ? fd(x.debut) + " → " + fd(x.fin) : "—") + '</td><td class="n">' + fcfa(x.montant) + '</td><td class="n">' + fcfa(p.part) + "</td><td>" + (x.statut === "genere" ? "Généré" : "À générer") + "</td></tr>"; });
-    G.ANGELS_PRINT.ouvrir({ division: H.division, emetteur: H.user(), fallback: H.identite ? H.identite() : null, titre: "État des régularisations de fin de période", ref: ref, date: today(), montant: S.effet + S.effetGenere, paysage: true,
+    G.LOGISTICA_PRINT.ouvrir({ division: H.division, emetteur: H.user(), fallback: H.identite ? H.identite() : null, titre: "État des régularisations de fin de période", ref: ref, date: today(), montant: S.effet + S.effetGenere, paysage: true,
       corps: '<p class="sub">Charges constatées d\'avance ' + fcfa(S.par.cca.montant) + " · Produits constatés d'avance " + fcfa(S.par.pca.montant) + " · Factures non parvenues " + fcfa(S.par.fnp.montant) + " · Factures à établir " + fcfa(S.par.fae.montant) + " · Incidence sur le résultat " + num(S.effet + S.effetGenere) + '.</p><table><thead><tr><th>Arrêté</th><th>Type</th><th>Libellé</th><th>Comptes</th><th>Période couverte</th><th class="n">Montant</th><th class="n">À reporter</th><th>État</th></tr></thead><tbody>' + rows.join("") + '</tbody></table><p class="sub" style="margin-top:8px">Montants hors taxes. Écritures en brouillard, comptabilisées après visa ; chaque arrêté est extourné au lendemain. À valider par l\'expert-comptable.</p>' }).catch(function (e) { alert("Impression impossible : " + e.message); });
     if (H.audit) H.audit("État des régularisations imprimé", String(S.nb));
   }
@@ -231,9 +231,9 @@
     print: imprimer,
     cand: function (i) { var c = candidats()[+i]; if (!c) return; var a = UIS.arret || arretDefaut(); form("Régulariser une charge payée d'avance", CH, { type: "cca", libelle: c.libelle, compte: c.compte, montant: c.montant, debut: c.date, fin: addJ(c.date, 364), arret: a, src: c.piece || c.libelle }, function (o) { o.src = c.piece || c.libelle; ajouter(o); }, "Enregistrer"); }
   };
-  document.addEventListener("click", function (e) { var t = e.target.closest && e.target.closest("[data-rg]"); if (!t || !G.ANGELS_REGUL.host) return; var f = ACT[t.dataset.rg]; if (!f) return; e.preventDefault(); H = G.ANGELS_REGUL.host; try { f(t.dataset.id, t); } catch (x) { alert(x.message); } });
+  document.addEventListener("click", function (e) { var t = e.target.closest && e.target.closest("[data-rg]"); if (!t || !G.LOGISTICA_REGUL.host) return; var f = ACT[t.dataset.rg]; if (!f) return; e.preventDefault(); H = G.LOGISTICA_REGUL.host; try { f(t.dataset.id, t); } catch (x) { alert(x.message); } });
   document.addEventListener("change", function (e) { var t = e.target; if (!H || !t.dataset || t.dataset.rgf !== "arret") return; UIS.arret = t.value; H.render(); });
 
-  G.ANGELS_REGUL = { host: null, view: view, TYPES: TYPES, UI: UIS, part: part, items: function (h) { if (h) H = h; return items(); }, ajouter: function (f, h) { if (h) H = h; return ajouter(f); }, modifier: function (i, f, h) { if (h) H = h; return modifier(i, f); }, supprimer: function (i, h) { if (h) H = h; return supprimer(i); }, remettre: function (i, h) { if (h) H = h; return remettre(i); },
+  G.LOGISTICA_REGUL = { host: null, view: view, TYPES: TYPES, UI: UIS, part: part, items: function (h) { if (h) H = h; return items(); }, ajouter: function (f, h) { if (h) H = h; return ajouter(f); }, modifier: function (i, f, h) { if (h) H = h; return modifier(i, f); }, supprimer: function (i, h) { if (h) H = h; return supprimer(i); }, remettre: function (i, h) { if (h) H = h; return remettre(i); },
     generer: function (a, h) { if (h) H = h; return generer(a); }, synthese: function (h) { if (h) H = h; return synthese(); }, candidats: function (h) { if (h) H = h; return candidats(); }, publier: publier, imprimer: function (h) { if (h) H = h; return imprimer(); }, use: function (h) { H = h; this.host = h; } };
 })(window);

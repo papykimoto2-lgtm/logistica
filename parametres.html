@@ -103,13 +103,13 @@ const hashPin=(id,p)=>{let x=5381;for(const c of id+":"+p)x=((x<<5)+x+c.charCode
 const uid=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const stamp=()=>new Date().toISOString();
 const RL={ /* mêmes profils que dans chaque application ; « lie » = profils rattachés à une fiche, créés dans leur application */
- dist:{key:"angels_erp_v1",lie:["livreur","vendeur"],roles:{admin:"Administrateur",direction:"Direction générale",superviseur:"Superviseur des livraisons",commercial:"Responsable commercial",preparateur:"Préparateur",caissier:"Caissier",livreur:"Livreur",vendeur:"Vendeur partenaire"},
+ dist:{key:"logistica_erp_v1",lie:["livreur","vendeur"],roles:{admin:"Administrateur",direction:"Direction générale",superviseur:"Superviseur des livraisons",commercial:"Responsable commercial",preparateur:"Préparateur",caissier:"Caissier",livreur:"Livreur",vendeur:"Vendeur partenaire"},
   ok:G=>G&&G.v===1&&Array.isArray(G.users)&&Array.isArray(G.audit),mdp:G=>Math.max(8,+(G.config&&G.config.mdp_min)||10),
   aud:(G,a,d,u)=>G.audit.push({ts:stamp(),user:u.nom,role:u.role,action:a,detail:d})},
- trans:{key:"angels_transport_v3",lie:["chauffeur"],roles:{admin:"Administrateur général",directeur:"Directeur / propriétaire",flotte:"Gestionnaire de flotte",caissier:"Caissier",comptable:"Comptable",controleur:"Contrôleur",chauffeur:"Chauffeur",transitaire:"Transitaire externe",importateur:"Responsable importation",stock_auto:"Gestionnaire de stock automobile",commercial_auto:"Commercial automobile"},
+ trans:{key:"logistica_transport_v3",lie:["chauffeur"],roles:{admin:"Administrateur général",directeur:"Directeur / propriétaire",flotte:"Gestionnaire de flotte",caissier:"Caissier",comptable:"Comptable",controleur:"Contrôleur",chauffeur:"Chauffeur",transitaire:"Transitaire externe",importateur:"Responsable importation",stock_auto:"Gestionnaire de stock automobile",commercial_auto:"Commercial automobile"},
   ok:G=>G&&Array.isArray(G.users)&&Array.isArray(G.audit),mdp:G=>Math.max(8,+(G.settings&&G.settings.mdp_min)||10),
   aud:(G,a,d,u)=>G.audit.unshift({t:stamp(),u:u.nom,r:u.role,a,d})},
- agro:{key:"angels_agro_v1",lie:[],roles:{admin:"Administrateur",direction:"Direction générale",chef:"Chef d'exploitation",soigneur:"Soigneur",magasinier:"Magasinier",commercial:"Commercial",caissier:"Caissier",comptable:"Comptable"},
+ agro:{key:"logistica_agro_v1",lie:[],roles:{admin:"Administrateur",direction:"Direction générale",chef:"Chef d'exploitation",soigneur:"Soigneur",magasinier:"Magasinier",commercial:"Commercial",caissier:"Caissier",comptable:"Comptable"},
   ok:G=>G&&Array.isArray(G.users)&&Array.isArray(G.audit),mdp:G=>Math.max(8,+(G.settings&&G.settings.mdp_min)||10),
   aud:(G,a,d,u)=>G.audit.unshift({t:stamp(),u:u.nom,r:u.role,a,d})}};
 let UM=(()=>{try{return sessionStorage.getItem("hub_umod")||"dist"}catch(e){return"dist"}})(),UEDIT=null,UMSG=null;
@@ -146,7 +146,7 @@ function uView(){
 }
 /* écrit dans l'application : relit l'état, revérifie l'autorisation, applique, journalise, enregistre */
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-rl]");if(!b)return;const m=UM,R=RL[m],au=uSess(m);if(!au)return;const G=uEtat(m),me=G&&G.users.find(u=>u.id===au.id);if(!me||me.role!=="admin"||me.actif===false)return;
- ANGELS_ROLES.ouvrir({app:{dist:"distribution",trans:"transport",agro:"agro"}[m],nomApp:MODS.find(x=>x.id===m).nom,get:()=>G,persister:()=>{localStorage.setItem(R.key,JSON.stringify(G))},audit:(a,d)=>R.aud(G,a+" (via Hub)",d,me),apres:()=>{rlSync(R,G);uView()}})});
+ LOGISTICA_ROLES.ouvrir({app:{dist:"distribution",trans:"transport",agro:"agro"}[m],nomApp:MODS.find(x=>x.id===m).nom,get:()=>G,persister:()=>{localStorage.setItem(R.key,JSON.stringify(G))},audit:(a,d)=>R.aud(G,a+" (via Hub)",d,me),apres:()=>{rlSync(R,G);uView()}})});
 function uAgir(m,fn){
  const au=uSess(m);if(!au){UMSG={er:1,t:"Autorisation expirée : déverrouillez à nouveau."};return uView()}
  const R=RL[m],G=uEtat(m);if(!G){UMSG={er:1,t:"Application introuvable."};return uView()}rlSync(R,G);
@@ -154,9 +154,9 @@ function uAgir(m,fn){
  try{const t=fn(G,R,me);try{localStorage.setItem(R.key,JSON.stringify(G))}catch(e){throw new Error("Stockage plein : changement non enregistré.")}UMSG={t};UEDIT=null}catch(e){UMSG={er:1,t:e.message}}
  uView()
 }
-async function uReset(id){const mdp=ANGELS_AUTH.generer(),rec=await ANGELS_AUTH.creer(mdp);let nom0="";
+async function uReset(id){const mdp=LOGISTICA_AUTH.generer(),rec=await LOGISTICA_AUTH.creer(mdp);let nom0="";
  uAgir(UM,(G,R,me)=>{const u=G.users.find(x=>x.id===id);if(!u)throw new Error("Compte introuvable.");u.pwd=rec;u.chg=true;delete u.h;delete u.pin_h;if(G.tries&&typeof G.tries==="object")G.tries[u.id]={n:0,until:0};nom0=u.nom;R.aud(G,"Mot de passe réinitialisé (via Hub)",u.nom,me);return u.nom+" : mot de passe temporaire généré."});
- if(UMSG&&!UMSG.er&&nom0)await ANGELS_AUTH.afficherTemp({titre:"Mot de passe réinitialisé",nom:nom0,mdp})}
+ if(UMSG&&!UMSG.er&&nom0)await LOGISTICA_AUTH.afficherTemp({titre:"Mot de passe réinitialisé",nom:nom0,mdp})}
 document.addEventListener("click",e=>{
  const t=e.target.closest("[data-um],[data-up],[data-ut],[data-ux],[data-ulock]");if(!t)return;
  if(t.dataset.um){UM=t.dataset.um;UEDIT=null;UMSG=null;try{sessionStorage.setItem("hub_umod",UM)}catch(x){}return uView()}
@@ -175,25 +175,25 @@ document.addEventListener("change",e=>{const s=e.target.closest("[data-ur]");if(
 document.addEventListener("submit",e=>{const f=e.target;if(f.id==="ugate"){e.preventDefault();const m=UM,G=uEtat(m);if(!G)return uView();
   const tr=TRY[m]||(TRY[m]={n:0,until:0});if(tr.until>Date.now()){UMSG={er:1,t:"Trop d'essais : patientez "+Math.ceil((tr.until-Date.now())/1000)+" s."};return uView()}
   const d=new FormData(f),u=G.users.find(x=>x.id===d.get("u")&&x.role==="admin"&&x.actif!==false),pwd=String(d.get("pwd"));
-  (async()=>{let r={ok:false};try{if(u)r=await ANGELS_AUTH.connecter(u,pwd)}catch(x){UMSG={er:1,t:x.message};return uView()}
+  (async()=>{let r={ok:false};try{if(u)r=await LOGISTICA_AUTH.connecter(u,pwd)}catch(x){UMSG={er:1,t:x.message};return uView()}
    if(r.ok&&r.legacy){UMSG={er:1,t:"Les codes PIN ne sont plus acceptés : ouvrez l'application et connectez-vous une fois pour créer votre mot de passe."}}
    else if(r.ok&&u.chg){UMSG={er:1,t:"Votre mot de passe est temporaire : ouvrez l'application et connectez-vous une fois pour le remplacer."}}
    else if(r.ok){TRY[m]={n:0,until:0};AUTH[m]={id:u.id,nom:u.nom,exp:Date.now()+DUREE};UMSG=null;cxHub(m,G,u,"param_ok")}
    else{cxHub(m,G,u||{id:String(d.get("u")||""),nom:(G.users.find(x=>x.id===d.get("u"))||{}).nom||"",role:""},"param_ko","Mot de passe incorrect");tr.n++;if(tr.n>=5){tr.n=0;tr.until=Date.now()+60000}UMSG={er:1,t:"Administrateur ou mot de passe incorrect."}}
    uView()})();return}
- if(f.id==="uadd"){e.preventDefault();const d=new FormData(f),mdp=ANGELS_AUTH.generer();
-  (async()=>{const rec=await ANGELS_AUTH.creer(mdp);let nom0="";
+ if(f.id==="uadd"){e.preventDefault();const d=new FormData(f),mdp=LOGISTICA_AUTH.generer();
+  (async()=>{const rec=await LOGISTICA_AUTH.creer(mdp);let nom0="";
    uAgir(UM,(G,R,me)=>{const nom=String(d.get("nom")||"").trim().replace(/\s+/g," "),role=String(d.get("role"));
     if(!nom)throw new Error("Nom obligatoire.");if(!R.roles[role]||R.lie.includes(role))throw new Error("Profil non autorisé depuis le hub.");
     if(G.users.some(u=>String(u.nom).toLowerCase()===nom.toLowerCase()))throw new Error("Un compte porte déjà ce nom.");
     const u={id:uid("u"),nom,role,actif:true,pwd:rec,chg:true};G.users.push(u);nom0=nom;R.aud(G,"Utilisateur créé (via Hub)",nom+" ("+role+")",me);return nom+" : compte créé ("+R.roles[role]+")."});
-   if(UMSG&&!UMSG.er&&nom0)await ANGELS_AUTH.afficherTemp({titre:"Compte créé",nom:nom0,mdp})})();return}
+   if(UMSG&&!UMSG.er&&nom0)await LOGISTICA_AUTH.afficherTemp({titre:"Compte créé",nom:nom0,mdp})})();return}
 });
 window.addEventListener("storage",()=>{if(!document.activeElement||!/INPUT|SELECT/.test(document.activeElement.tagName))uView()});
 window.addEventListener("storage",ev=>{if(ev.key===PKEY&&(!document.activeElement||!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName))){PCUR=null;pView()}});
 
 /* ---------- Portail unique : réglages (lus par portail.html) ---------- */
-const PKEY="angels_portail_v1";
+const PKEY="logistica_portail_v1";
 const PDEF={v:4,logo:"",couleur2:"",couleur3:"",legal:{raison:"",forme:"",rccm:"",siege:"",capital:"",dirigeant:""},nom:"LOGISTICA",slogan:"Commandez en ligne, faites-vous livrer. Vendez avec nous.",apropos:"",couleur:"#c8352b",
  societe:"Le groupe réunit plusieurs activités complémentaires au service de ses clients et de ses partenaires : la livraison à moto et la vente en ligne, le transport de personnes, le négoce et l'import de véhicules, et l'élevage.",
  bandeau:["Commandez en ligne, livraison rapide.","Devenez vendeur partenaire : postulez en quelques minutes.","Paiement à la livraison ou par Mobile Money."],
@@ -208,7 +208,7 @@ const pVideo=u=>{u=String(u||"").trim();if(!u)return"";if(!/^https:\/\/[^\s"'<>]
 const pTok=v=>{v=String(v||"").trim();if(!v)return"";const m=/#boutique=([A-Za-z0-9_-]+)/.exec(v);const t=m?m[1]:v;if(!/^[A-Za-z0-9_-]{20,}$/.test(t))throw new Error("Lien de boutique invalide : collez le lien copié dans Distributions → Vente en ligne.");try{const p=JSON.parse(decodeURIComponent(escape(atob(t.replace(/-/g,"+").replace(/_/g,"/")))));if(!p||!Array.isArray(p.p)||!Array.isArray(p.z))throw 0}catch(e){throw new Error("Lien de boutique illisible : générez-en un nouveau dans Distributions.")}return t};
 const pProduits=C=>{try{const t=C.boutique;if(!t)return[];const o=JSON.parse(decodeURIComponent(escape(atob(t.replace(/-/g,"+").replace(/_/g,"/")))));return(o.p||[]).map(x=>({c:String(x[0]).slice(0,30),n:String(x[1]).slice(0,100)}))}catch(e){return[]}};
 /* Catalogue de la boutique lu directement dans Distributions (mode automatique) */
-const pCatDist=()=>{const G=lire("angels_erp_v1");if(!G||!Array.isArray(G.produits)||!G.config)return null;const act=a=>(a||[]).filter(p=>p.actif&&p.en_ligne);
+const pCatDist=()=>{const G=lire("logistica_erp_v1");if(!G||!Array.isArray(G.produits)||!G.config)return null;const act=a=>(a||[]).filter(p=>p.actif&&p.en_ligne);
  const mm=(G.config.momo_comptes||[]).map(x=>String(x).trim()).filter(x=>x&&!/exemple/i.test(x)),P=[...act(G.produits).map(p=>[p.code,p.nom,Math.round(p.prix),Math.max(0,Math.floor(p.stock))]),...act(G.prestations).map(p=>[p.code,p.nom,Math.round(p.prix),-1,p.service||""])];
  return{n:P.length,tok:P.length?btoa(unescape(encodeURIComponent(JSON.stringify({o:String(G.config.org||"LOGISTICA"),w:G.config.whatsapp||"",z:(G.config.zones||[]).map(z=>[z.nom,Math.round(z.frais||0)]),p:P,m:mm,f:act(G.forfaits||[]).map(f=>[f.code,f.nom,Math.round(f.prix),f.livraisons])})))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""):""}};
 const pDebloque=()=>Object.values(AUTH).some(a=>a&&a.exp>Date.now());
@@ -259,7 +259,7 @@ function pView(){
  ${(()=>{const d=pCatDist();return(C.boutique_src||"auto")==="auto"?`<p class="note">${d?(d.n?`Le portail suit le catalogue « Vente en ligne » de Distributions : <b>${d.n} article(s)</b> publié(s), mis à jour à chaque enregistrement dans Distributions${C.boutique_sync?" (dernière synchronisation : "+e(String(C.boutique_sync).slice(0,16).replace("T"," "))+")":""}.`:"Distributions n'a encore aucun produit ni prestation publié en ligne : cochez « Vendu en ligne » dans Produits et stock ou Prestations."):"Aucune donnée de Distributions sur cet appareil : ouvrez Distributions une fois."}</p>`:'<p class="note">Mode lien : collez ci-dessous le lien copié dans Distributions → Vente en ligne. Le catalogue ne suit plus Distributions.</p>'})()}
  <div class="uf"><label style="flex:1;min-width:240px">Lien de la boutique (mode « lien » uniquement)<input name="boutique" value="${e(C.boutique?"…#boutique="+C.boutique.slice(0,12)+"… (enregistré)":"")}" style="width:100%" placeholder="https://…/distribution.html#boutique=…"></label></div>
  ${pProduits(C).length?`${H("Photos des produits")}<p class="note">Une photo réelle par produit s'affiche à côté du produit dans la boutique du portail (compressée à 320 px).</p><div style="overflow-x:auto"><table class="ut" style="min-width:460px"><tr><th>Photo</th><th>Produit</th><th>Code</th><th></th></tr>${pProduits(C).map(x=>`<tr><td>${C.photosProduits[x.c]?`<img src="${e(C.photosProduits[x.c])}" alt="" style="height:44px;width:44px;object-fit:cover;border-radius:10px">`:'<span class="note">—</span>'}</td><td>${e(x.n)}</td><td>${e(x.c)}</td><td><button type="button" class="sb g" ${dis} data-p="ppp" data-c="${e(x.c)}">📁 Photo</button>${C.photosProduits[x.c]?`<button type="button" class="sb g" ${dis} data-p="ppx" data-c="${e(x.c)}">Retirer</button>`:""}</td></tr>`).join("")}</table></div>`:'<p class="note">Collez le lien de la boutique et enregistrez : les produits apparaîtront ici pour recevoir leurs photos.</p>'}
- </div><div class="pp" data-pp="boutique">${H("🚗 Véhicules à vendre")}<div class="uf"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="vehact" ${C.vehicules_actif!==false?"checked":""}> Afficher le catalogue véhicules (alimenté par Transport → Catalogue véhicules)</label></div>${(()=>{let n="?";try{const r=JSON.parse(localStorage.getItem("angels_transport_v3")||"null");if(r&&Array.isArray(r.vn))n=r.vn.filter(v=>v.portail!==false&&((v.statut==="stock")||(v.statut==="route"&&v.prix_affiche>0))).length}catch(x){}return `<p class="note">${n} véhicule(s) publiable(s) sur cet appareil. Le catalogue est synchronisé à chaque enregistrement dans Transport ; masquez une fiche avec « Publié sur le portail : Non ».</p>`})()}</div><div class="pp" data-pp="boutique">${H("🤝 Devenir vendeur partenaire")}<div class="uf"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="vact" ${C.vendeurs.actif?"checked":""}> Candidatures ouvertes</label></div>
+ </div><div class="pp" data-pp="boutique">${H("🚗 Véhicules à vendre")}<div class="uf"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="vehact" ${C.vehicules_actif!==false?"checked":""}> Afficher le catalogue véhicules (alimenté par Transport → Catalogue véhicules)</label></div>${(()=>{let n="?";try{const r=JSON.parse(localStorage.getItem("logistica_transport_v3")||"null");if(r&&Array.isArray(r.vn))n=r.vn.filter(v=>v.portail!==false&&((v.statut==="stock")||(v.statut==="route"&&v.prix_affiche>0))).length}catch(x){}return `<p class="note">${n} véhicule(s) publiable(s) sur cet appareil. Le catalogue est synchronisé à chaque enregistrement dans Transport ; masquez une fiche avec « Publié sur le portail : Non ».</p>`})()}</div><div class="pp" data-pp="boutique">${H("🤝 Devenir vendeur partenaire")}<div class="uf"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="vact" ${C.vendeurs.actif?"checked":""}> Candidatures ouvertes</label></div>
  <div class="uf"><label style="flex:1;min-width:240px">Texte d'accueil<textarea name="vtexte" rows="2" maxlength="500" ${TA}>${e(C.vendeurs.texte)}</textarea></label></div>
  <p class="note">Les candidatures arrivent par WhatsApp : collez-les dans Distributions → Vendeurs partenaires → Candidatures. Vous approuvez ou refusez ; aucun compte n'est créé automatiquement.</p>
  </div><div class="pp" data-pp="accueil">${H("❓ Questions fréquentes")}<p class="note">Une question par ligne : question | réponse</p><textarea name="faq" rows="5" ${TA}>${e(C.faq.map(f=>f.q+" | "+f.r).join("\n"))}</textarea>
@@ -322,7 +322,7 @@ document.addEventListener("click",ev=>{const b=ev.target.closest("[data-p]");if(
 
 /* ---------- Médias publiables (stockés dans IndexedDB de cet appareil) ---------- */
 const PMCAT=[["accueil","Accueil (diaporama ou vidéo d'ouverture)"],["galerie","Galerie photos et vidéos"],["activite","Photos / vidéos d'une activité"],["societe","Société (équipe, locaux)"]];
-function idbOpen(){return new Promise((ok,ko)=>{if(!window.indexedDB)return ko(new Error("Stockage indisponible sur ce navigateur."));const r=indexedDB.open("angels_portail",2);r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains("media"))d.createObjectStore("media",{keyPath:"id"});if(!d.objectStoreNames.contains("veh"))d.createObjectStore("veh",{keyPath:"id"})};r.onsuccess=()=>ok(r.result);r.onerror=()=>ko(r.error)})}
+function idbOpen(){return new Promise((ok,ko)=>{if(!window.indexedDB)return ko(new Error("Stockage indisponible sur ce navigateur."));const r=indexedDB.open("logistica_portail",2);r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains("media"))d.createObjectStore("media",{keyPath:"id"});if(!d.objectStoreNames.contains("veh"))d.createObjectStore("veh",{keyPath:"id"})};r.onsuccess=()=>ok(r.result);r.onerror=()=>ko(r.error)})}
 const idbTx=async(mode,f)=>{const db=await idbOpen();return new Promise((ok,ko)=>{const t=db.transaction("media",mode),st=t.objectStore("media"),q=f(st);t.oncomplete=()=>ok(q&&q.result);t.onerror=()=>ko(t.error)})};
 const mAll=()=>idbTx("readonly",st=>st.getAll()).then(L=>(L||[]).sort((a,b)=>a.t-b.t));
 const mPut=m=>idbTx("readwrite",st=>st.put(m)),mDel=id=>idbTx("readwrite",st=>st.delete(id));
@@ -330,7 +330,7 @@ function imgCompress(file,max,q,type){return new Promise((ok,ko)=>{const fr=new 
 const fileData=f=>new Promise((ok,ko)=>{const fr=new FileReader();fr.onload=()=>ok(fr.result);fr.onerror=()=>ko(new Error("Lecture impossible"));fr.readAsDataURL(f)});
 const pVideoLien=u=>{u=String(u||"").trim();return /^https:\/\/(?:www\.)?youtube\.com\/watch\?(?:[^#]*&)?v=[A-Za-z0-9_-]{6,15}/i.test(u)||/^https:\/\/youtu\.be\/[A-Za-z0-9_-]{6,15}/i.test(u)||/^https:\/\/(?:www\.)?youtube\.com\/embed\/[A-Za-z0-9_-]{6,15}/i.test(u)||/^https:\/\/(?:www\.)?vimeo\.com\/\d{5,12}/i.test(u)||/^https:\/\/player\.vimeo\.com\/video\/\d{5,12}/i.test(u)||/^https:\/\/[^\s"'<>]+\.(mp4|webm|ogg)(\?[^\s"'<>]*)?$/i.test(u)};
 let PMM=null,MCUR={cat:"galerie",titre:"",act:"",comment:""};
-const pBc=(()=>{try{return new BroadcastChannel("angels_portail")}catch(e){return null}})();
+const pBc=(()=>{try{return new BroadcastChannel("logistica_portail")}catch(e){return null}})();
 function pDiffuse(){try{pBc&&pBc.postMessage("maj")}catch(e){}}
 const mAct=C=>[["","Général (groupe)"],...C.activites.map((a,i)=>["act"+(i+1),a.nom||"Nouvelle activité"])];
 async function mView(){
@@ -371,7 +371,7 @@ document.addEventListener("change",ev=>{const t=ev.target;if(t.id==="m_photos"){
   const C=pLire();C.logo=await imgCompress(f,360,0.9,"image/png");localStorage.setItem(PKEY,JSON.stringify(C));PCUR=null;PMSG={t:"Logo importé."};pDiffuse()}catch(e){PMSG={er:1,t:e.message}}pView()})()}});
 /* ---------- Publication : portail-data.js ou portail autonome ---------- */
 async function pVeh(){try{const db=await idbOpen();return await new Promise((ok,ko)=>{const q=db.transaction("veh").objectStore("veh").get("catalogue");q.onsuccess=()=>ok(q.result||null);q.onerror=()=>ko(q.error)})}catch(e){return null}}
-async function pDonnees(){const C=pLire();let L=[];try{L=await mAll()}catch(e){}const V=await pVeh();const PI=typeof ANGELS_PRINT!=="undefined"?ANGELS_PRINT.cfg():null,print=PI?{keys:ANGELS_PRINT.pubs(),site:PI.site,noms:Object.fromEntries(ANGELS_PRINT.DIVS.map(([k])=>[k,ANGELS_PRINT.ident(k).nom]))}:{keys:[],noms:{}};return{v:1,publie:new Date().toISOString(),cfg:C,media:L,print,veh:C.vehicules_actif===false?{items:[]}:{t:V?V.t:"",items:V?V.items:[]}}}
+async function pDonnees(){const C=pLire();let L=[];try{L=await mAll()}catch(e){}const V=await pVeh();const PI=typeof LOGISTICA_PRINT!=="undefined"?LOGISTICA_PRINT.cfg():null,print=PI?{keys:LOGISTICA_PRINT.pubs(),site:PI.site,noms:Object.fromEntries(LOGISTICA_PRINT.DIVS.map(([k])=>[k,LOGISTICA_PRINT.ident(k).nom]))}:{keys:[],noms:{}};return{v:1,publie:new Date().toISOString(),cfg:C,media:L,print,veh:C.vehicules_actif===false?{items:[]}:{t:V?V.t:"",items:V?V.items:[]}}}
 const pJs=o=>JSON.stringify(o).replace(/</g,"\\u003c").replace(/\u2028/g,"\\u2028").replace(/\u2029/g,"\\u2029");
 function pTelecharge(nom,txt,type){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type}));a.download=nom;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
 async function pPublie(mode){
@@ -390,7 +390,7 @@ document.addEventListener("click",ev=>{const b=ev.target.closest("[data-p]");if(
 const eE=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const fF=n=>Math.round(+n||0).toLocaleString("fr-FR").replace(/[  ]/g," ")+" F";
 const telWA=t=>{t=String(t||"").replace(/\D/g,"");return t.length===10?"225"+t:t};
-const donneesDist=()=>{const G=lire("angels_erp_v1");return G&&Array.isArray(G.commandes)&&Array.isArray(G.clients)?G:null};
+const donneesDist=()=>{const G=lire("logistica_erp_v1");return G&&Array.isArray(G.commandes)&&Array.isArray(G.clients)?G:null};
 const estWeb=c=>!!(c.web||c.canal==="Vente en ligne");
 let SJ=30;
 function sCalc(G,jours){
@@ -463,7 +463,7 @@ let IMSG=null;
 const iE=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const IF=[["raison","Raison sociale (en-tête)"],["forme","Forme juridique"],["capital","Capital"],["rccm","RCCM"],["ncc","N° compte contribuable (NCC)"],["siege","Siège / adresse"],["tel","Téléphone"],["email","E-mail"],["pied","Pied de page spécifique"]];
 function iView(){
- const el=$("pimp");if(!el||typeof ANGELS_PRINT==="undefined")return;const ok=pDebloque(),dis=ok?"":"disabled",C=ANGELS_PRINT.cfg(),K=ANGELS_PRINT.cleInfo(),R=ANGELS_PRINT.registre();
+ const el=$("pimp");if(!el||typeof LOGISTICA_PRINT==="undefined")return;const ok=pDebloque(),dis=ok?"":"disabled",C=LOGISTICA_PRINT.cfg(),K=LOGISTICA_PRINT.cleInfo(),R=LOGISTICA_PRINT.registre();
  const card=d=>{const [k,n]=d,x=C.div[k];return `<div class="card" data-idiv="${k}" style="margin:12px 0"><h3 style="margin:0 0 6px;font-size:14px">${k==="groupe"?"🏢 Groupe — valeurs par défaut de toutes les divisions":"🏷️ Division "+iE(n)}</h3>
   <div class="uf" style="align-items:center"><div style="width:84px;height:84px;border:1px dashed var(--bd);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fff">${x.logo?`<img src="${iE(x.logo)}" alt="Logo ${iE(n)}" style="max-width:80px;max-height:80px">`:'<span class="mu sm" style="text-align:center">Pas de logo</span>'}</div>
   <div><label class="sb g" style="cursor:pointer;display:inline-block;padding:8px 12px">Importer le logo<input type="file" accept="image/png,image/jpeg,image/webp" data-ilogo="${k}" ${dis} hidden></label> ${x.logo?`<button type="button" class="sb g" data-ilogoclr="${k}" ${dis}>Retirer</button>`:""}<div class="mu sm">${k==="groupe"?"Utilisé par les divisions sans logo propre.":"Sans logo : celui du groupe, puis un monogramme."}</div></div>
@@ -475,7 +475,7 @@ function iView(){
   <div class="uf"><label style="flex:1;min-width:260px">Adresse publique du site (https) — le QR ouvre la page de vérification<input name="site" value="${iE(C.site)}" placeholder="https://votre-site.vercel.app" maxlength="120" ${dis} style="width:100%"></label>
   <label style="flex:1;min-width:260px">Pied de page commun à tous les documents<input name="pied" value="${iE(C.pied)}" maxlength="200" placeholder="Merci de votre confiance" ${dis} style="width:100%"></label></div>
   <div class="uf"><label style="flex:1;min-width:260px">Mentions légales (bas de page)<textarea name="mentions" rows="2" maxlength="300" ${dis} style="width:100%;font:inherit;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx)">${iE(C.mentions)}</textarea></label></div></div>
-  ${ANGELS_PRINT.DIVS.map(card).join("")}<div class="uf"><button type="submit" class="sb" ${dis}>Enregistrer les réglages d'impression</button></div></form>
+  ${LOGISTICA_PRINT.DIVS.map(card).join("")}<div class="uf"><button type="submit" class="sb" ${dis}>Enregistrer les réglages d'impression</button></div></form>
  <div class="card" style="margin:12px 0"><h3 style="margin:0 0 6px;font-size:14px">🗝️ Clé de signature des documents</h3>
   <p class="note">Chaque document porte un QR signé (ECDSA P-256). La clé privée reste sur cet appareil ; la clé publique est publiée avec le portail (onglet Publication) et permet de vérifier l'authenticité sur <a href="verifier.html">verifier.html</a>. Pour émettre depuis plusieurs appareils, exportez la clé ici puis importez-la sur les autres appareils.</p>
   <p>${K.existe?`Clé active : <b>${iE(K.kid)}</b> · créée le ${iE(String(K.t).slice(0,10))}`:"Aucune clé : elle sera créée au premier document imprimé."} · <b>${R.length}</b> document(s) enregistré(s) sur cet appareil.</p>
@@ -483,23 +483,23 @@ function iView(){
   <p class="note">Régénérer la clé : les documents déjà imprimés avec l'ancienne clé ne seront plus confirmés par la page de vérification si l'ancienne clé n'est plus publiée. Gardez une copie de la clé exportée en lieu sûr.</p></div>`;
 }
 async function iEnregistrer(f){
- const C=ANGELS_PRINT.cfg(),d=new FormData(f);C.qr=!!d.get("qr");C.site=String(d.get("site")||"").trim();C.pied=String(d.get("pied")||"").trim();C.mentions=String(d.get("mentions")||"").trim();
+ const C=LOGISTICA_PRINT.cfg(),d=new FormData(f);C.qr=!!d.get("qr");C.site=String(d.get("site")||"").trim();C.pied=String(d.get("pied")||"").trim();C.mentions=String(d.get("mentions")||"").trim();
  if(C.site&&!/^https:\/\/[^\s"'<>]+$/.test(C.site))throw new Error("Adresse du site : https:// obligatoire.");
- ANGELS_PRINT.DIVS.forEach(([k])=>{IF.forEach(([f])=>{C.div[k][f]=String(d.get(k+"__"+f)||"").trim()});const c=String(d.get(k+"__couleur")||"");C.div[k].couleur=/^#[0-9a-f]{6}$/i.test(c)?c:""});
- if(!ANGELS_PRINT.sauver(C))throw new Error("Stockage plein.");
+ LOGISTICA_PRINT.DIVS.forEach(([k])=>{IF.forEach(([f])=>{C.div[k][f]=String(d.get(k+"__"+f)||"").trim()});const c=String(d.get(k+"__couleur")||"");C.div[k].couleur=/^#[0-9a-f]{6}$/i.test(c)?c:""});
+ if(!LOGISTICA_PRINT.sauver(C))throw new Error("Stockage plein.");
 }
-document.addEventListener("submit",ev=>{if(ev.target.id!=="iform")return;ev.preventDefault();(async()=>{try{if(!pDebloque())throw new Error("Déverrouillez d'abord une application avec le mot de passe d'un administrateur.");const logos=ANGELS_PRINT.cfg();await iEnregistrer(ev.target);const C=ANGELS_PRINT.cfg();ANGELS_PRINT.DIVS.forEach(([k])=>{C.div[k].logo=logos.div[k].logo});ANGELS_PRINT.sauver(C);IMSG={t:"Réglages d'impression enregistrés : tous les documents imprimés les utilisent."}}catch(e){IMSG={er:1,t:e.message}}iView()})()});
-document.addEventListener("change",ev=>{const t=ev.target;if(t.dataset&&t.dataset.ilogo){const f=t.files[0];if(!f)return;(async()=>{try{if(!pDebloque())throw new Error("Déverrouillez d'abord une application avec le mot de passe d'un administrateur.");if(!/^image\//.test(f.type))throw new Error("Ce n'est pas une image.");const src=await imgCompress(f,360,0.9,"image/png"),C=ANGELS_PRINT.cfg();C.div[t.dataset.ilogo].logo=src;ANGELS_PRINT.sauver(C);IMSG={t:"Logo importé."}}catch(e){IMSG={er:1,t:e.message}}iView()})()}
- if(t.dataset&&t.dataset.ik==="imp"){const f=t.files[0];if(!f)return;(async()=>{try{if(!pDebloque())throw new Error("Déverrouillez d'abord une application avec le mot de passe d'un administrateur.");const K=await ANGELS_PRINT.cleImporter(await f.text());IMSG={t:"Clé importée : "+K.kid}}catch(e){IMSG={er:1,t:e.message}}iView()})()}});
+document.addEventListener("submit",ev=>{if(ev.target.id!=="iform")return;ev.preventDefault();(async()=>{try{if(!pDebloque())throw new Error("Déverrouillez d'abord une application avec le mot de passe d'un administrateur.");const logos=LOGISTICA_PRINT.cfg();await iEnregistrer(ev.target);const C=LOGISTICA_PRINT.cfg();LOGISTICA_PRINT.DIVS.forEach(([k])=>{C.div[k].logo=logos.div[k].logo});LOGISTICA_PRINT.sauver(C);IMSG={t:"Réglages d'impression enregistrés : tous les documents imprimés les utilisent."}}catch(e){IMSG={er:1,t:e.message}}iView()})()});
+document.addEventListener("change",ev=>{const t=ev.target;if(t.dataset&&t.dataset.ilogo){const f=t.files[0];if(!f)return;(async()=>{try{if(!pDebloque())throw new Error("Déverrouillez d'abord une application avec le mot de passe d'un administrateur.");if(!/^image\//.test(f.type))throw new Error("Ce n'est pas une image.");const src=await imgCompress(f,360,0.9,"image/png"),C=LOGISTICA_PRINT.cfg();C.div[t.dataset.ilogo].logo=src;LOGISTICA_PRINT.sauver(C);IMSG={t:"Logo importé."}}catch(e){IMSG={er:1,t:e.message}}iView()})()}
+ if(t.dataset&&t.dataset.ik==="imp"){const f=t.files[0];if(!f)return;(async()=>{try{if(!pDebloque())throw new Error("Déverrouillez d'abord une application avec le mot de passe d'un administrateur.");const K=await LOGISTICA_PRINT.cleImporter(await f.text());IMSG={t:"Clé importée : "+K.kid}}catch(e){IMSG={er:1,t:e.message}}iView()})()}});
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-ilogoclr],[data-ik]");if(!b||b.tagName==="INPUT")return;
- if(b.dataset.ilogoclr){if(!pDebloque()){IMSG={er:1,t:"Déverrouillez d'abord une application avec le mot de passe d'un administrateur."};return iView()}const C=ANGELS_PRINT.cfg();C.div[b.dataset.ilogoclr].logo="";ANGELS_PRINT.sauver(C);IMSG={t:"Logo retiré."};return iView()}
- const k=b.dataset.ik;if(k==="essai"){ANGELS_PRINT.ouvrir({division:"groupe",titre:"Document d'essai",ref:"ESSAI-"+new Date().getFullYear()+"-0001",montant:125000,corps:"<p>Ce document d'essai vérifie l'en-tête, le pied de page et le QR de sécurité de votre entreprise.</p><table><tr><th>Désignation</th><th>Montant</th></tr><tr><td>Prestation d'essai</td><td>125 000 F</td></tr></table>",signatures:[["Pour l'entreprise","Nom, qualité, signature"],["Le client","Lu et approuvé"]],emetteur:"Paramètres"});return}
- if(k==="exp"){if(!pDebloque())return alert("Déverrouillez d'abord une application avec le mot de passe d'un administrateur : la clé privée permet de signer de faux documents.");const t=ANGELS_PRINT.cleExporter();if(!t)return;const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"application/json"}));a.download="cle-signature-angels.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);return}
- if(k==="gen"){if(!pDebloque()){IMSG={er:1,t:"Déverrouillez d'abord une application avec le mot de passe d'un administrateur."};return iView()}if(ANGELS_PRINT.cleInfo().existe&&!confirm("Régénérer la clé ? Les documents déjà imprimés ne seront plus confirmés si l'ancienne clé n'est plus publiée."))return;(async()=>{try{const K=await ANGELS_PRINT.cleRegenerer();IMSG={t:"Clé active : "+K.kid+". Republiez le portail pour publier la clé publique."}}catch(e){IMSG={er:1,t:e.message}}iView()})()}});
+ if(b.dataset.ilogoclr){if(!pDebloque()){IMSG={er:1,t:"Déverrouillez d'abord une application avec le mot de passe d'un administrateur."};return iView()}const C=LOGISTICA_PRINT.cfg();C.div[b.dataset.ilogoclr].logo="";LOGISTICA_PRINT.sauver(C);IMSG={t:"Logo retiré."};return iView()}
+ const k=b.dataset.ik;if(k==="essai"){LOGISTICA_PRINT.ouvrir({division:"groupe",titre:"Document d'essai",ref:"ESSAI-"+new Date().getFullYear()+"-0001",montant:125000,corps:"<p>Ce document d'essai vérifie l'en-tête, le pied de page et le QR de sécurité de votre entreprise.</p><table><tr><th>Désignation</th><th>Montant</th></tr><tr><td>Prestation d'essai</td><td>125 000 F</td></tr></table>",signatures:[["Pour l'entreprise","Nom, qualité, signature"],["Le client","Lu et approuvé"]],emetteur:"Paramètres"});return}
+ if(k==="exp"){if(!pDebloque())return alert("Déverrouillez d'abord une application avec le mot de passe d'un administrateur : la clé privée permet de signer de faux documents.");const t=LOGISTICA_PRINT.cleExporter();if(!t)return;const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"application/json"}));a.download="cle-signature-logistica.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);return}
+ if(k==="gen"){if(!pDebloque()){IMSG={er:1,t:"Déverrouillez d'abord une application avec le mot de passe d'un administrateur."};return iView()}if(LOGISTICA_PRINT.cleInfo().existe&&!confirm("Régénérer la clé ? Les documents déjà imprimés ne seront plus confirmés si l'ancienne clé n'est plus publiée."))return;(async()=>{try{const K=await LOGISTICA_PRINT.cleRegenerer();IMSG={t:"Clé active : "+K.kid+". Republiez le portail pour publier la clé publique."}}catch(e){IMSG={er:1,t:e.message}}iView()})()}});
 
 /* Cloud / Supabase : configuration partagée par les applications (stockée sur l'appareil). Seule la clé « anon » est acceptée. */
 const esc=t=>String(t==null?"":t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const CL_K="angels_supabase",clDef=()=>window.ANGELS_PASSERELLE||{url:"",key:""};
+const CL_K="logistica_supabase",clDef=()=>window.LOGISTICA_PASSERELLE||{url:"",key:""};
 const clLire=()=>{try{return JSON.parse(localStorage.getItem(CL_K)||"null")}catch(e){return null}};
 const clEff=()=>{const o=clLire();if(o&&o.off)return{url:"",key:"",off:true};if(o&&o.url&&o.key)return{url:o.url,key:o.key,perso:true};const d=clDef();return{url:d.url||"",key:d.key||"",defaut:true}};
 function clRole(k){try{const j=JSON.parse(atob(String(k).split(".")[1].replace(/-/g,"+").replace(/_/g,"/")));return j.role||""}catch(e){return""}}
@@ -511,8 +511,8 @@ function clValide(url,key){url=String(url||"").trim().replace(/\/+$/,"").replace
  return{url,key}}
 function clView(){csView();if(!ssView._n){ssView._n=1;ssRender()}const e=clEff(),u=$("cl-url"),k=$("cl-key");if(!u)return;if(document.activeElement!==u&&document.activeElement!==k){u.value=e.url;k.value=e.key}
  $("cl-badge").innerHTML=e.off?'<b style="color:#c62828">● Mode local — aucune connexion Supabase</b>':`<b style="color:#118a4b">● Connecté — ${esc(e.url)}${e.defaut?" (projet par défaut)":""}</b>`;
- const A=(()=>{try{return JSON.parse(localStorage.getItem("angels_erp_v1")||"null")}catch(x){return null}})(),c=(A&&A.config)||{};
- $("cl-apps").innerHTML=[["Synchronisation entre postes (cet appareil)",ANGELS_SYNC.actif()],["Passerelle livreur (Distributions)",c.passerelle_actif===true],["Pont téléphonique (Distributions)",!!(c.appel_pont&&c.appel_pont.actif)],["Application des livreurs (livreur.html)",!e.off&&!!e.url]].map(x=>`<li><span>${x[0]}</span><b style="color:${x[1]?"#118a4b":"#6b7390"}">${x[1]?"● Actif":"○ Inactif"}</b></li>`).join("")}
+ const A=(()=>{try{return JSON.parse(localStorage.getItem("logistica_erp_v1")||"null")}catch(x){return null}})(),c=(A&&A.config)||{};
+ $("cl-apps").innerHTML=[["Synchronisation entre postes (cet appareil)",LOGISTICA_SYNC.actif()],["Passerelle livreur (Distributions)",c.passerelle_actif===true],["Pont téléphonique (Distributions)",!!(c.appel_pont&&c.appel_pont.actif)],["Application des livreurs (livreur.html)",!e.off&&!!e.url]].map(x=>`<li><span>${x[0]}</span><b style="color:${x[1]?"#118a4b":"#6b7390"}">${x[1]?"● Actif":"○ Inactif"}</b></li>`).join("")}
 /* État de la synchronisation (envoi ↔ réception) : lecture et actions sur les trois applications. */
 const SS_APPS=[["distribution","Distributions"],["transport","Transport"],["agro","Agro"],["placement","Placement"],["assurance","Assurance"],["crm","CRM"]].filter(a=>(MQ_.modules||[]).includes(a[0])||(MQ_.outils||[]).includes(a[0]));
 const ssSel=()=>{const v=$("ss-app").value;return v==="tous"?SS_APPS:SS_APPS.filter(a=>a[0]===v)};
@@ -520,7 +520,7 @@ const ssHeure=t=>t?new Date(t).toLocaleString("fr-FR",{day:"2-digit",month:"2-di
 let SSD={};
 const ssOut=h=>{$("ss-out").innerHTML=h};
 function ssRender(erreur){const ds=SS_APPS.map(a=>SSD[a[0]]).filter(Boolean),conn=$("ss-conn");
- if(!ANGELS_SYNC.actif()){conn.className="bd0";conn.textContent="○ Synchronisation non configurée";}
+ if(!LOGISTICA_SYNC.actif()){conn.className="bd0";conn.textContent="○ Synchronisation non configurée";}
  else if(erreur){conn.className="bd0 er";conn.textContent="⚠ Cloud injoignable";}
  else if(ds.length){conn.className="bd0 ok";conn.textContent="● Connecté au cloud";}
  const mx=k=>Math.max(0,...ds.map(d=>d[k]||0));$("ss-envoi").textContent="⬆ Dernier envoi : "+ssHeure(mx("envoi"));$("ss-recep").textContent="⬇ Dernière réception : "+ssHeure(mx("reception"));
@@ -528,25 +528,25 @@ function ssRender(erreur){const ds=SS_APPS.map(a=>SSD[a[0]]).filter(Boolean),con
  $("ss-kpi").innerHTML=ds.length?`📦 <b>${som("elements")}</b> éléments · <span style="color:#118a4b">✔ <b>${som("aJour")}</b> à jour</span> · <span style="color:#1565c0">⬆ <b>${som("aEnvoyer")}</b> à envoyer</span> · <span style="color:#1565c0">⬇ <b>${som("aRecuperer")}</b> à récupérer</span> · 📝 <b>${som("enFile")}</b> en file d'attente · 🗑 <b>${som("suppressions")}</b> suppression(s)`:"Cliquez sur « Vérifier l'état ».";
  $("ss-tab").innerHTML=ds.length?`<thead><tr><th>Application</th><th>Éléments</th><th>À jour</th><th>À envoyer</th><th>À récupérer</th><th>Sur le serveur</th><th>État</th></tr></thead><tbody>${ds.map(d=>`<tr><td><b>${esc(d.nom)}</b></td><td>${d.elements}</td><td>${d.aJour}</td><td>${d.aEnvoyer+d.suppressions?`<b style="color:#1565c0">${d.aEnvoyer+d.suppressions}</b>`:0}</td><td>${d.aRecuperer?`<b style="color:#1565c0">${d.aRecuperer}</b>`:0}</td><td>${d.serveur==null?"—":d.serveur}</td><td>${!d.actif?"Non configurée":!d.amorce?"Première synchro à faire":d.aEnvoyer+d.suppressions+d.aRecuperer?"En attente":"✔ À jour"}</td></tr>`).join("")}</tbody>`:""}
 function ssView(){}
-async function ssDiag(){if(!ANGELS_SYNC.actif()){ssRender();return ssOut('<div class="umsg er">Synchronisation non configurée : renseignez la clé ci-dessus.</div>')}
+async function ssDiag(){if(!LOGISTICA_SYNC.actif()){ssRender();return ssOut('<div class="umsg er">Synchronisation non configurée : renseignez la clé ci-dessus.</div>')}
  ssOut("Vérification en cours…");let erreur=null;
- for(const [k,n] of SS_APPS){try{SSD[k]=await ANGELS_SYNC.commande(k,"diagnostic")}catch(e){erreur=e;SSD[k]=Object.assign(SSD[k]||{app:k,nom:n,elements:0,aJour:0,aEnvoyer:0,suppressions:0,enFile:0,aRecuperer:0,serveur:null,actif:true,amorce:false},{})}}
+ for(const [k,n] of SS_APPS){try{SSD[k]=await LOGISTICA_SYNC.commande(k,"diagnostic")}catch(e){erreur=e;SSD[k]=Object.assign(SSD[k]||{app:k,nom:n,elements:0,aJour:0,aEnvoyer:0,suppressions:0,enFile:0,aRecuperer:0,serveur:null,actif:true,amorce:false},{})}}
  ssRender(erreur);ssOut(erreur?`<div class="umsg er">${esc(erreur.message||erreur)}</div>`:"")}
 const ssTypes={nouveau:"🆕 nouveau",modifié:"✏️ modifié",supprimé:"🗑 supprimé"};
 async function ssAction(k){
  const write=["send","recv","resync","purge","retry"].includes(k);
  if(k==="diag")return ssDiag();
- if(!ANGELS_SYNC.actif())return ssOut('<div class="umsg er">Synchronisation non configurée : renseignez la clé ci-dessus.</div>');
+ if(!LOGISTICA_SYNC.actif())return ssOut('<div class="umsg er">Synchronisation non configurée : renseignez la clé ci-dessus.</div>');
  if(write&&!pDebloque())return ssOut('<div class="umsg er">Déverrouillez d\'abord une application avec le mot de passe d\'un administrateur.</div>');
  const apps=ssSel(),act={send:"envoyerTout",recv:"recupererTout",resync:"resynchro",retry:"reessayer",purge:"purgerCache",file:"file",cloud:"cloud",ecart:"ecart"}[k];let h="";
  if(k==="purge"){
-  let perdues=0,nonSync=[];for(const [a,n] of apps){try{const d=await ANGELS_SYNC.commande(a,"diagnostic");perdues+=d.aEnvoyer+d.suppressions;if(!d.amorce)nonSync.push(n)}catch(e){nonSync.push(n)}}
+  let perdues=0,nonSync=[];for(const [a,n] of apps){try{const d=await LOGISTICA_SYNC.commande(a,"diagnostic");perdues+=d.aEnvoyer+d.suppressions;if(!d.amorce)nonSync.push(n)}catch(e){nonSync.push(n)}}
   if(nonSync.length)return ssOut(`<div class="umsg er">Purge impossible pour ${esc(nonSync.join(", "))} : cet appareil n'est pas encore synchronisé, les données ne pourraient pas être rechargées depuis le serveur. Lancez d'abord « Resynchro complète ».</div>`);
   if(!confirm("PURGER LE CACHE LOCAL — "+apps.map(a=>a[1]).join(", ")+"\n\nLes données de cet appareil seront effacées puis rechargées depuis le serveur à la prochaine ouverture."+(perdues?"\n\n⚠ "+perdues+" modification(s) non envoyée(s) seront PERDUES.":"")+"\n\nContinuer ?"))return;
  }
  ssOut("Action en cours…");
  for(const [a,n] of apps){
-  try{const r=await ANGELS_SYNC.commande(a,act);
+  try{const r=await LOGISTICA_SYNC.commande(a,act);
    if(k==="file")h+=`<div style="margin:6px 0"><b>${esc(n)}</b> — ${r.length} modification(s) en attente</div>${r.length?`<table class="ut" style="width:100%"><thead><tr><th>Nature</th><th>Table</th><th>Élément</th></tr></thead><tbody>${r.slice(0,50).map(x=>`<tr><td>${ssTypes[x.type]||x.type}</td><td>${esc(x.coll)}</td><td>${esc(x.nom)}</td></tr>`).join("")}</tbody></table>${r.length>50?`<div class="note">… et ${r.length-50} autres</div>`:""}`:""}`;
    else if(k==="cloud")h+=`<div class="umsg" style="background:#eef2f6;color:#1c2430"><b>${esc(n)}</b> — ${esc(r.url)}<br>Réponse en ${r.ms} ms · serveur : Distributions ${r.serveur.distribution} · Transport ${r.serveur.transport} · Agro ${r.serveur.agro} enregistrement(s) · curseur local ${r.curseur} · ${r.amorce?"poste amorcé":"première synchronisation à faire"}${r.erreurs.length?`<br>Erreurs récentes : ${r.erreurs.map(e=>esc(ssHeure(e.t))+" — "+esc(e.m)).join(" ; ")}`:""}</div>`;
    else if(k==="ecart")h+=`<div style="margin:6px 0"><b>${esc(n)}</b> — ${r.ecarts?`<span style="color:#c62828">${r.ecarts} écart(s)</span>`:'<span style="color:#118a4b">aucun écart</span>'}</div><table class="ut" style="width:100%"><thead><tr><th>Table</th><th>Local</th><th>Serveur</th><th>Seulement ici</th><th>Seulement serveur</th><th>Différents</th></tr></thead><tbody>${r.lignes.slice(0,40).map(x=>`<tr><td>${esc(x.coll==="_doc"?"réglages":x.coll)}</td><td>${x.local}</td><td>${x.serveur}</td><td>${x.seulLocal||0}</td><td>${x.seulServeur||0}</td><td>${x.different||0}</td></tr>`).join("")}</tbody></table>`;
@@ -557,7 +557,7 @@ async function ssAction(k){
  ssOut(h);if(write)ssDiag().then(()=>ssOut(h));
 }
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-ss]");if(b)ssAction(b.dataset.ss)});
-const CS_K="angels_sync";
+const CS_K="logistica_sync";
 function csView(){const o=(()=>{try{return JSON.parse(localStorage.getItem(CS_K)||"null")}catch(e){return null}})(),k=$("cs-key"),on=$("cs-on");if(!k)return;if(document.activeElement!==k){k.value=(o&&o.cle)||""}on.checked=!!(o&&o.actif);
  $("cs-badge").innerHTML=o&&o.actif&&o.cle?'<b style="color:#118a4b">● Synchronisation activée sur cet appareil</b>':'<b style="color:#6b7390">○ Synchronisation désactivée (mode local)</b>'}
 function csMsg(t,er){$("cs-res").innerHTML=`<div class="umsg${er?" er":""}">${esc(t)}</div>`}
@@ -586,7 +586,7 @@ const APPN={dist:"distribution",trans:"transport",agro:"agro"},CXAPP={distributi
 const CXEV={ok:["Connexion","ok"],demo:["Connexion (accès démo)","ok"],out:["Déconnexion","mu"],ko:["Échec : mot de passe incorrect","er"],bloque:["Tentative pendant un blocage","er"],inactif:["Compte désactivé","er"],param_ok:["Gestion des comptes via le hub","ok"],param_ko:["Gestion des comptes : échec","er"]};
 const cxOk=e=>e==="ok"||e==="demo"||e==="param_ok",cxKo=e=>e==="ko"||e==="bloque"||e==="inactif"||e==="param_ko";
 const cxDt=t=>t?new Date(t).toLocaleString("fr-FR",{dateStyle:"short",timeStyle:"medium"}):"—";
-function cxHub(m,G,u,ev,motif){try{ANGELS_AUTH.trace(G,{app:APPN[m],uid:u.id||"",nom:u.nom||"",role:u.role||"",ev,motif,via:"hub"});localStorage.setItem(RL[m].key,JSON.stringify(G))}catch(e){}}
+function cxHub(m,G,u,ev,motif){try{LOGISTICA_AUTH.trace(G,{app:APPN[m],uid:u.id||"",nom:u.nom||"",role:u.role||"",ev,motif,via:"hub"});localStorage.setItem(RL[m].key,JSON.stringify(G))}catch(e){}}
 function cxDonnees(){const out={ent:[],users:[],verr:[]};
  MODS.forEach(mod=>{const m=mod.id,R=RL[m],G=uEtat(m),app=APPN[m];
   if(!G){out.verr.push({m,mod,raison:"absente"});return}
@@ -595,7 +595,7 @@ function cxDonnees(){const out={ent:[],users:[],verr:[]};
   (G.audit||[]).forEach(a=>{const t=a.ts||a.t,nom=a.user||a.u,ac=a.action||a.a;if(ac==="Connexion"&&t&&t<prem){const u=G.users.find(x=>x.nom===nom);L.push({id:"au"+t+nom,t,app,uid:u?u.id:"",nom,role:u?u.role:(a.role||a.r||""),ev:"ok",motif:"",app_:"",ancien:true})}});
   L.forEach(x=>out.ent.push(x));G.users.forEach(u=>out.users.push({app,uid:u.id,nom:u.nom,role:u.role,roleL:R.roles[u.role]||u.role,actif:u.actif!==false}))});
  return out}
-function rpCard(){const c=ANGELS_RAPPORT.cfg(),sv=ANGELS_RAPPORT.serveur();
+function rpCard(){const c=LOGISTICA_RAPPORT.cfg(),sv=LOGISTICA_RAPPORT.serveur();
  return `<div class="note" id="rp-card" style="margin:10px 0;padding:12px 14px;border:1px solid var(--bd);border-radius:12px;background:var(--card)"><h3 style="margin:0 0 6px;font-size:14px">📨 Rapport quotidien au DG</h3>
  <p class="note" style="margin:0 0 8px">Chaque jour à l'heure choisie, le rapport des dernières 24 h est préparé : un bandeau « Rapport prêt » avec le message WhatsApp déjà rédigé s'affiche sur les postes, et le serveur envoie le même rapport par e-mail${sv?"":" (synchronisation non activée sur cet appareil : réglage e-mail indisponible ici)"}.</p>
  <div class="uf" style="gap:8px;flex-wrap:wrap"><label><input type="checkbox" data-rp="actif" ${c.actif?"checked":""}> Envoi quotidien actif</label>
@@ -605,7 +605,7 @@ function rpCard(){const c=ANGELS_RAPPORT.cfg(),sv=ANGELS_RAPPORT.serveur();
  <label>E-mail(s) du DG<input type="text" data-rp="emails" value="${E(c.emails)}" placeholder="dg@exemple.com" maxlength="200"></label></div>
  <div class="uf" style="gap:8px;flex-wrap:wrap;margin-top:8px"><button type="button" class="tab" data-rpb="save">💾 Enregistrer</button><button type="button" class="tab" data-rpb="apercu">👁 Aperçu maintenant</button><button type="button" class="tab" data-rpb="wa">💬 WhatsApp maintenant</button><button type="button" class="tab" data-rpb="mail" ${sv?"":"disabled"}>✉ E-mail de test</button></div>
  <div id="rp-msg" class="note" role="status" style="margin-top:6px"></div></div>`}
-async function rpAct(k){const R=ANGELS_RAPPORT,msg=t=>{const m=$("rp-msg");if(m)m.textContent=t};
+async function rpAct(k){const R=LOGISTICA_RAPPORT,msg=t=>{const m=$("rp-msg");if(m)m.textContent=t};
  document.querySelectorAll("#rp-card [data-rp]").forEach(i=>{R.setCfg({[i.dataset.rp]:i.type==="checkbox"?i.checked:i.value.trim()})});
  try{if(k==="save"){msg("Enregistré sur cet appareil.");if(R.serveur()){await R.regler();msg("Enregistré ici et sur le serveur (e-mail quotidien à "+R.cfg().heure+").")}}
   else if(k==="apercu"){const x=R.generer(Date.now(),true);R.voir(x.id)}
@@ -613,7 +613,7 @@ async function rpAct(k){const R=ANGELS_RAPPORT,msg=t=>{const m=$("rp-msg");if(m)
   else if(k==="mail"){const j=await R.tester();msg("E-mail de test envoyé à "+j.a+" adresse(s).")}}
  catch(e){msg("⚠ "+e.message)}}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-rpb]");if(b)rpAct(b.dataset.rpb)});
-document.addEventListener("change",e=>{const i=e.target;if(i.dataset&&i.dataset.rp&&i.closest("#rp-card"))ANGELS_RAPPORT.setCfg({[i.dataset.rp]:i.type==="checkbox"?i.checked:i.value.trim()})});
+document.addEventListener("change",e=>{const i=e.target;if(i.dataset&&i.dataset.rp&&i.closest("#rp-card"))LOGISTICA_RAPPORT.setCfg({[i.dataset.rp]:i.type==="checkbox"?i.checked:i.value.trim()})});
 function cxView(){const box=$("s-cx");if(!box)return;const D=cxDonnees(),jours=CX.per==="all"?0:+CX.per,seuil=jours?Date.now()-jours*864e5:0,dans=x=>!seuil||new Date(x.t).getTime()>=seuil;
  const apps=Object.keys(CXAPP).filter(a=>!CX.app||a===CX.app),cle=(a,u)=>a+"|"+u;
  const E_=D.ent.filter(x=>apps.includes(x.app)),pers={};
@@ -646,13 +646,13 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-cx]");if(!
  else if(k==="tous"){CX.uid="";CX.n=100;cxView()}else if(k==="plus"){CX.n+=100;cxView()}else if(k==="csv")cxCsv()
  else if(k==="deverrouiller"){UM=b.dataset.m;try{sessionStorage.setItem("hub_umod",UM)}catch(x){}pTab("users");uView()}});
 const PTABS=[["users","👥 Utilisateurs et rôles"],["connexions","🔐 Connexions"],["identite","🎨 Identité"],["accueil","🏠 Accueil et contenu"],["boutique","🛒 Boutique et vendeurs"],["contact","📞 Contact et légal"],["medias","🖼️ Médias"],["stats","📊 Statistiques portail"],["acces","🔑 Accès portail"],["impression","🖨️ Impression"],["cloud","☁️ Cloud / Supabase"],["publication","🚀 Publication"]];
-let PTAB=(()=>{try{const t=sessionStorage.getItem("angels_param_tab");return PTABS.some(x=>x[0]===t)?t:"users"}catch(e){return"users"}})();
-function pTab(t){if(!PTABS.some(x=>x[0]===t))t="users";PTAB=t;try{sessionStorage.setItem("angels_param_tab",t)}catch(e){}
+let PTAB=(()=>{try{const t=sessionStorage.getItem("logistica_param_tab");return PTABS.some(x=>x[0]===t)?t:"users"}catch(e){return"users"}})();
+function pTab(t){if(!PTABS.some(x=>x[0]===t))t="users";PTAB=t;try{sessionStorage.setItem("logistica_param_tab",t)}catch(e){}
  $("ptabs").innerHTML=PTABS.map(x=>`<button type="button" role="tab" aria-selected="${x[0]===t}" class="tab ${x[0]===t?"on":""}" data-pt="${x[0]}">${x[1]}</button>`).join("");
  $("s-users").hidden=t!=="users";$("s-cx").hidden=t!=="connexions";if(t==="connexions")cxView();$("s-med").hidden=t!=="medias";$("s-stats").hidden=t!=="stats";$("s-acces").hidden=t!=="acces";$("s-imp").hidden=t!=="impression";$("s-cloud").hidden=t!=="cloud";if(t==="cloud")clView();if(t==="impression")iView();if(t==="stats")sView();if(t==="acces")aView();const portail=!["users","connexions","medias","stats","acces","impression","cloud"].includes(t);$("s-ptl").hidden=!portail;
  document.querySelectorAll("#ptl .pp").forEach(p=>{p.hidden=p.dataset.pp!==t});const bar=document.querySelector("#pform>.uf");if(bar)bar.style.display=t==="publication"?"none":"flex"}
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-pt]");if(b)pTab(b.dataset.pt)});
-pView();mView();pTab(PTAB);ANGELS_RAPPORT.init({peut:()=>true});
+pView();mView();pTab(PTAB);LOGISTICA_RAPPORT.init({peut:()=>true});
 {const _uv=uView;uView=function(){_uv();if(typeof pView==="function"){pView();mView();if(typeof iView==="function")iView()}}}
 uView();
 if("serviceWorker"in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register("sw.js").catch(()=>{});

@@ -6,7 +6,7 @@
 (function (G) {
   "use strict";
   var IT = 150000, MIN_DEF = 10, MAX = 128, te = new TextEncoder();
-  var COURANTS = ["motdepasse", "password", "azerty", "qwerty", "123456", "000000", "111111", "angels", "angelsgroup", "bienvenue", "admin", "abc123", "iloveyou", "welcome"];
+  var COURANTS = ["motdepasse", "password", "azerty", "qwerty", "123456", "000000", "111111", "logistica", "logisticagroup", "bienvenue", "admin", "abc123", "iloveyou", "welcome"];
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   function b64(u8) { var s = ""; for (var i = 0; i < u8.length; i++) s += String.fromCharCode(u8[i]); return btoa(s); }
   function unb64(s) { var b = atob(s), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
@@ -76,14 +76,14 @@
     return x;
   }
   async function appliquer(u, mdp, temporaire) { u.pwd = await creer(mdp); delete u.h; delete u.pin_h; if (temporaire) u.chg = true; else delete u.chg; u.pwd_le = new Date().toISOString(); }
-  var DEMO_MDP = "Demo@Angels2026", DEMO = {"v":2,"it":150000,"s":"YW5nZWxzLWRlbW8tMjAyNg==","h":"v3l6xZ/zqYp7e91ov33bbD69jUlngFx9y1GL/fA7DEM="};   /* comptes de démonstration (mot de passe « Demo@Angels2026 », haché) : à remplacer en production */
+  var DEMO_MDP = "Demo@Logistica2026", DEMO = {"v":2,"it":150000,"s":"Gmt2PN55CpESfdtywoJVcw==","h":"FrwZ4H7BtBV/u2FMxhPhQKy0D5WfFAhqqHgAlpkM0zc="};   /* comptes de démonstration (mot de passe « Demo@Logistica2026 », haché) : à remplacer en production */
 
   /* ---------- Mise en production ----------
      Une installation neuve ne contient AUCUNE donnée de démonstration : un seul administrateur (KESSIE), à qui le logiciel impose de changer son mot de passe à la première connexion.
-     Le mode démonstration (données d'exemple, profils prêts à l'emploi) n'existe que si « angels_demo » vaut 1 sur l'appareil (ouvrir l'application avec ?demo=1) : réservé aux tests et aux présentations. */
+     Le mode démonstration (données d'exemple, profils prêts à l'emploi) n'existe que si « logistica_demo » vaut 1 sur l'appareil (ouvrir l'application avec ?demo=1) : réservé aux tests et aux présentations. */
   var ADMIN_PROD = (G.ERP_MARQUE && G.ERP_MARQUE.admin) || { nom: "KESSIE", role: "admin", pwd: {"v":2,"it":150000,"s":"yDBjFkfuh6JJdWfOCZvWVA==","h":"k3sCfLXaCoI3AncQjn1I66xZf6c6znrNsxg7p8iF154="} };   /* instance cliente : administrateur défini dans marque.js (empreinte seulement) */
-  try { if (/[?&]demo=1(&|$)/.test(location.search)) localStorage.setItem("angels_demo", "1"); else if (/[?&]demo=0(&|$)/.test(location.search)) localStorage.removeItem("angels_demo"); } catch (e) { }
-  function demoOn() { try { return localStorage.getItem("angels_demo") === "1"; } catch (e) { return false; } }
+  try { if (/[?&]demo=1(&|$)/.test(location.search)) localStorage.setItem("logistica_demo", "1"); else if (/[?&]demo=0(&|$)/.test(location.search)) localStorage.removeItem("logistica_demo"); } catch (e) { }
+  function demoOn() { try { return localStorage.getItem("logistica_demo") === "1"; } catch (e) { return false; } }
   function adminProd(id) { return { id: id, nom: ADMIN_PROD.nom, role: ADMIN_PROD.role, actif: true, pwd: JSON.parse(JSON.stringify(ADMIN_PROD.pwd)), chg: true }; }
   /* Reconnaît les comptes d'une démonstration (mot de passe de démonstration, ou anciens PIN de démonstration jamais changés). */
   function demoUsers(users) {
@@ -96,9 +96,9 @@
   /* Données de démonstration trouvées sur un appareil en production : l'utilisateur confirme leur effacement (refus mémorisé). */
   function purgerDemo(users, cles, nomApp) {
     if (demoOn() || !demoUsers(users)) return false;
-    try { if (localStorage.getItem("angels_demo_garde_" + nomApp) === "1") return false; } catch (e) { }
+    try { if (localStorage.getItem("logistica_demo_garde_" + nomApp) === "1") return false; } catch (e) { }
     var ok = true; try { ok = confirm("MISE EN PRODUCTION — " + nomApp + "\n\nDes données de démonstration ont été trouvées sur cet appareil (comptes et exemples).\nElles vont être EFFACÉES pour repartir d'une base vide avec l'administrateur " + ADMIN_PROD.nom + ".\n\nOK = effacer et passer en production\nAnnuler = conserver ces données de démonstration"); } catch (e) { }
-    if (!ok) { try { localStorage.setItem("angels_demo_garde_" + nomApp, "1"); } catch (e) { } return false; }
+    if (!ok) { try { localStorage.setItem("logistica_demo_garde_" + nomApp, "1"); } catch (e) { } return false; }
     (cles || []).forEach(function (k) { try { localStorage.removeItem(k); } catch (e) { } });
     try { sessionStorage.clear(); } catch (e) { }
     return true;
@@ -197,5 +197,5 @@
     });
   }
 
-  G.ANGELS_AUTH = { IT: IT, MIN_DEF: MIN_DEF, creer: creer, verifier: verifier, valider: valider, force: force, generer: generer, connecter: connecter, trace: trace, appareil: appareil, appliquer: appliquer, legacy: legacy, ouvrirChangement: ouvrirChangement, afficherTemp: afficherTemp, fermer: fermer, DEMO_MDP: DEMO_MDP, DEMO: DEMO, demoOn: demoOn, adminProd: adminProd, demoUsers: demoUsers, purgerDemo: purgerDemo };
+  G.LOGISTICA_AUTH = { IT: IT, MIN_DEF: MIN_DEF, creer: creer, verifier: verifier, valider: valider, force: force, generer: generer, connecter: connecter, trace: trace, appareil: appareil, appliquer: appliquer, legacy: legacy, ouvrirChangement: ouvrirChangement, afficherTemp: afficherTemp, fermer: fermer, DEMO_MDP: DEMO_MDP, DEMO: DEMO, demoOn: demoOn, adminProd: adminProd, demoUsers: demoUsers, purgerDemo: purgerDemo };
 })(typeof window !== "undefined" ? window : globalThis);

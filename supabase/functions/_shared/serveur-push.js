@@ -21,7 +21,7 @@ export function dbPush(sb = client()) {
 /* Secrets à définir : VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY (voir tools/gen-vapid.js), VAPID_SUBJECT (mailto:… ou https://…). */
 export async function emetteurWebPush() {
   const { default: webpush } = await import("npm:web-push@3.6.7");
-  const pub = Deno.env.get("VAPID_PUBLIC_KEY"), priv = Deno.env.get("VAPID_PRIVATE_KEY"), sujet = Deno.env.get("VAPID_SUBJECT") || "mailto:contact@angels-group.app";
+  const pub = Deno.env.get("VAPID_PUBLIC_KEY"), priv = Deno.env.get("VAPID_PRIVATE_KEY"), sujet = Deno.env.get("VAPID_SUBJECT") || "mailto:contact@logistica-group.app";
   if (!pub || !priv) throw new Error("Clés VAPID absentes");
   webpush.setVapidDetails(sujet, pub, priv);
   return async (sub, payload) => {

@@ -121,7 +121,7 @@ footer{text-align:center;color:var(--mu);font-size:12px;padding:12px}
 <footer>© LOGISTICA · Hub · <a href="#" id="inst" hidden>📲 Installer</a><br><small>Logiciel développé par <b>Sanix Africa Division Technologies</b> · Contact (WhatsApp) : +225 0779181075 / 0140017751</small></footer>
 <script src="marque.js"></script><script src="auth-engine.js"></script>
 <script>
-const KEY="angels_erp_v1",$=s=>document.getElementById(s);
+const KEY="logistica_erp_v1",$=s=>document.getElementById(s);
 /* Modules et outils de l'instance (marque.js) : seuls ceux choisis apparaissent. */
 const MQ=window.ERP_MARQUE||{nom:"LOGISTICA",modules:["distribution","transport","agro"],outils:["portail","compta","crm","parametres"]};
 const ACTIF=id=>(MQ.modules||[]).includes(id)||(MQ.outils||[]).includes(id);
@@ -137,19 +137,19 @@ try{
  }
 }catch(e){}
 try{
- const T=JSON.parse(localStorage.getItem("angels_transport_v3")||"null");
+ const T=JSON.parse(localStorage.getItem("logistica_transport_v3")||"null");
  if(T){const j=new Date().toISOString().slice(0,10);$("t-ot").textContent=((T.payments||[]).filter(x=>x.statut==="confirme"&&x.date_valeur===j).reduce((s,x)=>s+(+x.montant||0),0)).toLocaleString("fr-FR")+" F";$("t-v").textContent=(T.vehicles||[]).length;$("t-c").textContent=(T.drivers||[]).length}
 }catch(e){}
 try{
- const As=JSON.parse(localStorage.getItem("angels_assurance_v1")||"null");
+ const As=JSON.parse(localStorage.getItem("logistica_assurance_v1")||"null");
  if(As&&$("s-p")){const j=new Date().toISOString().slice(0,10),pl=As.polices||[];$("s-p").textContent=pl.filter(p=>p.statut==="en_cours"&&p.effet<=j&&p.echeance>=j).length;const al=(As.cfg&&+As.cfg.alerte_renouvellement)||30;$("s-r").textContent=pl.filter(p=>p.statut!=="resiliee"&&!p.renouvelee_par&&Math.round((new Date(p.echeance+"T00:00:00Z")-new Date(j+"T00:00:00Z"))/864e5)<=al).length;$("s-s").textContent=(As.sinistres||[]).filter(s=>["declare","transmis","expertise","accepte"].includes(s.statut)).length}
 }catch(e){}
 try{
- const Pl=JSON.parse(localStorage.getItem("angels_placement_v1")||"null");
+ const Pl=JSON.parse(localStorage.getItem("logistica_placement_v1")||"null");
  if(Pl&&$("p-b")){const t=Date.now(),j=new Date().toISOString().slice(0,10);$("p-b").textContent=(Pl.besoins||[]).filter(b=>b.statut==="ouvert").length;$("p-e").textContent=(Pl.affectations||[]).filter(a=>a.statut!=="annulee"&&a.statut!=="terminee"&&a.debut<=j&&a.fin>=j).length;$("p-f").textContent=(Pl.pointages||[]).filter(p=>!p.facture_id&&p.fraction>0).length+" j"}
 }catch(e){}
 try{
- const G=JSON.parse(localStorage.getItem("angels_agro_v1")||"null");
+ const G=JSON.parse(localStorage.getItem("logistica_agro_v1")||"null");
  if(G){const en=(G.lots||[]).filter(l=>l.statut==="en_cours"),sor=l=>(G.sorties||[]).filter(s=>s.lot_id===l.id&&!s.annule).reduce((s,x)=>s+(+x.tetes||0),0),mor=l=>(G.suivis||[]).filter(x=>x.lot_id===l.id).reduce((s,x)=>s+(+x.morts||0),0);
   $("a-v").textContent=en.reduce((s,l)=>s+Math.max(0,l.initial-mor(l)-sor(l)),0).toLocaleString("fr-FR");$("a-l").textContent=en.length;
   const q=p=>(G.mvts||[]).filter(m=>m.produit_id===p.id).reduce((s,m)=>s+(m.sens==="entree"?m.qte:-m.qte),0);$("a-s").textContent=(G.produits||[]).filter(p=>p.categorie!=="fini"&&p.seuil>0&&q(p)<=p.seuil).length}
@@ -246,7 +246,7 @@ function consolide(){
  $("ncons").textContent="Chiffres lus sur cet appareil (données locales de chaque application). « Non ouvert » : l'application n'a pas encore été utilisée ici. Résultat de Distributions : voir son module Comptabilité.";
 }
 /* ---------- Tableau de bord par module ---------- */
-const TOUS=[{id:"dist",mod:"distribution",nom:"Distributions",ic:"🏍️",href:"distribution.html",c:"var(--g1)",cle:"angels_erp_v1",fn:distribution},{id:"trans",mod:"transport",nom:"Transport",ic:"🚚",href:"transport.html",c:"var(--g2)",cle:"angels_transport_v3",fn:transport},{id:"agro",mod:"agro",nom:"Agro",ic:"🐔",href:"agro.html",c:"var(--g3)",cle:"angels_agro_v1",fn:agro},{id:"plac",mod:"placement",nom:"Placement",ic:"👷",href:"placement.html",c:"#b45309",cle:"angels_placement_v1",fn:placement},{id:"assu",mod:"assurance",nom:"Assurance",ic:"🛡️",href:"assurance.html",c:"#1e6ea0",cle:"angels_assurance_v1",fn:assurance}];
+const TOUS=[{id:"dist",mod:"distribution",nom:"Distributions",ic:"🏍️",href:"distribution.html",c:"var(--g1)",cle:"logistica_erp_v1",fn:distribution},{id:"trans",mod:"transport",nom:"Transport",ic:"🚚",href:"transport.html",c:"var(--g2)",cle:"logistica_transport_v3",fn:transport},{id:"agro",mod:"agro",nom:"Agro",ic:"🐔",href:"agro.html",c:"var(--g3)",cle:"logistica_agro_v1",fn:agro},{id:"plac",mod:"placement",nom:"Placement",ic:"👷",href:"placement.html",c:"#b45309",cle:"logistica_placement_v1",fn:placement},{id:"assu",mod:"assurance",nom:"Assurance",ic:"🛡️",href:"assurance.html",c:"#1e6ea0",cle:"logistica_assurance_v1",fn:assurance}];
 const REG=TOUS.filter(r=>ACTIF(r.mod)),MODS=REG;
 let MOD=(()=>{try{return sessionStorage.getItem("hub_mod")||REG[0].id}catch(e){return REG[0].id}})();
 function tdb(X){
@@ -266,16 +266,16 @@ if("serviceWorker"in navigator&&/^https?:$/.test(location.protocol))navigator.se
 
 /* Mise en production : des données de démonstration encore présentes sur cet appareil faussent la vue consolidée. */
 (function(){
- const APPS=[["Distributions","angels_erp_v1",["angels_compta_distribution","angels_portail_v1"],"distribution"],["Transport","angels_transport_v3",["angels_compta_transport","angels_transport_files"],"transport"],["Agro","angels_agro_v1",["angels_compta_agro"],"agro"]].filter(a=>ACTIF(a[3]));
+ const APPS=[["Distributions","logistica_erp_v1",["logistica_compta_distribution","logistica_portail_v1"],"distribution"],["Transport","logistica_transport_v3",["logistica_compta_transport","logistica_transport_files"],"transport"],["Agro","logistica_agro_v1",["logistica_compta_agro"],"agro"]].filter(a=>ACTIF(a[3]));
  try{
-  if(ANGELS_AUTH.demoOn())return;
-  const trouves=APPS.filter(([n,k])=>{try{const S=JSON.parse(localStorage.getItem(k)||"null");return S&&ANGELS_AUTH.demoUsers(S.users)}catch(e){return false}});
+  if(LOGISTICA_AUTH.demoOn())return;
+  const trouves=APPS.filter(([n,k])=>{try{const S=JSON.parse(localStorage.getItem(k)||"null");return S&&LOGISTICA_AUTH.demoUsers(S.users)}catch(e){return false}});
   if(!trouves.length)return;
   const box=$("demo-alerte");box.hidden=false;
   box.innerHTML='<b>⚠ Données de démonstration détectées sur cet appareil</b> ('+trouves.map(x=>x[0]).join(", ")+'). Elles apparaissent dans la vue consolidée ci-dessous.<div style="margin-top:8px"><button type="button" id="demo-purge" style="font:700 14px Arial;padding:10px 14px;border-radius:9px;border:0;background:#c62828;color:#fff;cursor:pointer;min-height:42px">Effacer les données de démonstration de cet appareil</button></div>';
   $("demo-purge").onclick=function(){
    if(!confirm("Effacer les données de démonstration de : "+trouves.map(x=>x[0]).join(", ")+" ?\n\nLes applications repartiront d'une base vide avec l'administrateur "+((MQ.admin&&MQ.admin.nom)||"KESSIE")+". Cette action est définitive pour cet appareil."))return;
-   trouves.forEach(([n,k,der])=>{[k].concat(der).forEach(x=>{try{localStorage.removeItem(x)}catch(e){}});try{localStorage.removeItem("angels_demo_garde_"+n);localStorage.removeItem("angels_sync_base_"+n.toLowerCase().replace(/s$/,""))}catch(e){}});
+   trouves.forEach(([n,k,der])=>{[k].concat(der).forEach(x=>{try{localStorage.removeItem(x)}catch(e){}});try{localStorage.removeItem("logistica_demo_garde_"+n);localStorage.removeItem("logistica_sync_base_"+n.toLowerCase().replace(/s$/,""))}catch(e){}});
    try{sessionStorage.clear()}catch(e){}
    location.reload();
   };

@@ -6,7 +6,7 @@
   var D = G.document;
   var E = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   var fc = function (n) { return Math.round(n || 0).toLocaleString("fr-FR").replace(/[  ]/g, " ") + " F"; };
-  var APPS = [["distribution", "angels_erp_v1", "Distribution"], ["transport", "angels_transport_v3", "Transport"], ["agro", "angels_agro_v1", "Agro"]];
+  var APPS = [["distribution", "logistica_erp_v1", "Distribution"], ["transport", "logistica_transport_v3", "Transport"], ["agro", "logistica_agro_v1", "Agro"]];
   var DUREE = 30 * 60 * 1000;
   function lire(k) { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } }
   function hue(s) { var h = 0; String(s).split("").forEach(function (c) { h = (h * 31 + c.charCodeAt(0)) % 360; }); return h; }
@@ -65,7 +65,7 @@
         if (TRY.until > Date.now()) { msg("Trop d'essais : patientez " + Math.ceil((TRY.until - Date.now()) / 1000) + " s.", 1); return render(); }
         var g = c && lire(c.key), u = g && (g.users || []).filter(function (x) { return x.id === c.id && x.actif !== false && ROLES.indexOf(x.role) >= 0; })[0];
         (async function () {
-          var r = { ok: false }; try { if (u) r = await G.ANGELS_AUTH.connecter(u, String(d.get("pwd"))); } catch (x) { }
+          var r = { ok: false }; try { if (u) r = await G.LOGISTICA_AUTH.connecter(u, String(d.get("pwd"))); } catch (x) { }
           if (r.ok && r.legacy) msg("Les codes PIN ne sont plus acceptés : connectez-vous une fois à l'application pour créer votre mot de passe.", 1);
           else if (r.ok && u.chg) msg("Votre mot de passe est temporaire : ouvrez l'application et connectez-vous une fois pour le remplacer.", 1);
           else if (r.ok) { TRY = { n: 0, until: 0 }; SESS = { app: c.app, appNom: c.appNom, id: c.id, nom: c.nom, exp: Date.now() + DUREE }; try { sessionStorage.setItem(SK, JSON.stringify(SESS)); } catch (x) { } ST.msg = null; }
@@ -77,9 +77,9 @@
       if (!garde()) return render();
       if (o.formulaire) o.formulaire(f.dataset.f, new FormData(f), f, ST, agir, par);
     });
-    G["ANGELS_" + o.id.toUpperCase() + "_RAFRAICHIR"] = function () { if (garde()) render(); };
+    G["LOGISTICA_" + o.id.toUpperCase() + "_RAFRAICHIR"] = function () { if (garde()) render(); };
     render();
     return { render: render, agir: agir, ST: ST, par: par, garde: garde, toast: toast, session: function () { return SESS; } };
   }
-  G.ANGELS_SHELL = { init: init, E: E, fc: fc, fmt: fmt, av: av, kpi: kpi, ilya: ilya, hue: hue };
+  G.LOGISTICA_SHELL = { init: init, E: E, fc: fc, fmt: fmt, av: av, kpi: kpi, ilya: ilya, hue: hue };
 })(window);

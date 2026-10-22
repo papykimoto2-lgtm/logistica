@@ -4,13 +4,13 @@
    - QR code de sécurité : signature numérique ECDSA P-256 (WebCrypto) de la référence, de la date, du montant et de l'empreinte du contenu.
      La clé privée reste sur l'appareil émetteur ; la clé publique est publiée avec le portail (portail-data.js) : la page verifier.html
      confirme l'authenticité d'un document sans serveur. Sans WebCrypto (page non sécurisée), repli sur un contrôle simple, signalé comme tel.
-   - Registre local des documents émis (angels_docs_v1).
+   - Registre local des documents émis (logistica_docs_v1).
    - Aperçu A4 (portrait / paysage) avec Imprimer, PDF (boîte d'impression) et téléchargement HTML.
    - hook() : remplace window.print() pour que tous les imprimés existants de l'application passent par le moteur.
    Dépend de qrcode.js (qrcode-generator, MIT). */
 (function (G) {
   "use strict";
-  var KEY = "angels_print_v1", KEYS = "angels_print_key_v1", REG = "angels_docs_v1";
+  var KEY = "logistica_print_v1", KEYS = "logistica_print_key_v1", REG = "logistica_docs_v1";
   var DIVS = [["groupe", "Groupe"], ["transport", "Transport"], ["distribution", "Distribution"], ["agro", "Agro"]];
   var CHAMPS = ["raison", "forme", "capital", "rccm", "ncc", "siege", "tel", "email", "pied", "couleur", "logo"];
   var enc = typeof TextEncoder !== "undefined" ? new TextEncoder() : null;
@@ -63,10 +63,10 @@
     return k;
   }
   function cleInfo() { var k = lire(KEYS); return k && k.kid ? { existe: true, kid: k.kid, t: k.t } : { existe: false, kid: "", t: "" }; }
-  function cleExporter() { var k = lire(KEYS); return k ? JSON.stringify({ angels_cle: 1, priv: k.priv, pub: k.pub, kid: k.kid, t: k.t }) : ""; }
+  function cleExporter() { var k = lire(KEYS); return k ? JSON.stringify({ logistica_cle: 1, priv: k.priv, pub: k.pub, kid: k.kid, t: k.t }) : ""; }
   async function cleImporter(txt) {
     var o; try { o = JSON.parse(txt); } catch (e) { throw new Error("Fichier de clé illisible."); }
-    if (!o || o.angels_cle !== 1 || !o.priv || !o.pub) throw new Error("Ce n'est pas une clé de signature LOGISTICA.");
+    if (!o || o.logistica_cle !== 1 || !o.priv || !o.pub) throw new Error("Ce n'est pas une clé de signature LOGISTICA.");
     var s = subtle(); if (!s) throw new Error("Cet appareil ne permet pas la signature (ouvrez l'application en https).");
     try {
       var ks = await s.importKey("jwk", o.priv, ALGO, false, ["sign"]), kv = await s.importKey("jwk", o.pub, ALGO, false, ["verify"]), essai = new TextEncoder().encode("essai"), sg = await s.sign(SIGN, ks, essai);
@@ -87,7 +87,7 @@
   var nette = function (s, n) { return String(s == null ? "" : s).normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^A-Za-z0-9 .,:\/_\-]/g, " ").replace(/\s+/g, " ").trim().slice(0, n || 40); };
   function canonDe(div, ref, date, montant, h, kid) { return ["A1", nette(div, 12), nette(ref, 40), date, String(Math.round(+montant || 0)), h, kid].join("|"); }
   function baseSite(c) { var s = String(c.site || "").trim().replace(/\/+$/, ""); if (/^https:\/\/[^\s]+$/.test(s)) return s; return /^https?:$/.test(G.location.protocol) ? G.location.origin : ""; }
-  function lienDe(c, canon, sig) { var b = baseSite(c); return (b ? b + "/verifier.html#" : "ANGELS-VERIF:") + b64u(enc.encode(canon)) + "." + sig; }
+  function lienDe(c, canon, sig) { var b = baseSite(c); return (b ? b + "/verifier.html#" : "LOGISTICA-VERIF:") + b64u(enc.encode(canon)) + "." + sig; }
 
   /* ---------- Registre des documents émis (sur cet appareil) ---------- */
   function registre() { var r = lire(REG); return Array.isArray(r) ? r : []; }
@@ -210,7 +210,7 @@
         var mds = document.querySelectorAll(".md"), md = mds.length ? mds[mds.length - 1] : null, src = md ? md : (opt.racine ? opt.racine() : (document.querySelector("main") || document.getElementById("app")));
         if (!src) return G.__printNatif();
         var cl = src.cloneNode(true);
-        if (G.ANGELS_PAGER) G.ANGELS_PAGER.depagine(cl);
+        if (G.LOGISTICA_PAGER) G.LOGISTICA_PAGER.depagine(cl);
         cl.querySelectorAll(".noprint,button,select,input,textarea,nav,script,style,.x,[data-x],[hidden]").forEach(function (n) { n.remove(); });
         var h1 = cl.querySelector("h1,h2"), titre = h1 ? h1.textContent.replace(/\s+/g, " ").trim() : "Document";
         if (h1 && h1.tagName === "H1") h1.remove();
@@ -236,6 +236,6 @@
     if (!k) return body + ".-.0";
     var s = await signer("T1|" + body); return body + "." + s.sig + "." + s.kid;
   }
-  G.ANGELS_PRINT = { DIVS: DIVS, cfg: cfg, sauver: sauver, ident: ident, ouvrir: ouvrir, jeton: jeton, dernier: function () { return ST.ctl; }, depuisFrame: depuisFrame, hook: hook, fermer: fermer, registre: registre, cleInfo: cleInfo, cleExporter: cleExporter, cleImporter: cleImporter, cleRegenerer: cleRegenerer, cleAssurer: cleAssurer, pubs: pubs,
+  G.LOGISTICA_PRINT = { DIVS: DIVS, cfg: cfg, sauver: sauver, ident: ident, ouvrir: ouvrir, jeton: jeton, dernier: function () { return ST.ctl; }, depuisFrame: depuisFrame, hook: hook, fermer: fermer, registre: registre, cleInfo: cleInfo, cleExporter: cleExporter, cleImporter: cleImporter, cleRegenerer: cleRegenerer, cleAssurer: cleAssurer, pubs: pubs,
     verifierSig: verifierSig, unb64u: unb64u, sha: sha, canonDe: canonDe, construire: construire, esc: esc, okImg: okImg };
 })(window);

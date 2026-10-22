@@ -2,12 +2,12 @@
    Impression par la boîte d'impression du navigateur avec le pilote de l'imprimante : la taille de l'étiquette est portée par la règle CSS @page, une étiquette par page.
    Aucune donnée n'est enregistrée sur le serveur ; seuls les réglages de l'étiquette (taille, copies) sont mémorisés sur le poste.
 
-   ANGELS_ETIQ.ouvrir({ titre, items:[{ qr, titre, l1, l2, l3, code }], apres:fn })   ouvre l'aperçu et l'impression
-   ANGELS_ETIQ.html(items, { w, h, copies, cadre })                                  document HTML complet (testable)
+   LOGISTICA_ETIQ.ouvrir({ titre, items:[{ qr, titre, l1, l2, l3, code }], apres:fn })   ouvre l'aperçu et l'impression
+   LOGISTICA_ETIQ.html(items, { w, h, copies, cadre })                                  document HTML complet (testable)
    Contenu d'un QR code : « AGE1<type>|<identifiant> » — P produit, M moto, L livreur, V véhicule, T lot ; les QR de colis gardent leur format propre (AGE1|commande|n/N|code). */
 (function (G) {
   "use strict";
-  var KEY = "angels_etiq", W_MIN = 20, W_MAX = 82, H_MIN = 15, H_MAX = 200, COPIES_MAX = 50;
+  var KEY = "logistica_etiq", W_MIN = 20, W_MAX = 82, H_MIN = 15, H_MAX = 200, COPIES_MAX = 50;
   var PRE = [["80x80", "80 × 80 mm (autocollant maximal, par défaut)", 80, 80], ["50x30", "50 × 30 mm", 50, 30], ["40x30", "40 × 30 mm", 40, 30], ["60x40", "60 × 40 mm", 60, 40], ["80x50", "80 × 50 mm", 80, 50], ["perso", "Autre taille…", 0, 0]];
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   var clamp = function (v, a, b) { return Math.min(b, Math.max(a, v)); };
@@ -142,5 +142,5 @@
     maj(); return ov;
   }
 
-  G.ANGELS_ETIQ = { ouvrir: ouvrir, imprimer: imprimer, ouvrirPdf: ouvrirPdf, rasteriser: rasteriser, pdf: pdf, html: html, etiquette: etiquette, cfg: cfg, PRESETS: PRE, LIMITES: { wMin: W_MIN, wMax: W_MAX, hMin: H_MIN, hMax: H_MAX, copies: COPIES_MAX } };
+  G.LOGISTICA_ETIQ = { ouvrir: ouvrir, imprimer: imprimer, ouvrirPdf: ouvrirPdf, rasteriser: rasteriser, pdf: pdf, html: html, etiquette: etiquette, cfg: cfg, PRESETS: PRE, LIMITES: { wMin: W_MIN, wMax: W_MAX, hMin: H_MIN, hMax: H_MAX, copies: COPIES_MAX } };
 })(window);

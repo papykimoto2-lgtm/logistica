@@ -9,28 +9,28 @@
   "use strict";
   /* Profils : réglages propres à chaque application (clé de stockage, ce qui reste local, secrets jamais envoyés). */
   var PROFILS = {
-    distribution: { nom: "Distributions", cle: "angels_erp_v1", exclude: ["pos", "gps_hist", "tries", "pass", "pass_err"], secrets: { config: ["appel_pont.cle_admin"] }, derives: ["angels_compta_distribution", "angels_portail_v1"] },
-    transport: { nom: "Transport", cle: "angels_transport_v3", exclude: ["tries", "gps_pos", "gps_alerts", "alertes_etat"], derives: ["angels_compta_transport", "angels_transport_files"] },
-    agro: { nom: "Agro", cle: "angels_agro_v1", exclude: ["tries"], derives: ["angels_compta_agro"] },
-    crm: { nom: "CRM", cle: "angels_crm_v1", exclude: [], derives: [] },
-    placement: { nom: "Placement", cle: "angels_placement_v1", exclude: [], derives: [] },
-    assurance: { nom: "Assurance", cle: "angels_assurance_v1", exclude: [], derives: [] }
+    distribution: { nom: "Distributions", cle: "logistica_erp_v1", exclude: ["pos", "gps_hist", "tries", "pass", "pass_err"], secrets: { config: ["appel_pont.cle_admin"] }, derives: ["logistica_compta_distribution", "logistica_portail_v1"] },
+    transport: { nom: "Transport", cle: "logistica_transport_v3", exclude: ["tries", "gps_pos", "gps_alerts", "alertes_etat"], derives: ["logistica_compta_transport", "logistica_transport_files"] },
+    agro: { nom: "Agro", cle: "logistica_agro_v1", exclude: ["tries"], derives: ["logistica_compta_agro"] },
+    crm: { nom: "CRM", cle: "logistica_crm_v1", exclude: [], derives: [] },
+    placement: { nom: "Placement", cle: "logistica_placement_v1", exclude: [], derives: [] },
+    assurance: { nom: "Assurance", cle: "logistica_assurance_v1", exclude: [], derives: [] }
   };
   /* Une instance du moteur = une application. Dans une application elle tourne en continu ; le Hub en crée une « sans écran » pour lire l'état et agir. */
   function Moteur(P) {
   P = Object.assign({ exclude: [], ajout: ["audit"], seq: ["seq"], secrets: {}, derives: [] }, P); if (!P.nom) P.nom = P.app;
-  var CFG_K = "angels_supabase", SYNC_K = "angels_sync", B = { cursor: 0, map: {}, boot: false };
+  var CFG_K = "logistica_supabase", SYNC_K = "logistica_sync", B = { cursor: 0, map: {}, boot: false };
   var st = { etat: "inactif", dernier: 0, err: "", busy: false, again: false, applying: false, deb: null, trop: [], doublons: [], attenteRefresh: false, erreurs: [] };
 
   function lire(k) { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } }
   function conf() {
-    if (lire("angels_demo_local")) return null;   /* démonstration locale (demo.html) : rien n'est jamais envoyé au serveur */
-    var u = lire(CFG_K), s = lire(SYNC_K), def = G.ANGELS_PASSERELLE || {}, url = (u && u.off) ? "" : (u && u.url) || def.url || "";
+    if (lire("logistica_demo_local")) return null;   /* démonstration locale (demo.html) : rien n'est jamais envoyé au serveur */
+    var u = lire(CFG_K), s = lire(SYNC_K), def = G.LOGISTICA_PASSERELLE || {}, url = (u && u.off) ? "" : (u && u.url) || def.url || "";
     if (!s || !s.actif || !s.cle || !/^https:\/\//.test(url)) return null;
     return { fn: String(url).replace(/\/+$/, "") + "/functions/v1/sync", cle: s.cle };
   }
   function h(s) { var x = 5381, i = s.length; while (i) x = (x * 33) ^ s.charCodeAt(--i); return (x >>> 0).toString(36) + ":" + s.length; }
-  var bk = function () { return "angels_sync_base_" + P.app; };
+  var bk = function () { return "logistica_sync_base_" + P.app; };
   function sauverBase() { try { localStorage.setItem(bk(), JSON.stringify(B)); } catch (e) { } }
   function chemin(o, p) { var a = p.split("."), c = o; for (var i = 0; i < a.length - 1; i++) { if (!c || typeof c !== "object") return null; c = c[a[i]]; } return c && typeof c === "object" ? [c, a[a.length - 1]] : null; }
   /* Secrets : jamais envoyés ; à la réception, la valeur locale est conservée. */
@@ -218,16 +218,16 @@
   function signal() { if (!P || st.applying || !conf()) return; clearTimeout(st.deb); st.deb = setTimeout(cycle, 1500); }
 
   function demarrer() {
-    var b = lire("angels_sync_base_" + P.app); if (b && b.map) B = b;
+    var b = lire("logistica_sync_base_" + P.app); if (b && b.map) B = b;
     setInterval(function () { if (!document.hidden) cycle(); if (st.attenteRefresh) rafraichir(); }, 12000);
     setInterval(function () { if (st.attenteRefresh && !occupe()) rafraichir(); }, 2500);
     document.addEventListener("visibilitychange", function () { if (!document.hidden) cycle(); });
     G.addEventListener("online", function () { cycle(); });
     setTimeout(function () { persister(); majBadge(); cycle(); }, 900);   /* le stockage de l'appareil reflète l'état en mémoire (migrations de démarrage comprises) */
-    try { canal = new BroadcastChannel("angels_sync_cmd"); canal.onmessage = function (ev) { var m = ev.data || {}; if (m.app !== P.app || !m.id || m.rep) return; if (m.action === "ping") return canal.postMessage({ rep: m.id, app: P.app, ok: true }); lancer(m.action).then(function (d) { canal.postMessage({ rep: m.id, app: P.app, ok: true, data: d }); }, function (e) { canal.postMessage({ rep: m.id, app: P.app, ok: false, err: String(e && e.message || e) }); }); }; } catch (e) { }
+    try { canal = new BroadcastChannel("logistica_sync_cmd"); canal.onmessage = function (ev) { var m = ev.data || {}; if (m.app !== P.app || !m.id || m.rep) return; if (m.action === "ping") return canal.postMessage({ rep: m.id, app: P.app, ok: true }); lancer(m.action).then(function (d) { canal.postMessage({ rep: m.id, app: P.app, ok: true, data: d }); }, function (e) { canal.postMessage({ rep: m.id, app: P.app, ok: false, err: String(e && e.message || e) }); }); }; } catch (e) { }
   }
   var canal = null;
-  function charger() { var b = lire("angels_sync_base_" + P.app); if (b && b.map) B = b; }
+  function charger() { var b = lire("logistica_sync_base_" + P.app); if (b && b.map) B = b; }
   function libelle(app, coll, id) { try { var S = P.get(), a = S[coll]; if (Array.isArray(a)) { for (var i = 0; i < a.length; i++) if (a[i] && a[i].id === id) return a[i].numero || a[i].nom || a[i].immat || a[i].libelle || id; } } catch (e) { } return id; }
 
   /* ----- Lecture de l'état (sans rien modifier) ----- */
@@ -276,7 +276,7 @@
   async function reessayer() { await cycle(); return diagnostic(); }
   async function purgerCache() {
     var nb = file().length;
-    [P.cle, "angels_sync_base_" + P.app].concat(P.derives || []).forEach(function (k) { try { localStorage.removeItem(k); } catch (e) { } });
+    [P.cle, "logistica_sync_base_" + P.app].concat(P.derives || []).forEach(function (k) { try { localStorage.removeItem(k); } catch (e) { } });
     B = { cursor: 0, map: {}, boot: false }; try { sessionStorage.clear(); } catch (e) { }
     if (P.badge) setTimeout(function () { location.reload(); }, 300);
     return { purge: true, perdues: nb };
@@ -310,18 +310,18 @@
     }
     if (LECTURE[action] || typeof BroadcastChannel === "undefined") return sansEcran();
     return new Promise(function (res, rej) {
-      var id = "c" + Date.now() + Math.random().toString(36).slice(2, 6), ch = new BroadcastChannel("angels_sync_cmd"), present = false, fini = false;
+      var id = "c" + Date.now() + Math.random().toString(36).slice(2, 6), ch = new BroadcastChannel("logistica_sync_cmd"), present = false, fini = false;
       function fin(f, v) { if (fini) return; fini = true; try { ch.close(); } catch (e) { } f(v); }
       ch.onmessage = function (ev) { var m = ev.data || {}; if (m.rep !== id) return; if (!present) { present = true; clearTimeout(t); ch.postMessage({ id: id + "x", app: app, action: action }); id = id + "x"; return; } if (m.ok) fin(res, m.data); else fin(rej, new Error(m.err || "Échec")); };
       ch.postMessage({ id: id, app: app, action: "ping" });
       var t = setTimeout(function () { if (present) return; sansEcran().then(function (v) { fin(res, v); }, function (e) { fin(rej, e); }); }, 700);
     });
   }
-  G.ANGELS_SYNC = {
+  G.LOGISTICA_SYNC = {
     PROFILS: PROFILS, commande: commande,
     init: function (o) { M = Moteur(Object.assign({}, PROFILS[o.app] || {}, o, { badge: true })); M.demarrer(); },
     signal: function () { if (M) M.signal(); }, cycle: function () { return M ? M.cycle() : Promise.resolve(); },
     etat: function () { return M ? M.etat() : { etat: "inactif", actif: false, base: { cursor: 0, map: {}, boot: false } }; },
-    actif: function () { var u = null, s = null; try { u = JSON.parse(localStorage.getItem("angels_supabase") || "null"); s = JSON.parse(localStorage.getItem("angels_sync") || "null"); } catch (e) { } var def = G.ANGELS_PASSERELLE || {}, url = (u && u.off) ? "" : (u && u.url) || def.url || ""; return !!(s && s.actif && s.cle && /^https:\/\//.test(url)); }
+    actif: function () { var u = null, s = null; try { u = JSON.parse(localStorage.getItem("logistica_supabase") || "null"); s = JSON.parse(localStorage.getItem("logistica_sync") || "null"); } catch (e) { } var def = G.LOGISTICA_PASSERELLE || {}, url = (u && u.off) ? "" : (u && u.url) || def.url || ""; return !!(s && s.actif && s.cle && /^https:\/\//.test(url)); }
   };
 })(window);

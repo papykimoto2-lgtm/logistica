@@ -2,10 +2,10 @@
    Chaîne : travailleur → besoin d'une entreprise → affectation (taux client / taux travailleur) → pointage journalier validé → facture client + paie du travailleur → marge.
    Garde-fous : jamais deux affectations qui se chevauchent pour la même personne ; un pointage par affectation et par jour ; un pointage n'est facturé qu'une fois et payé qu'une fois ;
    référence Mobile Money unique ; aucun montant négatif ; chaque action tracée. Écritures SYSCOHADA générées à la demande (équilibrées), jamais saisies à la main.
-   État local « angels_placement_v1 », synchronisé entre postes comme les autres applications (profil « placement »). */
+   État local « logistica_placement_v1 », synchronisé entre postes comme les autres applications (profil « placement »). */
 (function (G) {
   "use strict";
-  var K = "angels_placement_v1", DJ = 864e5;
+  var K = "logistica_placement_v1", DJ = 864e5;
   var TYPES = { journalier: "Journalier", temporaire: "Temporaire", moto: "Coursier moto", voiture: "Coursier voiture", pied: "Coursier non motorisé", bureau: "Personnel de bureau" };
   var MODES = ["Espèces", "Wave", "Orange Money", "MTN MoMo", "Moov Money", "Virement"];
   var CFG0 = { tva: 18, delai_facture: 30 };
@@ -23,10 +23,10 @@
   function sauver(S) {
     S = S || etat(); S.audit = S.audit.slice(-1500); var ok = true;
     try { localStorage.setItem(K, JSON.stringify(S)); } catch (e) { ok = false; }
-    try { if (G.ANGELS_SYNC) G.ANGELS_SYNC.signal(); } catch (e) { }
+    try { if (G.LOGISTICA_SYNC) G.LOGISTICA_SYNC.signal(); } catch (e) { }
     return ok;
   }
-  if (G.addEventListener) G.addEventListener("storage", function (e) { if (e.key === K) { CACHE = null; try { if (G.ANGELS_PLACEMENT_RAFRAICHIR) G.ANGELS_PLACEMENT_RAFRAICHIR(); } catch (x) { } } });
+  if (G.addEventListener) G.addEventListener("storage", function (e) { if (e.key === K) { CACHE = null; try { if (G.LOGISTICA_PLACEMENT_RAFRAICHIR) G.LOGISTICA_PLACEMENT_RAFRAICHIR(); } catch (x) { } } });
   function cfg(S) { var c = Object.assign({}, CFG0), u = (S || etat()).cfg || {}; Object.keys(CFG0).forEach(function (k) { var v = +u[k]; if (isFinite(v) && v >= 0 && u[k] !== "" && u[k] != null) c[k] = v; }); return c; }
   function comptes(S) { return Object.assign({}, COMPTES0, (S || etat()).cfg.comptes || {}); }
   function audit(S, par, action, detail) { S.audit.push({ id: uid("au"), t: nowIso(), par: par || "?", action: action, detail: String(detail || "").slice(0, 300) }); }
@@ -195,5 +195,5 @@
   function exportPaies(S) { S = S || etat(); return csv([["Numéro", "Date", "Travailleur", "Téléphone", "Jours", "Montant", "Mode", "Référence"]].concat(S.paies.map(function (p) { var t = S.travailleurs.filter(function (x) { return x.id === p.travailleur_id; })[0] || {}; return [p.numero, p.date, t.nom, t.tel, p.jours, p.net, p.mode, p.ref]; }))); }
 
   function csvEcritures(S) { var rows = [["Date", "Journal", "Pièce", "Libellé", "Compte", "Débit", "Crédit"]]; ecritures(S).forEach(function (e) { e.lignes.forEach(function (l) { rows.push([e.date, e.journal, e.piece, e.libelle, l.compte, l.debit, l.credit]); }); }); return csv(rows); }
-  G.ANGELS_PLACEMENT = { K: K, TYPES: TYPES, MODES: MODES, esc: esc, norm: norm, etat: etat, sauver: sauver, cfg: cfg, ajouterTravailleur: ajouterTravailleur, statutTravailleur: statutTravailleur, ajouterClient: ajouterClient, creerBesoin: creerBesoin, annulerBesoin: annulerBesoin, affecter: affecter, annulerAffectation: annulerAffectation, terminerAffectation: terminerAffectation, pointer: pointer, corrigerPointage: corrigerPointage, afacturer: afacturer, facturer: facturer, encaisser: encaisser, payeFacture: paye, apayer: apayer, payer: payer, resume: resume, candidats: candidats, pourvus: pourvus, ecritures: ecritures, equilibre: equilibre, reglages: reglages, exportPaies: exportPaies, csvEcritures: csvEcritures, jours: jours };
+  G.LOGISTICA_PLACEMENT = { K: K, TYPES: TYPES, MODES: MODES, esc: esc, norm: norm, etat: etat, sauver: sauver, cfg: cfg, ajouterTravailleur: ajouterTravailleur, statutTravailleur: statutTravailleur, ajouterClient: ajouterClient, creerBesoin: creerBesoin, annulerBesoin: annulerBesoin, affecter: affecter, annulerAffectation: annulerAffectation, terminerAffectation: terminerAffectation, pointer: pointer, corrigerPointage: corrigerPointage, afacturer: afacturer, facturer: facturer, encaisser: encaisser, payeFacture: paye, apayer: apayer, payer: payer, resume: resume, candidats: candidats, pourvus: pourvus, ecritures: ecritures, equilibre: equilibre, reglages: reglages, exportPaies: exportPaies, csvEcritures: csvEcritures, jours: jours };
 })(typeof window !== "undefined" ? window : globalThis);
